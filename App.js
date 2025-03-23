@@ -289,36 +289,14 @@ function initStage() {
         if (currentDragDirection) {
             const directionColor = DIRECTION_COLORS[currentDragDirection];
             directionList.push(`${directionList.length + 1}. ${currentDragDirection}`);
-            directionText.text(directionList.join('\n'));
-
-            // Update scroll position to bottom
-            const contentHeight = directionText.height();
-            const containerHeight = TEXT_CONTAINER_HEIGHT;
-            
-            if (contentHeight > containerHeight) {
-                scrollbarThumb.visible(true);
-                const maxScroll = contentHeight - containerHeight;
-                textContainer.y(-maxScroll);
-
-                // Update thumb size and position
-                const ratio = containerHeight / contentHeight;
-                const thumbHeight = Math.max(30, containerHeight * ratio);
-                scrollbarThumb.height(thumbHeight);
-                scrollbarThumb.y(10 + TEXT_CONTAINER_HEIGHT - thumbHeight - SCROLLBAR_PADDING);
-            }
-            else {
-                scrollbarThumb.visible(false);
-            }
-
-            leftLayer.batchDraw();
         }
-
+        
         // Convert screen coordinates to grid coordinates
         const startCol = Math.max(0, Math.floor((x1 - GRID_OFFSET_X) / cellSize));
         const endCol = Math.min(numberOfColumns - 1, Math.floor((x2 - GRID_OFFSET_X) / cellSize));
         const startRow = Math.max(0, Math.floor(y1 / cellSize));
         const endRow = Math.min(numberOfRows - 1, Math.floor(y2 / cellSize));
-
+        
         // Store corner cells
         const cornerCells = {
             topLeft: gridCells[startRow][startCol],
@@ -326,7 +304,7 @@ function initStage() {
             bottomLeft: gridCells[endRow][startCol],
             bottomRight: gridCells[endRow][endCol]
         };
-
+        
         // Function to get random cells adjacent to selection
         function getRandomAdjacentCells(numCells) {
             const adjacentCells = [];
@@ -342,7 +320,7 @@ function initStage() {
             for (let i = 0; i < numCells && sides.length > 0; i++) {
                 const side = sides.pop();
                 let cell = null;
-
+                
                 switch(side) {
                     case 'top':
                         if (startRow > 0) {
@@ -350,7 +328,7 @@ function initStage() {
                             cell = gridCells[startRow - 1][col];
                         }
                         break;
-                    case 'right':
+                        case 'right':
                         if (endCol < numberOfColumns - 1) {
                             const row = startRow + Math.floor(Math.random() * (endRow - startRow + 1));
                             cell = gridCells[row][endCol + 1];
@@ -414,6 +392,78 @@ function initStage() {
             cell.cache();
             cell.draw();
         });
+
+        UpdateCellPercentage();
+    }
+
+    function UpdateCellPercentage(){
+        // Calculate color percentages
+        const totalCells = numberOfRows * numberOfColumns;
+        const colorCounts = {
+            red: 0,
+            green: 0,
+            blue: 0,
+            orange: 0
+        };
+
+        // Count cells of each color
+        for (let row = 0; row < numberOfRows; row++) {
+            for (let col = 0; col < numberOfColumns; col++) {
+                const cell = gridCells[row][col];
+                switch(cell.attrs.fill) {
+                    case DIRECTION_COLORS.TopToBottomRight:
+                        colorCounts.red++;
+                        break;
+                    case DIRECTION_COLORS.TopToBottomLeft:
+                        colorCounts.green++;
+                        break;
+                    case DIRECTION_COLORS.BottomToTopRight:
+                        colorCounts.blue++;
+                        break;
+                    case DIRECTION_COLORS.BottomToTopLeft:
+                        colorCounts.orange++;
+                        break;
+                }
+            }
+        }
+
+        // Calculate percentages
+        const percentages = {
+            red: ((colorCounts.red / totalCells) * 100).toFixed(1),
+            green: ((colorCounts.green / totalCells) * 100).toFixed(1),
+            blue: ((colorCounts.blue / totalCells) * 100).toFixed(1),
+            orange: ((colorCounts.orange / totalCells) * 100).toFixed(1)
+        };
+
+        // Add color percentages to direction list
+        directionList.push(`\nColor Distribution:`);
+        directionList.push(`Red: ${percentages.red}%`);
+        directionList.push(`Green: ${percentages.green}%`);
+        directionList.push(`Blue: ${percentages.blue}%`);
+        directionList.push(`Orange: ${percentages.orange}%`);
+
+        directionText.text(directionList.join('\n'));
+
+        // Update scroll position to bottom
+        const contentHeight = directionText.height();
+        const containerHeight = TEXT_CONTAINER_HEIGHT;
+
+        if (contentHeight > containerHeight) {
+            scrollbarThumb.visible(true);
+            const maxScroll = contentHeight - containerHeight;
+            textContainer.y(-maxScroll);
+
+            // Update thumb size and position
+            const ratio = containerHeight / contentHeight;
+            const thumbHeight = Math.max(30, containerHeight * ratio);
+            scrollbarThumb.height(thumbHeight);
+            scrollbarThumb.y(10 + TEXT_CONTAINER_HEIGHT - thumbHeight - SCROLLBAR_PADDING);
+        }
+        else {
+            scrollbarThumb.visible(false);
+        }
+
+        leftLayer.batchDraw();
     }
 
     // Add mouse events to stage
