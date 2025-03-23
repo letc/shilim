@@ -13,6 +13,7 @@ let scrollbarY = 0;
 const GRID_OFFSET_X = 310;
 const SCROLLBAR_WIDTH = 10;
 const SCROLLBAR_PADDING = 2;
+const TEXT_CONTAINER_HEIGHT = 520;
 
 // Cache color values
 const COLORS = {
@@ -92,38 +93,46 @@ function initStage() {
 
     // Create a clip container for the text
     const clipContainer = new Konva.Group({
-        x: 0,
-        y: 0,
+        x: 10,
+        y: 10,
         width: 280,
-        height: 520,
+        height: TEXT_CONTAINER_HEIGHT,
         clip: {
             x: 0,
             y: 0,
             width: 280,
-            height: 520
+            height: TEXT_CONTAINER_HEIGHT
         }
     });
 
     // Add text to left layer with scrolling container
+    const textContainer = new Konva.Group({
+        x: 0,
+        y: 0,
+        width: 260,
+        height: TEXT_CONTAINER_HEIGHT
+    });
+
     const directionText = new Konva.Text({
         x: 10,
-        y: 10,
-        width: 260, // Reduced to make room for scrollbar
-        height: 520,
+        y: 0,
+        width: 260,
         fontSize: 20,
         fill: COLORS.TEXT_COLOR,
         text: '',
         align: 'left',
         wrap: 'word'
     });
-    clipContainer.add(directionText);
+
+    textContainer.add(directionText);
+    clipContainer.add(textContainer);
 
     // Create scrollbar background
     const scrollbarBg = new Konva.Rect({
         x: 290,
-        y: 0,
+        y: 10,
         width: SCROLLBAR_WIDTH,
-        height: 520,
+        height: TEXT_CONTAINER_HEIGHT,
         fill: COLORS.SCROLLBAR_BG,
         cornerRadius: 4
     });
@@ -131,41 +140,67 @@ function initStage() {
     // Create scrollbar thumb
     const scrollbarThumb = new Konva.Rect({
         x: 290 + SCROLLBAR_PADDING,
-        y: SCROLLBAR_PADDING,
+        y: 10 + SCROLLBAR_PADDING,
         width: SCROLLBAR_WIDTH - (2 * SCROLLBAR_PADDING),
-        height: 100, // Initial height, will be updated
+        height: 100,
         fill: COLORS.SCROLLBAR_THUMB,
         cornerRadius: 4,
         draggable: true,
         dragBoundFunc: function(pos) {
-            const maxY = 520 - this.height() - (2 * SCROLLBAR_PADDING);
+            const maxY = TEXT_CONTAINER_HEIGHT + 10 - this.height() - (2 * SCROLLBAR_PADDING);
             return {
                 x: this.x(),
-                y: Math.max(SCROLLBAR_PADDING, Math.min(pos.y, maxY))
+                y: Math.max(10 + SCROLLBAR_PADDING, Math.min(pos.y, maxY))
             };
         }
     });
 
+    function updateScroll() {
+        const contentHeight = directionText.height();
+        const containerHeight = TEXT_CONTAINER_HEIGHT;
+        
+        if (contentHeight <= containerHeight) {
+            scrollbarBg.visible(false);
+            scrollbarThumb.visible(false);
+            textContainer.y(0);
+            return;
+        }
+
+        scrollbarBg.visible(true);
+        scrollbarThumb.visible(true);
+
+        // Update thumb size
+        const ratio = containerHeight / contentHeight;
+        const thumbHeight = Math.max(30, containerHeight * ratio);
+        scrollbarThumb.height(thumbHeight);
+
+        // Calculate scroll position
+        const scrollRatio = (scrollbarThumb.y() - (10 + SCROLLBAR_PADDING)) / (containerHeight - thumbHeight - (2 * SCROLLBAR_PADDING));
+        const maxScroll = contentHeight - containerHeight;
+        textContainer.y(-maxScroll * scrollRatio);
+    }
+
     // Add scrollbar events
-    scrollbarThumb.on('dragmove', () => {
-        const maxScroll = Math.max(0, directionText.height() - 520);
-        const scrollRatio = (scrollbarThumb.y() - SCROLLBAR_PADDING) / (520 - scrollbarThumb.height() - (2 * SCROLLBAR_PADDING));
-        directionText.y(-maxScroll * scrollRatio);
-        leftLayer.batchDraw();
-    });
+    scrollbarThumb.on('dragmove', updateScroll);
 
     // Add mouse wheel event for scrolling
     stage.on('wheel', (e) => {
-        if (e.evt.deltaY !== 0 && directionText.height() > 520) {
+        const contentHeight = directionText.height();
+        const containerHeight = TEXT_CONTAINER_HEIGHT;
+
+        if (contentHeight > containerHeight) {
             e.evt.preventDefault();
-            const maxScroll = Math.max(0, directionText.height() - 520);
-            const newY = Math.max(-maxScroll, Math.min(0, directionText.y() - e.evt.deltaY));
-            directionText.y(newY);
+            const delta = e.evt.deltaY;
+            const maxScroll = contentHeight - containerHeight;
+            const currentScroll = -textContainer.y();
+            const newScroll = Math.max(0, Math.min(maxScroll, currentScroll + delta));
             
-            // Update scrollbar thumb position
-            const scrollRatio = -newY / maxScroll;
-            const thumbY = SCROLLBAR_PADDING + (scrollRatio * (520 - scrollbarThumb.height() - (2 * SCROLLBAR_PADDING)));
-            scrollbarThumb.y(thumbY);
+            textContainer.y(-newScroll);
+
+            // Update thumb position
+            const scrollRatio = newScroll / maxScroll;
+            const maxThumbY = containerHeight - scrollbarThumb.height() - (2 * SCROLLBAR_PADDING);
+            scrollbarThumb.y(10 + SCROLLBAR_PADDING + (scrollRatio * maxThumbY));
             
             leftLayer.batchDraw();
         }
@@ -247,18 +282,23 @@ function initStage() {
             directionList.push(`${directionList.length + 1}. ${currentDragDirection}`);
             directionText.text(directionList.join('\n'));
 
-            // Update scrollbar thumb size and position
+            // Update scroll position to bottom
             const contentHeight = directionText.height();
-            const containerHeight = 520;
-            const ratio = containerHeight / contentHeight;
-            const thumbHeight = Math.max(30, Math.min(containerHeight * ratio, containerHeight));
-            scrollbarThumb.height(thumbHeight);
-
-            // Scroll to bottom
+            const containerHeight = TEXT_CONTAINER_HEIGHT;
+            
             if (contentHeight > containerHeight) {
+                scrollbarThumb.visible(true);
                 const maxScroll = contentHeight - containerHeight;
-                directionText.y(-maxScroll);
-                scrollbarThumb.y(520 - thumbHeight - SCROLLBAR_PADDING);
+                textContainer.y(-maxScroll);
+
+                // Update thumb size and position
+                const ratio = containerHeight / contentHeight;
+                const thumbHeight = Math.max(30, containerHeight * ratio);
+                scrollbarThumb.height(thumbHeight);
+                scrollbarThumb.y(10 + TEXT_CONTAINER_HEIGHT - thumbHeight - SCROLLBAR_PADDING);
+            }
+            else{
+                scrollbarThumb.visible(false);
             }
 
             leftLayer.batchDraw();
