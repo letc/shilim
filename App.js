@@ -327,6 +327,57 @@ function initStage() {
             bottomRight: gridCells[endRow][endCol]
         };
 
+        // Function to get random cells adjacent to selection
+        function getRandomAdjacentCells(numCells) {
+            const adjacentCells = [];
+            const sides = ['top', 'right', 'bottom', 'left'];
+            
+            // Shuffle sides array
+            for (let i = sides.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [sides[i], sides[j]] = [sides[j], sides[i]];
+            }
+
+            // Try to add cells from random sides
+            for (let i = 0; i < numCells && sides.length > 0; i++) {
+                const side = sides.pop();
+                let cell = null;
+
+                switch(side) {
+                    case 'top':
+                        if (startRow > 0) {
+                            const col = startCol + Math.floor(Math.random() * (endCol - startCol + 1));
+                            cell = gridCells[startRow - 1][col];
+                        }
+                        break;
+                    case 'right':
+                        if (endCol < numberOfColumns - 1) {
+                            const row = startRow + Math.floor(Math.random() * (endRow - startRow + 1));
+                            cell = gridCells[row][endCol + 1];
+                        }
+                        break;
+                    case 'bottom':
+                        if (endRow < numberOfRows - 1) {
+                            const col = startCol + Math.floor(Math.random() * (endCol - startCol + 1));
+                            cell = gridCells[endRow + 1][col];
+                        }
+                        break;
+                    case 'left':
+                        if (startCol > 0) {
+                            const row = startRow + Math.floor(Math.random() * (endRow - startRow + 1));
+                            cell = gridCells[row][startCol - 1];
+                        }
+                        break;
+                }
+
+                if (cell && !adjacentCells.includes(cell)) {
+                    adjacentCells.push(cell);
+                }
+            }
+
+            return adjacentCells;
+        }
+
         // Only iterate over cells that could be in the selection
         for (let row = startRow; row <= endRow; row++) {
             for (let col = startCol; col <= endCol; col++) {
@@ -339,6 +390,16 @@ function initStage() {
                 modifiedCells.add(cell);
             }
         }
+
+        // Add random adjacent cells
+        const numExtraCells = Math.floor(Math.random() * 2) + 2; // Random number between 2 and 3
+        const extraCells = getRandomAdjacentCells(numExtraCells);
+        extraCells.forEach(cell => {
+            cell.attrs.fill = DIRECTION_COLORS[currentDragDirection];
+            cell.cornerRadius([0, 0, 0, 0]);
+            selectedCells.push(cell);
+            modifiedCells.add(cell);
+        });
 
         // Set specific corner radius for each corner
         // Format: [topLeft, topRight, bottomRight, bottomLeft]
