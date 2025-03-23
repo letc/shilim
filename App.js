@@ -7,9 +7,12 @@ let startPos = null;
 let gridCells = [];
 let selectedCells = [];
 let currentDragDirection = null;
-let directionHistory = [];
+let directionList = [];
+let isDraggingScroll = false;
+let scrollbarY = 0;
 const GRID_OFFSET_X = 310;
-const MAX_HISTORY = 10; // Maximum number of directions to show
+const SCROLLBAR_WIDTH = 10;
+const SCROLLBAR_PADDING = 2;
 
 // Cache color values
 const COLORS = {
@@ -19,7 +22,9 @@ const COLORS = {
     SELECTION_STROKE: 'black',
     CELL_STROKE: 'black',
     CELL_SHADOW: 'black',
-    TEXT_COLOR: 'black'
+    TEXT_COLOR: 'black',
+    SCROLLBAR_BG: '#dddddd',
+    SCROLLBAR_THUMB: '#999999'
 };
 
 // Direction enum
@@ -85,19 +90,90 @@ function initStage() {
         layer.draw();
     };
 
-    // Add text to left layer
+    // Create a clip container for the text
+    const clipContainer = new Konva.Group({
+        x: 0,
+        y: 0,
+        width: 280,
+        height: 520,
+        clip: {
+            x: 0,
+            y: 0,
+            width: 280,
+            height: 520
+        }
+    });
+
+    // Add text to left layer with scrolling container
     const directionText = new Konva.Text({
-        x: 10,  // Added padding from left
-        y: 10,  // Added padding from top
-        width: 280, // Reduced width to account for padding
-        height: 520, // Reduced height to account for padding
+        x: 10,
+        y: 10,
+        width: 260, // Reduced to make room for scrollbar
+        height: 520,
         fontSize: 20,
         fill: COLORS.TEXT_COLOR,
         text: '',
-        align: 'center', // Changed to left align for better readability of history
+        align: 'left',
         wrap: 'word'
     });
-    leftLayer.add(directionText);
+    clipContainer.add(directionText);
+
+    // Create scrollbar background
+    const scrollbarBg = new Konva.Rect({
+        x: 290,
+        y: 0,
+        width: SCROLLBAR_WIDTH,
+        height: 520,
+        fill: COLORS.SCROLLBAR_BG,
+        cornerRadius: 4
+    });
+
+    // Create scrollbar thumb
+    const scrollbarThumb = new Konva.Rect({
+        x: 290 + SCROLLBAR_PADDING,
+        y: SCROLLBAR_PADDING,
+        width: SCROLLBAR_WIDTH - (2 * SCROLLBAR_PADDING),
+        height: 100, // Initial height, will be updated
+        fill: COLORS.SCROLLBAR_THUMB,
+        cornerRadius: 4,
+        draggable: true,
+        dragBoundFunc: function(pos) {
+            const maxY = 520 - this.height() - (2 * SCROLLBAR_PADDING);
+            return {
+                x: this.x(),
+                y: Math.max(SCROLLBAR_PADDING, Math.min(pos.y, maxY))
+            };
+        }
+    });
+
+    // Add scrollbar events
+    scrollbarThumb.on('dragmove', () => {
+        const maxScroll = Math.max(0, directionText.height() - 520);
+        const scrollRatio = (scrollbarThumb.y() - SCROLLBAR_PADDING) / (520 - scrollbarThumb.height() - (2 * SCROLLBAR_PADDING));
+        directionText.y(-maxScroll * scrollRatio);
+        leftLayer.batchDraw();
+    });
+
+    // Add mouse wheel event for scrolling
+    stage.on('wheel', (e) => {
+        if (e.evt.deltaY !== 0 && directionText.height() > 520) {
+            e.evt.preventDefault();
+            const maxScroll = Math.max(0, directionText.height() - 520);
+            const newY = Math.max(-maxScroll, Math.min(0, directionText.y() - e.evt.deltaY));
+            directionText.y(newY);
+            
+            // Update scrollbar thumb position
+            const scrollRatio = -newY / maxScroll;
+            const thumbY = SCROLLBAR_PADDING + (scrollRatio * (520 - scrollbarThumb.height() - (2 * SCROLLBAR_PADDING)));
+            scrollbarThumb.y(thumbY);
+            
+            leftLayer.batchDraw();
+        }
+    });
+
+    leftLayer.add(clipContainer);
+    leftLayer.add(scrollbarBg);
+    leftLayer.add(scrollbarThumb);
 
     rightLayer = new Konva.Layer();
     var bgImageRight = new Image();
@@ -166,15 +242,25 @@ function initStage() {
         // Update drag direction
         currentDragDirection = getDragDirection(startPos.x, startPos.y, pos.x, pos.y);
         
-        // Add new direction to history
+        // Add new direction to list with index
         if (currentDragDirection) {
-            directionHistory.push(currentDragDirection);
-            // Keep only the last MAX_HISTORY items
-            if (directionHistory.length > MAX_HISTORY) {
-                directionHistory.shift();
+            directionList.push(`${directionList.length + 1}. ${currentDragDirection}`);
+            directionText.text(directionList.join('\n'));
+
+            // Update scrollbar thumb size and position
+            const contentHeight = directionText.height();
+            const containerHeight = 520;
+            const ratio = containerHeight / contentHeight;
+            const thumbHeight = Math.max(30, Math.min(containerHeight * ratio, containerHeight));
+            scrollbarThumb.height(thumbHeight);
+
+            // Scroll to bottom
+            if (contentHeight > containerHeight) {
+                const maxScroll = contentHeight - containerHeight;
+                directionText.y(-maxScroll);
+                scrollbarThumb.y(520 - thumbHeight - SCROLLBAR_PADDING);
             }
-            // Update text with history
-            directionText.text(directionHistory.join('\n'));
+
             leftLayer.batchDraw();
         }
 
