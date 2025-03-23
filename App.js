@@ -28,6 +28,14 @@ const COLORS = {
     SCROLLBAR_THUMB: '#999999'
 };
 
+// Direction colors
+const DIRECTION_COLORS = {
+    TopToBottomRight: '#ff0000',  // Red
+    TopToBottomLeft: '#00ff00',   // Green
+    BottomToTopRight: '#0000ff',  // Blue
+    BottomToTopLeft: '#ffa500'    // Orange
+};
+
 // Direction enum
 const DragDirection = {
     TopToBottomRight: 'TopToBottomRight',   // x2 > x1 && y2 > y1
@@ -277,8 +285,9 @@ function initStage() {
         // Update drag direction
         currentDragDirection = getDragDirection(startPos.x, startPos.y, pos.x, pos.y);
         
-        // Add new direction to list with index
+        // Add new direction to list with index and color
         if (currentDragDirection) {
+            const directionColor = DIRECTION_COLORS[currentDragDirection];
             directionList.push(`${directionList.length + 1}. ${currentDragDirection}`);
             directionText.text(directionList.join('\n'));
 
@@ -297,7 +306,7 @@ function initStage() {
                 scrollbarThumb.height(thumbHeight);
                 scrollbarThumb.y(10 + TEXT_CONTAINER_HEIGHT - thumbHeight - SCROLLBAR_PADDING);
             }
-            else{
+            else {
                 scrollbarThumb.visible(false);
             }
 
@@ -310,15 +319,33 @@ function initStage() {
         const startRow = Math.max(0, Math.floor(y1 / cellSize));
         const endRow = Math.min(numberOfRows - 1, Math.floor(y2 / cellSize));
 
+        // Store corner cells
+        const cornerCells = {
+            topLeft: gridCells[startRow][startCol],
+            topRight: gridCells[startRow][endCol],
+            bottomLeft: gridCells[endRow][startCol],
+            bottomRight: gridCells[endRow][endCol]
+        };
+
         // Only iterate over cells that could be in the selection
         for (let row = startRow; row <= endRow; row++) {
             for (let col = startCol; col <= endCol; col++) {
                 const cell = gridCells[row][col];
-                cell.attrs.fill = COLORS.CELL_SELECTED;
+                // Apply direction-specific color
+                cell.attrs.fill = DIRECTION_COLORS[currentDragDirection];
+                // Reset corner radius for non-corner cells
+                cell.cornerRadius([0, 0, 0, 0]);
                 selectedCells.push(cell);
                 modifiedCells.add(cell);
             }
         }
+
+        // Set specific corner radius for each corner
+        // Format: [topLeft, topRight, bottomRight, bottomLeft]
+        cornerCells.topLeft.cornerRadius([40, 0, 0, 0]);
+        cornerCells.topRight.cornerRadius([0, 40, 0, 0]);
+        cornerCells.bottomRight.cornerRadius([0, 0, 40, 0]);
+        cornerCells.bottomLeft.cornerRadius([0, 0, 0, 40]);
 
         // Draw only modified cells
         modifiedCells.forEach(cell => {
