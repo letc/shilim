@@ -7,7 +7,9 @@ let startPos = null;
 let gridCells = [];
 let selectedCells = [];
 let currentDragDirection = null;
+let directionHistory = [];
 const GRID_OFFSET_X = 310;
+const MAX_HISTORY = 10; // Maximum number of directions to show
 
 // Cache color values
 const COLORS = {
@@ -16,7 +18,8 @@ const COLORS = {
     SELECTION_FILL: 'rgba(0, 0, 255, 0.2)',
     SELECTION_STROKE: 'black',
     CELL_STROKE: 'black',
-    CELL_SHADOW: 'black'
+    CELL_SHADOW: 'black',
+    TEXT_COLOR: 'black'
 };
 
 // Direction enum
@@ -81,6 +84,20 @@ function initStage() {
         layer.add(kineticImage);
         layer.draw();
     };
+
+    // Add text to left layer
+    const directionText = new Konva.Text({
+        x: 10,  // Added padding from left
+        y: 10,  // Added padding from top
+        width: 280, // Reduced width to account for padding
+        height: 520, // Reduced height to account for padding
+        fontSize: 20,
+        fill: COLORS.TEXT_COLOR,
+        text: '',
+        align: 'center', // Changed to left align for better readability of history
+        wrap: 'word'
+    });
+    leftLayer.add(directionText);
 
     rightLayer = new Konva.Layer();
     var bgImageRight = new Image();
@@ -148,7 +165,18 @@ function initStage() {
 
         // Update drag direction
         currentDragDirection = getDragDirection(startPos.x, startPos.y, pos.x, pos.y);
-        console.log('Current drag direction:', currentDragDirection);
+        
+        // Add new direction to history
+        if (currentDragDirection) {
+            directionHistory.push(currentDragDirection);
+            // Keep only the last MAX_HISTORY items
+            if (directionHistory.length > MAX_HISTORY) {
+                directionHistory.shift();
+            }
+            // Update text with history
+            directionText.text(directionHistory.join('\n'));
+            leftLayer.batchDraw();
+        }
 
         // Convert screen coordinates to grid coordinates
         const startCol = Math.max(0, Math.floor((x1 - GRID_OFFSET_X) / cellSize));
@@ -180,7 +208,7 @@ function initStage() {
         if (pos.x >= GRID_OFFSET_X) {
             isSelecting = true;
             startPos = pos;
-            currentDragDirection = null; // Reset direction on new selection
+            currentDragDirection = null; // Reset current direction
             
             selectionRect.setAttrs({
                 x: pos.x,
