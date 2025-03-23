@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konva.js Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        #konva-container {
+            position: relative;
+            width: 960px;
+            height: 540px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+    </style>
+    <script src="konva.min.js"></script>
+</head>
+<body>
+
+    <script src = "LetCEngine.js"></script>
+    <script src = "LetCEngine.Utility.js"></script>
+    <script src = "LetCEngine.UI.js"></script>
+    <script src = "App.js"></script>
+
+    <div id="container">
+        <div id="konva-container"></div>
+    </div>
+    <script>
+        initStage();
+    </script>
+</body>
+
+</html>
