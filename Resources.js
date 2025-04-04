@@ -8,12 +8,12 @@ async function downloadAndExtractZip(zipUrl) {
             throw new Error('JSZip library is not loaded. Please check your script includes.');
         }
 
-        console.log('Downloading textures...', zipUrl);
+        console.log('loading...', zipUrl);
         // Show loading text
-        loadingText = new PIXI.Text('Downloading textures...', {
+        loadingText = new PIXI.Text('Loading...', {
             fontFamily: 'Arial',
             fontSize: 24,
-            fill: 0xFFFFFF,
+            fill: 'black',
             align: 'center'
         });
         loadingText.anchor.set(0.5);
@@ -38,7 +38,6 @@ async function downloadAndExtractZip(zipUrl) {
         console.log('Zip loaded successfully');
 
         const texturePromises = [];
-        const textureMap = new Map();
 
         // Process each file in the zip
         const files = Object.entries(zip.files);
