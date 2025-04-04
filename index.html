@@ -3,49 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Konva.js Test</title>
+    <title>PixiJS Game</title>
+    <script src="pixi.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background-color: #f0f0f0;
         }
 
-        #container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-        }
-        #konva-container {
+        #app-container {
             position: relative;
             width: 960px;
             height: 540px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
+        canvas {
+            display: block;
+        }
     </style>
-    <script src="konva.min.js"></script>
 </head>
 <body>
+    <div id="app-container"></div>
 
-    <script src = "LetCEngine.js"></script>
-    <script src = "LetCEngine.Utility.js"></script>
-    <script src = "LetCEngine.UI.js"></script>
-    <script src = "App.js"></script>
-
-    <div id="container">
-        <div id="konva-container"></div>
-    </div>
-    <script>
-        initStage();
+    <script type="module">
+        import { app } from './Config.js';
+        import { initApp } from './App.js';
+        import { initInfoSection } from './InfoSection.js';
+        import { initImageSection } from './ImageSection.js';
+        import { LoadTextures } from './Resources.js';
+        
+        // Wait for app to be ready
+        async function init() {
+            await initApp();
+            await LoadTextures();
+            await initInfoSection();
+            await initImageSection();
+        }
+        
+        init().catch(console.error);
     </script>
 </body>
-
 </html>

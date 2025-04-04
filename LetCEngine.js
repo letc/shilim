@@ -1,1 +1,0 @@
-var LetCEngine = LetCEngine || {}; 
