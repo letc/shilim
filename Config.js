@@ -43,7 +43,10 @@ const DragDirection = {
 
 // Define the folder paths
 const folderPaths = [
-    'assets/illustration1'
+    'assets/illustration1',
+    'assets/illustration2',
+    'assets/illustration3',
+    'assets/illustration4'
 ];
 
 const TextureArray = folderPaths.map(() => Array.from(Array(numberOfRows), () => Array(numberOfColumns)));
@@ -53,4 +56,31 @@ var TileImageDirection;
 
 var stage, layer, leftLayer, rightLayer, selectionLayer;
 
-export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, SCROLLBAR_WIDTH, SCROLLBAR_PADDING, TEXT_CONTAINER_HEIGHT, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, stage, layer, leftLayer, rightLayer, selectionLayer, TextureArray };
+class GridCell {
+    constructor(row, col, sprite) {
+        this.row = row;
+        this.col = col;
+        this.sprite = sprite; // Will store the PIXI.Sprite object
+    }
+
+    getPosition() {
+        return { row: this.row, col: this.col };
+    }
+
+    setSprite(newSprite) {
+        if (this.sprite) {
+            this.sprite.destroy();
+        }
+        this.sprite = newSprite;
+    }
+
+    destroy() {
+        if (this.sprite) {
+            this.sprite.destroy();
+        }
+    }
+}
+
+let gridCells = [];
+
+export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, SCROLLBAR_WIDTH, SCROLLBAR_PADDING, TEXT_CONTAINER_HEIGHT, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells };

@@ -1,4 +1,4 @@
-function getRandomSelectionRect(rect, area) {
+export function getRandomSelectionRect(rect, area) {
     let randomX, randomY;
   
     // Keep generating random positions until the rectangle fits within the area

@@ -1,6 +1,6 @@
 import { app, TextureArray, folderPaths, numberOfRows, numberOfColumns, cellSize } from './Config.js';
 
-async function downloadAndExtractZip(zipUrl) {
+async function downloadAndExtractZip(zipUrl, index) {
     let loadingText = null;
     try {
         // Check if JSZip is available
@@ -8,7 +8,7 @@ async function downloadAndExtractZip(zipUrl) {
             throw new Error('JSZip library is not loaded. Please check your script includes.');
         }
 
-        console.log('loading...', zipUrl);
+        //console.log('loading...', zipUrl);
         // Show loading text
         loadingText = new PIXI.Text('Loading...', {
             fontFamily: 'Arial',
@@ -26,28 +26,28 @@ async function downloadAndExtractZip(zipUrl) {
         if (!response.ok) {
             throw new Error(`Failed to download zip file: ${response.status} ${response.statusText}`);
         }
-        console.log('Zip file downloaded, getting array buffer...');
+        //console.log('Zip file downloaded, getting array buffer...');
         const zipData = await response.arrayBuffer();
-        console.log('Array buffer received, size:', zipData.byteLength);
+        //console.log('Array buffer received, size:', zipData.byteLength);
         
         // Load zip data
-        console.log('Creating new JSZip instance...');
+        //console.log('Creating new JSZip instance...');
         const zip = new JSZip();
-        console.log('Loading zip data...');
+        //console.log('Loading zip data...');
         await zip.loadAsync(zipData);
-        console.log('Zip loaded successfully');
+        //console.log('Zip loaded successfully');
 
         const texturePromises = [];
 
         // Process each file in the zip
         const files = Object.entries(zip.files);
-        console.log('Found files in zip:', files.length);
+        //console.log('Found files in zip:', files.length);
         
         for (const [filename, file] of files) {
-            console.log('Processing file:', filename);
+            //console.log('Processing file:', filename);
             if (!file.dir && filename.endsWith('.png')) {
                 const promise = file.async('blob').then(async (blob) => {
-                    console.log('Extracted blob for:', filename, 'size:', blob.size);
+                    //console.log('Extracted blob for:', filename, 'size:', blob.size);
                     
                     // Create an image element
                     const img = new Image();
@@ -58,7 +58,7 @@ async function downloadAndExtractZip(zipUrl) {
                     if (match) {
                         const row = parseInt(match[1]);
                         const col = parseInt(match[2]);
-                        console.log(`Processing texture ${filename} for position [${row}][${col}]`);
+                        //console.log(`Processing texture ${filename} for position [${row}][${col}]`);
                         
                         // Create a promise that resolves when the image loads
                         const imageLoadPromise = new Promise((resolve, reject) => {
@@ -81,7 +81,7 @@ async function downloadAndExtractZip(zipUrl) {
                                 sprite.y = row * cellSize;
                                 
                                 // Store in texture array
-                                TextureArray[0][row][col] = sprite;
+                                TextureArray[index][row][col] = sprite;
                                 
                                 // Clean up
                                 URL.revokeObjectURL(objectUrl);
@@ -98,11 +98,11 @@ async function downloadAndExtractZip(zipUrl) {
                         img.src = objectUrl;
                         return imageLoadPromise;
                     } else {
-                        console.warn('Invalid filename format:', filename);
+                        //console.warn('Invalid filename format:', filename);
                         URL.revokeObjectURL(objectUrl);
                     }
                 }).catch(error => {
-                    console.error('Error processing file:', filename, error);
+                    //console.error('Error processing file:', filename, error);
                 });
                 
                 texturePromises.push(promise);
@@ -110,9 +110,9 @@ async function downloadAndExtractZip(zipUrl) {
         }
 
         // Wait for all files to be processed
-        console.log('Waiting for all textures to be processed...');
+        //console.log('Waiting for all textures to be processed...');
         await Promise.all(texturePromises.filter(p => p)); // Filter out undefined promises
-        console.log('All textures processed');
+        //console.log('All textures processed');
         
         // Remove loading text
         if (loadingText && loadingText.parent) {
@@ -143,10 +143,12 @@ async function LoadTextures() {
         loadingText.y = app.screen.height / 2;
         app.stage.addChild(loadingText);
 
+        let index = 0;  // Counter for texture folders
         // Process each texture folder
         for (const folderPath of folderPaths) {
             const zipUrl = `${folderPath}/textures.zip`;
-            await downloadAndExtractZip(zipUrl);
+            await downloadAndExtractZip(zipUrl, index);
+            index++;
         }
 
         // Remove loading text
