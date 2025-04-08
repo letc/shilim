@@ -22,7 +22,7 @@ async function initImageSection() {
             }
 
             if (isCorner) {
-                const cornerRadius = 20;
+                const cornerRadius = 15;
                 const mask = new PIXI.Graphics();
                 mask.beginFill(0xFFFFFF);
                 
@@ -75,7 +75,7 @@ async function initImageSection() {
             sprite.y = row * cellSize;
 
             if (isCorner) {
-                const cornerRadius = 20;
+                const cornerRadius = 15;
                 const mask = new PIXI.Graphics();
                 mask.beginFill(0xFFFFFF);
                 
@@ -119,10 +119,14 @@ async function initImageSection() {
             return sprite;
         };
 
+        // Track positions of recently added cells
+        let recentlyAddedCells = [];
+
         // Helper function to add random cells around selection
         const addRandomCellsAroundSelection = (startRow, startCol, endRow, endCol) => {
             const numCells = Math.floor(Math.random() * 2) + 2; // Random number between 2-3
             const positions = [];
+            recentlyAddedCells = []; // Reset the tracking array
             
             // Get all possible positions around the selection
             for (let row = startRow - 1; row <= endRow + 1; row++) {
@@ -178,46 +182,142 @@ async function initImageSection() {
                     const cell = new GridCell(row, col, newSprite);
                     gridCells.push(cell);
                     gridContainer.addChild(newSprite);
+                    recentlyAddedCells.push({row, col}); // Track the added cell
                 }
             }
         };
 
-        // Helper function to check for surrounded blank cells
-        const checkForSurroundedBlankCells = () => {
-            // Create a 2D array to track cell positions
-            const cellMap = Array(numberOfRows).fill(null).map(() => Array(numberOfColumns).fill(null));
+        // Helper function to remove a random cell from the selection edge
+        const removeRandomCellAroundSelection = (startRow, startCol, endRow, endCol) => {
+            const positions = [];
             
-            // Map all existing cells
-            gridCells.forEach(cell => {
-                if (cell && cell.sprite) {
-                    cellMap[cell.row][cell.col] = cell;
-                }
-            });
-            
-            // Check each position for surrounded blank cells
-            for (let row = 1; row < numberOfRows - 1; row++) {
-                for (let col = 1; col < numberOfColumns - 1; col++) {
-                    // If this position is blank
-                    if (!cellMap[row][col]) {
-                        // Check if all surrounding positions have sprites
-                        const isSurrounded = 
-                            cellMap[row - 1][col]?.sprite && // top
-                            cellMap[row + 1][col]?.sprite && // bottom
-                            cellMap[row][col - 1]?.sprite && // left
-                            cellMap[row][col + 1]?.sprite && // right
-                            cellMap[row - 1][col - 1]?.sprite && // top-left
-                            cellMap[row - 1][col + 1]?.sprite && // top-right
-                            cellMap[row + 1][col - 1]?.sprite && // bottom-left
-                            cellMap[row + 1][col + 1]?.sprite;   // bottom-right
-                        
-                        if (isSurrounded) {
-                            alert(`Found a surrounded blank cell at row ${row}, column ${col}!`);
-                            return true;
+            // Get all edge positions inside the selection area
+            for (let row = startRow; row <= endRow; row++) {
+                for (let col = startCol; col <= endCol; col++) {
+                    // Check if the position is on the edge of selection (inside)
+                    const isEdge = (
+                        row === startRow || // top edge
+                        row === endRow ||   // bottom edge
+                        col === startCol || // left edge
+                        col === endCol      // right edge
+                    );
+
+                    // Skip corners
+                    const isCorner = (
+                        (row === startRow && col === startCol) || // top-left
+                        (row === startRow && col === endCol) ||   // top-right
+                        (row === endRow && col === startCol) ||   // bottom-left
+                        (row === endRow && col === endCol)        // bottom-right
+                    );
+
+                    if (isEdge && !isCorner) {
+                        // Check for cells in adjacent positions based on which edge we're on
+                        let hasAdjacentCell = false;
+
+                        if (row === startRow) { // Top edge
+                            // Check for cell above
+                            hasAdjacentCell = gridCells.some(cell => 
+                                cell.row === row - 1 && cell.col === col
+                            );
+                        } else if (row === endRow) { // Bottom edge
+                            // Check for cell below
+                            hasAdjacentCell = gridCells.some(cell => 
+                                cell.row === row + 1 && cell.col === col
+                            );
+                        } else if (col === startCol) { // Left edge
+                            // Check for cell to the left
+                            hasAdjacentCell = gridCells.some(cell => 
+                                cell.row === row && cell.col === col - 1
+                            );
+                        } else if (col === endCol) { // Right edge
+                            // Check for cell to the right
+                            hasAdjacentCell = gridCells.some(cell => 
+                                cell.row === row && cell.col === col + 1
+                            );
+                        }
+
+                        // Only add position if there's no adjacent cell in the direction we're checking
+                        if (!hasAdjacentCell) {
+                            // Find the cell at this position
+                            const cellToRemove = gridCells.find(cell => cell.row === row && cell.col === col);
+                            if (cellToRemove) {
+                                positions.push({row, col, cell: cellToRemove});
+                            }
                         }
                     }
                 }
             }
-            return false;
+
+            // Randomly select one position to remove
+            if (positions.length > 0) {
+                const randomIndex = Math.floor(Math.random() * positions.length);
+                const {row, col, cell} = positions[randomIndex];
+                
+                // Remove the sprite from the container
+                if (cell.sprite) {
+                    gridContainer.removeChild(cell.sprite);
+                    // Remove the cell from gridCells array
+                    const cellIndex = gridCells.indexOf(cell);
+                    if (cellIndex > -1) {
+                        gridCells.splice(cellIndex, 1);
+                    }
+
+                    // Determine if the removed cell is on horizontal or vertical edge
+                    const isHorizontalEdge = row === startRow || row === endRow;
+                    const isVerticalEdge = col === startCol || col === endCol;
+
+                    // Update corners of adjacent cells based on edge type
+                    if (isHorizontalEdge) {
+                        // If cell is removed from top/bottom edge, round corners of left and right adjacent cells
+                        const adjacentCells = [
+                            {row: row, col: col-1},   // left
+                            {row: row, col: col+1}    // right
+                        ];
+
+                        adjacentCells.forEach(({row: adjRow, col: adjCol}) => {
+                            const adjacentCell = gridCells.find(cell => cell.row === adjRow && cell.col === adjCol);
+                            if (adjacentCell && adjacentCell.sprite) {
+                                let cornerPosition = null;
+                                if (adjCol < col) {
+                                    // Left cell
+                                    cornerPosition = row === startRow ? 'topRight' : 'bottomRight';
+                                } else {
+                                    // Right cell
+                                    cornerPosition = row === startRow ? 'topLeft' : 'bottomLeft';
+                                }
+
+                                if (cornerPosition) {
+                                    updateSpriteCornerMask(adjacentCell.sprite, adjRow, adjCol, true, cornerPosition);
+                                }
+                            }
+                        });
+                    } else if (isVerticalEdge) {
+                        // If cell is removed from left/right edge, round corners of top and bottom adjacent cells
+                        const adjacentCells = [
+                            {row: row-1, col: col},   // top
+                            {row: row+1, col: col}    // bottom
+                        ];
+
+                        adjacentCells.forEach(({row: adjRow, col: adjCol}) => {
+                            const adjacentCell = gridCells.find(cell => cell.row === adjRow && cell.col === adjCol);
+                            if (adjacentCell && adjacentCell.sprite) {
+                                let cornerPosition = null;
+                                if (adjRow < row) {
+                                    // Top cell
+                                    cornerPosition = col === startCol ? 'bottomLeft' : 'bottomRight';
+                                } else {
+                                    // Bottom cell
+                                    cornerPosition = col === startCol ? 'topLeft' : 'topRight';
+                                }
+
+                                if (cornerPosition) {
+                                    updateSpriteCornerMask(adjacentCell.sprite, adjRow, adjCol, true, cornerPosition);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
         };
 
         // Create a container for the image section
@@ -413,8 +513,8 @@ async function initImageSection() {
                 // Add random cells around the selection
                 addRandomCellsAroundSelection(originalStartRow, originalStartCol, originalEndRow, originalEndCol);
 
-                // Check for surrounded blank cells
-                //checkForSurroundedBlankCells();
+                // Remove a random cell around the selection
+                removeRandomCellAroundSelection(originalStartRow, originalStartCol, originalEndRow, originalEndCol);
 
                 
             }
@@ -460,8 +560,8 @@ async function initImageSection() {
                 // Add random cells around the selection
                 addRandomCellsAroundSelection(originalStartRow, originalStartCol, originalEndRow, originalEndCol);
 
-                // Check for surrounded blank cells
-                //checkForSurroundedBlankCells();
+                // Remove a random cell around the selection
+                removeRandomCellAroundSelection(originalStartRow, originalStartCol, originalEndRow, originalEndCol);
 
                 // Clear existing grid cells
                 tempGridCells.forEach(cell => {
