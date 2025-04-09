@@ -327,11 +327,33 @@ async function initImageSection() {
         imageContainer.eventMode = 'static';
 
         // Load the background
-        const backgroundTexture = await PIXI.Assets.load('assets/bg_blue.png');
+        const backgroundTexture = await PIXI.Assets.load('assets/bg_white.png');
         const backgroundImage = new PIXI.Sprite(backgroundTexture);
         backgroundImage.width = 650;
         backgroundImage.height = 540;
-        imageContainer.addChild(backgroundImage);
+
+        // Create a container for the background with effects
+        const bgContainer = new PIXI.Container();
+
+        // Create stroke and mask using graphics
+        const bgGraphics = new PIXI.Graphics();
+        bgGraphics.lineStyle(1, 0xd2d2d2, 1);
+        bgGraphics.beginFill(0xFFFFFF);
+        bgGraphics.drawRoundedRect(0, 0, 650, 540, 20);
+        bgGraphics.endFill();
+
+        // Create mask for rounded corners
+        const bgMask = new PIXI.Graphics();
+        bgMask.beginFill(0xFFFFFF);
+        bgMask.drawRoundedRect(0, 0, 650, 540, 20);
+        bgMask.endFill();
+        backgroundImage.mask = bgMask;
+
+        // Add everything to the container
+        bgContainer.addChild(backgroundImage);
+        bgContainer.addChild(bgGraphics);
+        bgContainer.addChild(bgMask);
+        imageContainer.addChild(bgContainer);
 
         // Create a container for the grid
         const gridContainer = new PIXI.Container();

@@ -4,24 +4,40 @@ async function initInfoSection() {
     try {
         // Create a container for the image section
         const imageContainer = new PIXI.Container();
-        imageContainer.x = 0;  // Position from left
-        imageContainer.y = 0;    // Position from top
+        imageContainer.x = 10;  // Position from left
+        imageContainer.y = 10;    // Position from top
         imageContainer.eventMode = 'static';
 
-        // Load the image
-        const texture = await PIXI.Assets.load('assets/bg_red.png');
+        // Load the background
+        const archiveIndexTexture = await PIXI.Assets.load('assets/bg_white.png');
+        const archiveIndexImage = new PIXI.Sprite(archiveIndexTexture);
+        archiveIndexImage.x = 0;
+        archiveIndexImage.y = 0;
+        archiveIndexImage.width = 290;
+        archiveIndexImage.height = 50;
 
-        // Create the image sprite
-        const image = new PIXI.Sprite(texture);
+        // Create a container for the background with effects
+        const bgContainer = new PIXI.Container();
 
-        // Position and size the image within the container
-        image.x = 0;  // Relative to container
-        image.y = 0;  // Relative to container
-        image.width = 300;   // Fixed width
-        image.height = 540;  // Fixed height
+        // Create stroke and mask using graphics
+        const bgGraphics = new PIXI.Graphics();
+        bgGraphics.lineStyle(1, 0xd2d2d2, 1);
+        bgGraphics.beginFill(0xFFFFFF);
+        bgGraphics.drawRoundedRect(0, 0, 290, 50, 20);
+        bgGraphics.endFill();
 
-        // Add the image to the container
-        imageContainer.addChild(image);
+        // Create mask for rounded corners
+        const bgMask = new PIXI.Graphics();
+        bgMask.beginFill(0xFFFFFF);
+        bgMask.drawRoundedRect(0, 0, 290, 50, 20);
+        bgMask.endFill();
+        archiveIndexImage.mask = bgMask;
+
+        // Add everything to the container
+        bgContainer.addChild(archiveIndexImage);
+        bgContainer.addChild(bgGraphics);
+        bgContainer.addChild(bgMask);
+        imageContainer.addChild(bgContainer);
 
         // Add the container to the stage
         app.stage.addChild(imageContainer);
@@ -44,7 +60,7 @@ async function initInfoSection() {
         app.stage.addChild(scrollMask);
 
         // Create text content
-        const content = new PIXI.Text('This is a long text that should be scrollable.\n'.repeat(2), {
+        const content = new PIXI.Text('', {
             fontSize: 20,
             fill: 0x000000,
             wordWrap: true,

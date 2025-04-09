@@ -12,25 +12,17 @@ async function initApp() {
             canvas: document.createElement('canvas')
         });
 
+        // Add rounded corners and stroke to the canvas
+        app.view.style.borderRadius = '26px';
+        app.view.style.border = '2px solid #d2d2d2';
+        app.view.style.backgroundColor = '#FFFFFF';
+
         // Add the Pixi canvas to our container
         document.getElementById('app-container').appendChild(app.view);
 
         try {
             // Initialize the asset loader
             await PIXI.Assets.init();
-
-            // Load the background image
-            const texture = await PIXI.Assets.load('assets/bg_yellow.png');
-
-            // Create the background sprite
-            const background = new PIXI.Sprite(texture);
-
-            // Make the background fill the screen
-            background.width = app.screen.width;
-            background.height = app.screen.height;
-
-            // Add the background to the stage
-            app.stage.addChild(background);
 
         } catch (error) {
             console.error('Error loading game assets:', error);
