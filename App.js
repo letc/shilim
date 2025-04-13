@@ -16,6 +16,8 @@ async function initApp() {
         app.view.style.borderRadius = '26px';
         app.view.style.border = '2px solid #d2d2d2';
         app.view.style.backgroundColor = '#FFFFFF';
+        app.view.style.width = '960px';
+        app.view.style.height = '540px';
 
         // Add the Pixi canvas to our container
         document.getElementById('app-container').appendChild(app.view);
