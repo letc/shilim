@@ -4,8 +4,8 @@ async function initApp() {
     try {
         // Configure the application
         await app.init({
-            width: 960,
-            height: 540,
+            width: 1550,
+            height: 1000,
             backgroundColor: 0xFFFFFF,
             antialias: true,
             resolution: window.devicePixelRatio || 1,
@@ -16,11 +16,27 @@ async function initApp() {
         app.view.style.borderRadius = '26px';
         app.view.style.border = '2px solid #d2d2d2';
         app.view.style.backgroundColor = '#FFFFFF';
-        app.view.style.width = '960px';
-        app.view.style.height = '540px';
+        app.view.style.width = '1550px';
+        app.view.style.height = '1000px';
 
         // Add the Pixi canvas to our container
         document.getElementById('app-container').appendChild(app.view);
+
+        // Handle window resizing
+        function resize() {
+            const container = document.getElementById('app-container');
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            
+            // Update renderer size to match container
+            app.renderer.resize(containerWidth, containerHeight);
+        }
+
+        // Initial resize
+        resize();
+
+        // Add window resize listener
+        window.addEventListener('resize', resize);
 
         try {
             // Initialize the asset loader

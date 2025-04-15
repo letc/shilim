@@ -8,35 +8,114 @@ async function initInfoSection() {
         imageContainer.y = 10;    // Position from top
         imageContainer.eventMode = 'static';
 
-        // Load the background
-        const archiveIndexTexture = await PIXI.Assets.load('assets/bg_white.png');
-        const archiveIndexImage = new PIXI.Sprite(archiveIndexTexture);
-        archiveIndexImage.x = 0;
-        archiveIndexImage.y = 0;
-        archiveIndexImage.width = 290;
-        archiveIndexImage.height = 50;
-
         // Create a container for the background with effects
         const bgContainer = new PIXI.Container();
+
+        // Load the background
+        const bgTexture = await PIXI.Assets.load('assets/bg_white.png');
+        
+        
+        
+        //archiveIndex--------------------------------------
+
+        const archiveIndexRect = {
+            x: 0,
+            y: 0,
+            width: 290,
+            height: 50,
+        };
+
+        const archiveIndexImage = new PIXI.Sprite(bgTexture);
+        archiveIndexImage.x = archiveIndexRect.x;
+        archiveIndexImage.y = archiveIndexRect.y;
+        archiveIndexImage.width = archiveIndexRect.width;
+        archiveIndexImage.height = archiveIndexRect.height;
 
         // Create stroke and mask using graphics
         const bgGraphics = new PIXI.Graphics();
         bgGraphics.lineStyle(1, 0xd2d2d2, 1);
         bgGraphics.beginFill(0xFFFFFF);
-        bgGraphics.drawRoundedRect(0, 0, 290, 50, 20);
+        bgGraphics.drawRoundedRect(archiveIndexRect.x, archiveIndexRect.y, archiveIndexRect.width, archiveIndexRect.height, 20);
         bgGraphics.endFill();
 
         // Create mask for rounded corners
         const bgMask = new PIXI.Graphics();
         bgMask.beginFill(0xFFFFFF);
-        bgMask.drawRoundedRect(0, 0, 290, 50, 20);
+        bgMask.drawRoundedRect(archiveIndexRect.x, archiveIndexRect.y, archiveIndexRect.width, archiveIndexRect.height, 20);
         bgMask.endFill();
         archiveIndexImage.mask = bgMask;
+
+        // Add text element with padding
+        const archiveIndexLabelText = new PIXI.Text('archive index', {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 0x808080,
+            align: 'left',
+            fontStyle: 'italic'
+        });
+        archiveIndexLabelText.x = 12; // 10px padding from left
+        archiveIndexLabelText.y = 14; // 10px padding from top
+        //archiveIndex--------------------------------------
+
+
+
+
+        //archiveIndexValue--------------------------------------
+
+        const archiveIndexValueRect = {
+            x: 250,
+            y: 10,
+            width: 30,
+            height: 30,
+        };
+
+        const archiveIndexValueImage = new PIXI.Sprite(bgTexture);
+        archiveIndexValueImage.x = archiveIndexValueRect.x;
+        archiveIndexValueImage.y = archiveIndexValueRect.y;
+        archiveIndexValueImage.width = archiveIndexValueRect.width;
+        archiveIndexValueImage.height = archiveIndexValueRect.height;
+
+        // Create stroke and mask using graphics
+        const bgArchiveIndexValueGraphics = new PIXI.Graphics();
+        bgArchiveIndexValueGraphics.lineStyle(1, 0xd2d2d2, 1);
+        bgArchiveIndexValueGraphics.beginFill(0xFFFFFF);
+        bgArchiveIndexValueGraphics.drawRoundedRect(archiveIndexValueRect.x, archiveIndexValueRect.y, archiveIndexValueRect.width, archiveIndexValueRect.height, 20);
+        bgArchiveIndexValueGraphics.endFill();
+
+        // Create mask for rounded corners
+        const bgArchiveIndexValueMask = new PIXI.Graphics();
+        bgArchiveIndexValueMask.beginFill(0xFFFFFF);
+        bgArchiveIndexValueMask.drawRoundedRect(archiveIndexValueRect.x, archiveIndexValueRect.y, archiveIndexValueRect.width, archiveIndexValueRect.height, 20);
+        bgArchiveIndexValueMask.endFill();
+        archiveIndexValueImage.mask = bgArchiveIndexValueMask;
+
+        // Add text element with padding
+        const archiveIndexValueLabelText = new PIXI.Text('0', {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 0x808080,
+            align: 'center',
+            fontStyle: 'italic'
+        });
+        archiveIndexValueLabelText.x = archiveIndexValueRect.x + 8; // 10px padding from left
+        archiveIndexValueLabelText.y = archiveIndexValueRect.y + 4; // 10px padding from top
+        //archiveIndexValue--------------------------------------
+
+
+
+
 
         // Add everything to the container
         bgContainer.addChild(archiveIndexImage);
         bgContainer.addChild(bgGraphics);
         bgContainer.addChild(bgMask);
+        bgContainer.addChild(archiveIndexLabelText);
+
+        bgContainer.addChild(archiveIndexValueImage);
+        bgContainer.addChild(bgArchiveIndexValueGraphics);
+        bgContainer.addChild(bgArchiveIndexValueMask);
+        bgContainer.addChild(archiveIndexValueLabelText);
+
         imageContainer.addChild(bgContainer);
 
         // Add the container to the stage
@@ -48,13 +127,13 @@ async function initInfoSection() {
         scrollContainer.x = 0;
         scrollContainer.y = 0;
         scrollContainer.width = 300;
-        scrollContainer.height = 540;
+        scrollContainer.height = 1000;
         scrollContainer.eventMode = 'static';
 
         // Create a mask for the scroll container
         const scrollMask = new PIXI.Graphics();
         scrollMask.beginFill(0xFFFFFF);
-        scrollMask.drawRect(0, 0, 300, 540);
+        scrollMask.drawRect(0, 0, 300, 1000);
         scrollMask.endFill();
         scrollContainer.mask = scrollMask;
         app.stage.addChild(scrollMask);
@@ -75,7 +154,7 @@ async function initInfoSection() {
         // Create scrollbar background
         const scrollbarBg = new PIXI.Graphics();
         scrollbarBg.beginFill(0xDDDDDD);
-        scrollbarBg.drawRoundedRect(290, 0, 10, 540, 5);
+        scrollbarBg.drawRoundedRect(290, 0, 10, 1000, 5);
         scrollbarBg.endFill();
         app.stage.addChild(scrollbarBg);
 
@@ -92,7 +171,7 @@ async function initInfoSection() {
 
         // Calculate scrollbar properties
         let contentHeight = content.height;
-        const viewportHeight = 540;
+        const viewportHeight = 1000;
         let scrollableHeight = Math.max(0, contentHeight - viewportHeight);
         let thumbHeight = Math.max(50, (viewportHeight / contentHeight) * viewportHeight);
         const scrollTrackHeight = viewportHeight - 4;
@@ -178,7 +257,7 @@ async function initInfoSection() {
                 x: 0,
                 y: 0,
                 width: 300,
-                height: 540
+                height: 1000
             };
 
             // Check if mouse is within bounds and content is larger than viewport

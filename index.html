@@ -8,42 +8,29 @@
     <script src="pixi.min.js"></script>
     <style>
         body {
-            /* font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f0f0f0; */
-
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
+            overflow: hidden;
         }
 
         #app-container {
-            /* position: relative;
-            width: 960px;
-            height: 540px;
-            background-color: white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            justify-content: center;
-            align-items: center; */
-            max-width: 100%; /* Makes the image responsive */
-            max-height: 100%; /* Ensures the image fits within the viewport */
-            width: 960px;    /* Default width */
-            height: auto;    /* Maintains aspect ratio */
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional styling */
+            position: relative;
+            width: 1550px;
+            height: 1000px;
+            max-width: 95vw;
+            max-height: 95vh;
+            aspect-ratio: 1550/1000;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         canvas {
             display: block;
+            width: 100% !important;
+            height: 100% !important;
         }
     </style>
 </head>

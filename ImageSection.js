@@ -320,17 +320,24 @@ async function initImageSection() {
             }
         };
 
+        const interactiveRect = {
+            x: 310,
+            y: 0,
+            width: 1240,
+            height: 1000,
+        };
+
         // Create a container for the image section
         const imageContainer = new PIXI.Container();
-        imageContainer.x = 310;  // Position from left
-        imageContainer.y = 0;    // Position from top
+        imageContainer.x = interactiveRect.x;  // Position from left
+        imageContainer.y = interactiveRect.y;    // Position from top
         imageContainer.eventMode = 'static';
 
         // Load the background
         const backgroundTexture = await PIXI.Assets.load('assets/bg_white.png');
         const backgroundImage = new PIXI.Sprite(backgroundTexture);
-        backgroundImage.width = 650;
-        backgroundImage.height = 540;
+        backgroundImage.width = interactiveRect.width;
+        backgroundImage.height = interactiveRect.height;
 
         // Create a container for the background with effects
         const bgContainer = new PIXI.Container();
@@ -339,13 +346,13 @@ async function initImageSection() {
         const bgGraphics = new PIXI.Graphics();
         bgGraphics.lineStyle(1, 0xd2d2d2, 1);
         bgGraphics.beginFill(0xFFFFFF);
-        bgGraphics.drawRoundedRect(0, 0, 650, 540, 20);
+        bgGraphics.drawRoundedRect(0, 0, interactiveRect.width, interactiveRect.height, 20);
         bgGraphics.endFill();
 
         // Create mask for rounded corners
         const bgMask = new PIXI.Graphics();
         bgMask.beginFill(0xFFFFFF);
-        bgMask.drawRoundedRect(0, 0, 650, 540, 20);
+        bgMask.drawRoundedRect(0, 0, interactiveRect.width, interactiveRect.height, 20);
         bgMask.endFill();
         backgroundImage.mask = bgMask;
 

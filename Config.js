@@ -1,16 +1,13 @@
 const app = new PIXI.Application();
 
-const stageWidth = 960;
-const stageHeight = 540;
+const stageWidth = 1550;
+const stageHeight = 1000;
 const GRID_OFFSET_X = 310;
-const SCROLLBAR_WIDTH = 10;
-const SCROLLBAR_PADDING = 2;
-const TEXT_CONTAINER_HEIGHT = 520;
 
-const stageSize = 650;
-const cellSize = 18;
-const numberOfRows = 30;
-const numberOfColumns = 36;
+const stageSize = 1240;
+const cellSize = 20;
+const numberOfRows = 50;
+const numberOfColumns = 62;
 
 // Cache color values
 const COLORS = {
@@ -83,4 +80,4 @@ class GridCell {
 
 let gridCells = [];
 
-export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, SCROLLBAR_WIDTH, SCROLLBAR_PADDING, TEXT_CONTAINER_HEIGHT, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells };
+export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells };
