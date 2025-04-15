@@ -410,6 +410,16 @@ async function initImageSection() {
                 // Snap to grid
                 endX = Math.floor(endX / cellSize) * cellSize + cellSize;
                 endY = Math.floor(endY / cellSize) * cellSize + cellSize;
+
+                // Calculate dimensions in cells
+                const cellsWidth = Math.abs(endX - startX) / cellSize;
+                const cellsHeight = Math.abs(endY - startY) / cellSize;
+
+                // Restrict to minimum 2x2 and maximum 5x5
+                if (cellsWidth < 2) endX = startX + (endX > startX ? 2 * cellSize : -2 * cellSize);
+                if (cellsWidth > 5) endX = startX + (endX > startX ? 5 * cellSize : -5 * cellSize);
+                if (cellsHeight < 2) endY = startY + (endY > startY ? 2 * cellSize : -2 * cellSize);
+                if (cellsHeight > 5) endY = startY + (endY > startY ? 5 * cellSize : -5 * cellSize);
                 
                 // Draw selection rectangle
                 selectionRect.clear();
@@ -429,8 +439,18 @@ async function initImageSection() {
         // Mouse up event
         gridContainer.on('pointerup', () => {
             isDragging = false;
-            selectionRect.clear();
 
+            // Calculate dimensions in cells
+            const cellsWidth = Math.abs(endX - startX) / cellSize;
+            const cellsHeight = Math.abs(endY - startY) / cellSize;
+
+            // Enforce minimum 2x2 and maximum 5x5 on final selection
+            if (cellsWidth < 2 || cellsWidth > 5 || cellsHeight < 2 || cellsHeight > 5) {
+                selectionRect.clear();
+                return;
+            }
+
+            selectionRect.clear();
             let originalX1 = Math.min(startX, endX);
             let originalY1 = Math.min(startY, endY);
             let originalX2 = Math.max(startX, endX);
