@@ -13,8 +13,138 @@ async function initImageSection() {
 
         let currentDragDirection;
 
+        const interactiveRect = {
+            x: 310,
+            y: 0,
+            width: 1240,
+            height: 1000,
+        };
+
+        // Handle window resizing
+        function resize() {
+            const container = document.getElementById('app-container');
+        console.log('container.clientHeight: ',container.clientHeight);
+
+        if(container.clientHeight < 1000) {
+            interactiveRect.height -= (1000 -container.clientHeight);
+        }
+        }
+
+        // Initial resize
+        resize();
+
+        // Add window resize listener
+        window.addEventListener('resize', resize);
+
+
+
+        // Class to track texture statistics
+        class TextureStats {
+            constructor() {
+                this.textures = {
+                    [DragDirection.TopToBottomRight]: 0,
+                    [DragDirection.TopToBottomLeft]: 0,
+                    [DragDirection.BottomToTopRight]: 0,
+                    [DragDirection.BottomToTopLeft]: 0
+                };
+                this.totalCells = numberOfRows * numberOfColumns;
+                this.surroundedEmptyCells = 0;
+                // Create a 2D grid to track filled cells
+                this.grid = Array(numberOfRows).fill().map(() => 
+                    Array(numberOfColumns).fill(false)
+                );
+            }
+
+            addTexture(direction, row, col) {
+                this.textures[direction]++;
+                this.grid[row][col] = true;
+                this.updateSurroundedEmptyCells();
+            }
+
+            removeTexture(direction, row, col) {
+                if (this.textures[direction] > 0) {
+                    this.textures[direction]--;
+                    this.grid[row][col] = false;
+                    this.updateSurroundedEmptyCells();
+                }
+            }
+
+            isCellSurrounded(row, col) {
+                if (this.grid[row][col]) return false; // Cell is filled
+
+                const neighbors = [
+                    [-1, -1], [-1, 0], [-1, 1],
+                    [0, -1],           [0, 1],
+                    [1, -1],  [1, 0],  [1, 1]
+                ];
+
+                return neighbors.every(([dr, dc]) => {
+                    const newRow = row + dr;
+                    const newCol = col + dc;
+                    return newRow >= 0 && newRow < numberOfRows &&
+                           newCol >= 0 && newCol < numberOfColumns &&
+                           this.grid[newRow][newCol];
+                });
+            }
+
+            updateSurroundedEmptyCells() {
+                this.surroundedEmptyCells = 0;
+                // First remove any existing surrounded cell indicators
+                const surroundedSprites = gridContainer.children.filter(child => child.isSurroundedIndicator);
+                surroundedSprites.forEach(sprite => {
+                    gridContainer.removeChild(sprite);
+                    sprite.destroy();
+                });
+
+                for (let row = 0; row < numberOfRows; row++) {
+                    for (let col = 0; col < numberOfColumns; col++) {
+                        if (this.isCellSurrounded(row, col)) {
+                            this.surroundedEmptyCells++;
+                            
+                            // Create a black sprite for the surrounded cell
+                            const graphics = new PIXI.Graphics();
+                            graphics.beginFill(0x000000, 0.5); // Semi-transparent black
+                            graphics.drawRect(0, 0, cellSize, cellSize);
+                            graphics.endFill();
+                            
+                            const texture = app.renderer.generateTexture(graphics);
+                            const sprite = new PIXI.Sprite(texture);
+                            
+                            sprite.x = col * cellSize;
+                            sprite.y = row * cellSize;
+                            sprite.isSurroundedIndicator = true; // Mark this sprite as a surrounded cell indicator
+                            
+                            gridContainer.addChild(sprite);
+                        }
+                    }
+                }
+            }
+
+            printStats() {
+                console.log('\nTexture Statistics:');
+                for (const [direction, count] of Object.entries(this.textures)) {
+                    const percentage = ((count / this.totalCells) * 100).toFixed(2);
+                    console.log(`${direction}: ${count} cells (${percentage}%)`);
+                }
+                const totalUsed = Object.values(this.textures).reduce((a, b) => a + b, 0);
+                const totalPercentage = ((totalUsed / this.totalCells) * 100).toFixed(2);
+                console.log(`Total Used: ${totalUsed} cells (${totalPercentage}%)`);
+                
+                const surroundedPercentage = ((this.surroundedEmptyCells / this.totalCells) * 100).toFixed(2);
+                console.log(`Surrounded Empty Cells: ${this.surroundedEmptyCells} (${surroundedPercentage}%)`);
+            }
+        }
+
+        // Create instance of TextureStats
+        const textureStats = new TextureStats();
+
         // Helper function to update sprite's corner mask
         const updateSpriteCornerMask = (sprite, row, col, isCorner, cornerPosition) => {
+            // Check if sprite or its position is null
+            if (!sprite || !sprite.position || sprite.position._x === null || sprite.position._y === null) {
+                return sprite;
+            }
+
             // Remove any existing mask
             if (sprite.mask) {
                 sprite.mask.destroy();
@@ -26,43 +156,48 @@ async function initImageSection() {
                 const mask = new PIXI.Graphics();
                 mask.beginFill(0xFFFFFF);
                 
+                // Calculate absolute coordinates
+                const x = col * cellSize;
+                const y = row * cellSize;
+                
                 // Create path for rounded corner only at specific corner
                 switch(cornerPosition) {
                     case 'topLeft':
-                        mask.moveTo(sprite.x + cornerRadius, sprite.y);
-                        mask.arcTo(sprite.x, sprite.y, sprite.x, sprite.y + cornerRadius, cornerRadius);
-                        mask.lineTo(sprite.x, sprite.y + cellSize);
-                        mask.lineTo(sprite.x + cellSize, sprite.y + cellSize);
-                        mask.lineTo(sprite.x + cellSize, sprite.y);
+                        mask.moveTo(x + cornerRadius, y);
+                        mask.arcTo(x, y, x, y + cornerRadius, cornerRadius);
+                        mask.lineTo(x, y + cellSize);
+                        mask.lineTo(x + cellSize, y + cellSize);
+                        mask.lineTo(x + cellSize, y);
                         break;
                     case 'topRight':
-                        mask.moveTo(sprite.x, sprite.y);
-                        mask.lineTo(sprite.x + cellSize - cornerRadius, sprite.y);
-                        mask.arcTo(sprite.x + cellSize, sprite.y, sprite.x + cellSize, sprite.y + cornerRadius, cornerRadius);
-                        mask.lineTo(sprite.x + cellSize, sprite.y + cellSize);
-                        mask.lineTo(sprite.x, sprite.y + cellSize);
+                        mask.moveTo(x, y);
+                        mask.lineTo(x + cellSize - cornerRadius, y);
+                        mask.arcTo(x + cellSize, y, x + cellSize, y + cornerRadius, cornerRadius);
+                        mask.lineTo(x + cellSize, y + cellSize);
+                        mask.lineTo(x, y + cellSize);
                         break;
                     case 'bottomLeft':
-                        mask.moveTo(sprite.x, sprite.y);
-                        mask.lineTo(sprite.x + cellSize, sprite.y);
-                        mask.lineTo(sprite.x + cellSize, sprite.y + cellSize);
-                        mask.lineTo(sprite.x + cornerRadius, sprite.y + cellSize);
-                        mask.arcTo(sprite.x, sprite.y + cellSize, sprite.x, sprite.y + cellSize - cornerRadius, cornerRadius);
+                        mask.moveTo(x, y);
+                        mask.lineTo(x + cellSize, y);
+                        mask.lineTo(x + cellSize, y + cellSize);
+                        mask.lineTo(x + cornerRadius, y + cellSize);
+                        mask.arcTo(x, y + cellSize, x, y + cellSize - cornerRadius, cornerRadius);
                         break;
                     case 'bottomRight':
-                        mask.moveTo(sprite.x, sprite.y);
-                        mask.lineTo(sprite.x + cellSize, sprite.y);
-                        mask.lineTo(sprite.x + cellSize, sprite.y + cellSize - cornerRadius);
-                        mask.arcTo(sprite.x + cellSize, sprite.y + cellSize, sprite.x + cellSize - cornerRadius, sprite.y + cellSize, cornerRadius);
-                        mask.lineTo(sprite.x, sprite.y + cellSize);
+                        mask.moveTo(x, y);
+                        mask.lineTo(x + cellSize, y);
+                        mask.lineTo(x + cellSize, y + cellSize - cornerRadius);
+                        mask.arcTo(x + cellSize, y + cellSize, x + cellSize - cornerRadius, y + cellSize, cornerRadius);
+                        mask.lineTo(x, y + cellSize);
                         break;
                 }
                 mask.closePath();
                 mask.endFill();
-                sprite.mask = mask;
+                
+                // Add mask to the container and set it as sprite's mask
                 gridContainer.addChild(mask);
+                sprite.mask = mask;
             }
-
             return sprite;
         };
 
@@ -119,14 +254,11 @@ async function initImageSection() {
             return sprite;
         };
 
-        // Track positions of recently added cells
-        let recentlyAddedCells = [];
-
-        // Helper function to add random cells around selection
+        // Function to add random cells around selection
         const addRandomCellsAroundSelection = (startRow, startCol, endRow, endCol) => {
             const numCells = Math.floor(Math.random() * 2) + 2; // Random number between 2-3
             const positions = [];
-            recentlyAddedCells = []; // Reset the tracking array
+            //recentlyAddedCells = []; // Reset the tracking array
             
             // Get all possible positions around the selection
             for (let row = startRow - 1; row <= endRow + 1; row++) {
@@ -182,12 +314,13 @@ async function initImageSection() {
                     const cell = new GridCell(row, col, newSprite);
                     gridCells.push(cell);
                     gridContainer.addChild(newSprite);
-                    recentlyAddedCells.push({row, col}); // Track the added cell
+                    //recentlyAddedCells.push({row, col}); // Track the added cell
+                    textureStats.addTexture(currentDragDirection, row, col); // Track new texture
                 }
             }
         };
 
-        // Helper function to remove a random cell from the selection edge
+        // Function to remove a random cell around selection
         const removeRandomCellAroundSelection = (startRow, startCol, endRow, endCol) => {
             const positions = [];
             
@@ -317,15 +450,11 @@ async function initImageSection() {
                         });
                     }
                 }
+                textureStats.removeTexture(currentDragDirection, row, col); // Track removed texture
             }
         };
 
-        const interactiveRect = {
-            x: 310,
-            y: 0,
-            width: 1240,
-            height: 1000,
-        };
+        
 
         // Create a container for the image section
         const imageContainer = new PIXI.Container();
@@ -555,6 +684,7 @@ async function initImageSection() {
                             sprite.y = row * cellSize;
                             sprite = updateSpriteCornerMask(sprite, row, col, isCorner, cornerPosition);
                             gridContainer.addChild(sprite);
+                            textureStats.addTexture(currentDragDirection, row, col); // Track new texture
                         }
                     }
                 });
@@ -603,6 +733,7 @@ async function initImageSection() {
                         const newCell = new GridCell(row, col, newSprite);
                         gridCells.push(newCell);
                         gridContainer.addChild(newSprite);
+                        textureStats.addTexture(currentDragDirection, row, col); // Track new texture
                     }
                 });
 
@@ -618,6 +749,7 @@ async function initImageSection() {
                 });
                 tempGridCells.length = 0;
             }
+            textureStats.printStats(); // Print updated statistics
         });
 
         // Mouse out event
