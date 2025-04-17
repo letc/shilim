@@ -1,5 +1,5 @@
 import { app } from './Config.js';
-
+let content;
 async function initInfoSection() {
     try {
         // Create a container for the image section
@@ -7,6 +7,7 @@ async function initInfoSection() {
         imageContainer.x = 10;  // Position from left
         imageContainer.y = 10;    // Position from top
         imageContainer.eventMode = 'static';
+        
 
         // Create a container for the background with effects
         const bgContainer = new PIXI.Container();
@@ -139,8 +140,8 @@ async function initInfoSection() {
         app.stage.addChild(scrollMask);
 
         // Create text content
-        const content = new PIXI.Text('', {
-            fontSize: 20,
+        content = new PIXI.Text('', {
+            fontSize: 10,
             fill: 0x000000,
             wordWrap: true,
             wordWrapWidth: 280,
@@ -285,4 +286,4 @@ async function initInfoSection() {
     }
 }
 
-export { initInfoSection };
+export { initInfoSection, content };

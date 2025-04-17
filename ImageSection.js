@@ -1,5 +1,6 @@
 import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, stageSize, stageHeight, GridCell, gridCells, DragDirection } from './Config.js';
 import { getRandomSelectionRect } from './Utils.js';
+import { content } from './InfoSection.js';
 
 async function initImageSection() {
     try {
@@ -150,20 +151,28 @@ async function initImageSection() {
             }
 
             printStats() {
+
+                content.text = '\nTexture Statistics:';
+                
                 console.log('\nTexture Statistics:');
                 for (const [direction, count] of Object.entries(this.textures)) {
                     const percentage = ((count / this.totalCells) * 100).toFixed(2);
                     console.log(`${direction}: ${count} cells (${percentage}%)`);
+                    content.text += `${direction}: ${count} cells (${percentage}%)`;
                 }
                 const totalUsed = Object.values(this.textures).reduce((a, b) => a + b, 0);
                 const totalPercentage = ((totalUsed / this.totalCells) * 100).toFixed(2);
                 console.log(`Total Used: ${totalUsed} cells (${totalPercentage}%)`);
+                content.text += `Total Used: ${totalUsed} cells (${totalPercentage}%)`;
                 
                 const surroundedPercentage = ((this.surroundedEmptyCells / this.totalCells) * 100).toFixed(2);
                 console.log(`Surrounded Empty Cells: ${this.surroundedEmptyCells} (${surroundedPercentage}%)`);
+                content.text += `Surrounded Empty Cells: ${this.surroundedEmptyCells} (${surroundedPercentage}%)`;
                 console.log(`Number of surrounded groups: ${this.surroundedGroups.length}`);
+                content.text += `Number of surrounded groups: ${this.surroundedGroups.length}`;
                 this.surroundedGroups.forEach((group, index) => {
                     console.log(`Group ${index + 1} size: ${group.length} cells`);
+                    content.text += `Group ${index + 1} size: ${group.length} cells`;
                 });
             }
         }
