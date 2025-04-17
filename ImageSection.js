@@ -49,10 +49,62 @@ async function initImageSection() {
                 };
                 this.totalCells = numberOfRows * numberOfColumns;
                 this.surroundedEmptyCells = 0;
+                this.surroundedGroups = [];
                 // Create a 2D grid to track filled cells
                 this.grid = Array(numberOfRows).fill().map(() => 
                     Array(numberOfColumns).fill(false)
                 );
+                // Create a 2D grid to track visited cells during group detection
+                this.visited = Array(numberOfRows).fill().map(() => 
+                    Array(numberOfColumns).fill(false)
+                );
+            }
+
+            // Helper function to check if a cell is within grid bounds
+            isValidCell(row, col) {
+                return row >= 0 && row < numberOfRows && col >= 0 && col < numberOfColumns;
+            }
+
+            // Helper function to find connected empty cells
+            findConnectedEmptyCells(row, col, group) {
+                if (!this.isValidCell(row, col) || this.visited[row][col] || this.grid[row][col]) {
+                    return;
+                }
+
+                this.visited[row][col] = true;
+                group.push({row, col});
+
+                // Check 4-connected neighbors (up, right, down, left)
+                const neighbors = [[-1, 0], [0, 1], [1, 0], [0, -1]];
+                for (const [dr, dc] of neighbors) {
+                    this.findConnectedEmptyCells(row + dr, col + dc, group);
+                }
+            }
+
+            // Check if a group of cells is completely surrounded by filled cells
+            isGroupSurrounded(group) {
+                for (const {row, col} of group) {
+                    const neighbors = [
+                        [-1, -1], [-1, 0], [-1, 1],
+                        [0, -1],           [0, 1],
+                        [1, -1],  [1, 0],  [1, 1]
+                    ];
+
+                    for (const [dr, dc] of neighbors) {
+                        const newRow = row + dr;
+                        const newCol = col + dc;
+                        
+                        // If neighbor is outside grid, group is not surrounded
+                        if (!this.isValidCell(newRow, newCol)) return false;
+                        
+                        // If neighbor is empty and not part of the group, group is not surrounded
+                        if (!this.grid[newRow][newCol] && 
+                            !group.some(cell => cell.row === newRow && cell.col === newCol)) {
+                            return false;
+                        }
+                    }
+                }
+                return true;
             }
 
             addTexture(direction, row, col) {
@@ -69,52 +121,29 @@ async function initImageSection() {
                 }
             }
 
-            isCellSurrounded(row, col) {
-                if (this.grid[row][col]) return false; // Cell is filled
-
-                const neighbors = [
-                    [-1, -1], [-1, 0], [-1, 1],
-                    [0, -1],           [0, 1],
-                    [1, -1],  [1, 0],  [1, 1]
-                ];
-
-                return neighbors.every(([dr, dc]) => {
-                    const newRow = row + dr;
-                    const newCol = col + dc;
-                    return newRow >= 0 && newRow < numberOfRows &&
-                           newCol >= 0 && newCol < numberOfColumns &&
-                           this.grid[newRow][newCol];
-                });
-            }
-
             updateSurroundedEmptyCells() {
                 this.surroundedEmptyCells = 0;
-                // First remove any existing surrounded cell indicators
-                const surroundedSprites = gridContainer.children.filter(child => child.isSurroundedIndicator);
-                surroundedSprites.forEach(sprite => {
-                    gridContainer.removeChild(sprite);
-                    sprite.destroy();
-                });
-
+                this.surroundedGroups = [];
+                
+                // Reset visited grid
                 for (let row = 0; row < numberOfRows; row++) {
                     for (let col = 0; col < numberOfColumns; col++) {
-                        if (this.isCellSurrounded(row, col)) {
-                            this.surroundedEmptyCells++;
+                        this.visited[row][col] = false;
+                    }
+                }
+
+                // Find all groups of connected empty cells
+                for (let row = 0; row < numberOfRows; row++) {
+                    for (let col = 0; col < numberOfColumns; col++) {
+                        if (!this.visited[row][col] && !this.grid[row][col]) {
+                            const group = [];
+                            this.findConnectedEmptyCells(row, col, group);
                             
-                            // Create a black sprite for the surrounded cell
-                            const graphics = new PIXI.Graphics();
-                            graphics.beginFill(0x000000, 0.5); // Semi-transparent black
-                            graphics.drawRect(0, 0, cellSize, cellSize);
-                            graphics.endFill();
-                            
-                            const texture = app.renderer.generateTexture(graphics);
-                            const sprite = new PIXI.Sprite(texture);
-                            
-                            sprite.x = col * cellSize;
-                            sprite.y = row * cellSize;
-                            sprite.isSurroundedIndicator = true; // Mark this sprite as a surrounded cell indicator
-                            
-                            gridContainer.addChild(sprite);
+                            // Check if this group is surrounded
+                            if (group.length > 0 && this.isGroupSurrounded(group)) {
+                                this.surroundedGroups.push(group);
+                                this.surroundedEmptyCells += group.length;
+                            }
                         }
                     }
                 }
@@ -132,6 +161,10 @@ async function initImageSection() {
                 
                 const surroundedPercentage = ((this.surroundedEmptyCells / this.totalCells) * 100).toFixed(2);
                 console.log(`Surrounded Empty Cells: ${this.surroundedEmptyCells} (${surroundedPercentage}%)`);
+                console.log(`Number of surrounded groups: ${this.surroundedGroups.length}`);
+                this.surroundedGroups.forEach((group, index) => {
+                    console.log(`Group ${index + 1} size: ${group.length} cells`);
+                });
             }
         }
 
