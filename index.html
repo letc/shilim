@@ -44,8 +44,6 @@
         import { initImageSection } from './ImageSection.js';
         import { LoadTextures } from './Resources.js';
         import { initBottomLayout } from './BottomLayout.js';
-        
-        let bottomLayout;
 
         // Wait for app to be ready
         async function init() {
@@ -53,7 +51,7 @@
             await LoadTextures();
             await initInfoSection();
             await initImageSection();
-            bottomLayout = await initBottomLayout();
+            await initBottomLayout();
 
             // Example: Set sections to 90% and 10% (hiding the last two)
             //bottomLayout.updateSectionSizes(90, 10, 0, 0);

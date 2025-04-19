@@ -1,6 +1,7 @@
 import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, stageSize, stageHeight, GridCell, gridCells, DragDirection } from './Config.js';
 import { getRandomSelectionRect } from './Utils.js';
 import { content } from './InfoSection.js';
+import { updateSectionSizes } from './BottomLayout.js';
 
 async function initImageSection() {
     try {
