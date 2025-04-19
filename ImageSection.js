@@ -109,10 +109,38 @@ async function initImageSection() {
                 return true;
             }
 
+            updateSections() {
+                // Calculate total filled cells
+                const totalFilled = Object.values(this.textures).reduce((sum, count) => sum + count, 0);
+                
+                if (totalFilled === 0) {
+                    // If no cells are filled, make all sections equal
+                    updateSectionSizes(25, 25, 25, 25);
+                    return;
+                }
+
+                // Calculate percentages based on filled cells
+                const topToBottomRightPercentage = ((this.textures[DragDirection.TopToBottomRight] / totalFilled) * 100).toFixed(2);
+                const topToBottomLeftPercentage = ((this.textures[DragDirection.TopToBottomLeft] / totalFilled) * 100).toFixed(2);
+                const bottomToTopRightPercentage = ((this.textures[DragDirection.BottomToTopRight] / totalFilled) * 100).toFixed(2);
+                const bottomToTopLeftPercentage = ((this.textures[DragDirection.BottomToTopLeft] / totalFilled) * 100).toFixed(2);
+
+                // Update section sizes
+                updateSectionSizes(
+                    parseFloat(topToBottomRightPercentage),
+                    parseFloat(topToBottomLeftPercentage),
+                    parseFloat(bottomToTopRightPercentage),
+                    parseFloat(bottomToTopLeftPercentage)
+                );
+
+                //updateSectionSizes(100, 0, 0, 0);
+            }
+
             addTexture(direction, row, col) {
                 this.textures[direction]++;
                 this.grid[row][col] = true;
                 this.updateSurroundedEmptyCells();
+                this.updateSections();
             }
 
             removeTexture(direction, row, col) {
@@ -120,6 +148,7 @@ async function initImageSection() {
                     this.textures[direction]--;
                     this.grid[row][col] = false;
                     this.updateSurroundedEmptyCells();
+                    this.updateSections();
                 }
             }
 
@@ -152,7 +181,6 @@ async function initImageSection() {
             }
 
             printStats() {
-
                 content.text = '\nTexture Statistics:';
                 
                 console.log('\nTexture Statistics:');
@@ -175,6 +203,9 @@ async function initImageSection() {
                     console.log(`Group ${index + 1} size: ${group.length} cells`);
                     content.text += `\nGroup ${index + 1} size: ${group.length} cells`;
                 });
+                
+                // Also update sections when printing stats
+                this.updateSections();
             }
         }
 
