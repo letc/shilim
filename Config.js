@@ -80,4 +80,13 @@ class GridCell {
 
 let gridCells = [];
 
-export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells };
+const projects = [
+    { title: 'Artist Residency 001.', author: 'Ann De Forest', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'CULTURE', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 003.', author: 'Kushala Vora', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, CULTURE', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 004.', author: 'Constantine and Rebecca', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'CULTURE', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 007.', author: 'Joel Gordon', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Mapping Workshops.', author: 'Vritti Mangeulley & Hibah Hanif', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+];
+
+export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects };

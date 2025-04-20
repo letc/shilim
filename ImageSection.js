@@ -1,6 +1,6 @@
 import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, stageSize, stageHeight, GridCell, gridCells, DragDirection } from './Config.js';
 import { getRandomSelectionRect } from './Utils.js';
-import { content } from './InfoSection.js';
+import { content, archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes } from './BottomLayout.js';
 
 async function initImageSection() {
@@ -134,6 +134,8 @@ async function initImageSection() {
                 );
 
                 //updateSectionSizes(100, 0, 0, 0);
+
+                archiveIndexValueLabelText.text = (this.surroundedGroups.length).toString();
             }
 
             addTexture(direction, row, col) {
@@ -180,7 +182,7 @@ async function initImageSection() {
                 }
             }
 
-            printStats() {
+            /* printStats() {
                 content.text = '\nTexture Statistics:';
                 
                 console.log('\nTexture Statistics:');
@@ -206,7 +208,7 @@ async function initImageSection() {
                 
                 // Also update sections when printing stats
                 this.updateSections();
-            }
+            } */
         }
 
         // Create instance of TextureStats
@@ -823,7 +825,8 @@ async function initImageSection() {
                 });
                 tempGridCells.length = 0;
             }
-            textureStats.printStats(); // Print updated statistics
+            //textureStats.printStats(); // Print updated statistics
+            textureStats.updateSections();
         });
 
         // Mouse out event

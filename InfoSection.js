@@ -1,5 +1,9 @@
-import { app } from './Config.js';
+import { app, projects } from './Config.js';
+import { createProjectCard } from './ProjectCard.js';
+
 let content;
+let archiveIndexValueLabelText;
+
 async function initInfoSection() {
     try {
         // Create a container for the image section
@@ -91,7 +95,7 @@ async function initInfoSection() {
         archiveIndexValueImage.mask = bgArchiveIndexValueMask;
 
         // Add text element with padding
-        const archiveIndexValueLabelText = new PIXI.Text('0', {
+        archiveIndexValueLabelText = new PIXI.Text('0', {
             fontFamily: 'Arial',
             fontSize: 20,
             fill: 0x808080,
@@ -100,22 +104,47 @@ async function initInfoSection() {
         });
         archiveIndexValueLabelText.x = archiveIndexValueRect.x + 8; // 10px padding from left
         archiveIndexValueLabelText.y = archiveIndexValueRect.y + 4; // 10px padding from top
-        //archiveIndexValue--------------------------------------
+        archiveIndexValueLabelText.y = 14; // 10px padding from top
 
-
-
-
-
-        // Add everything to the container
+        // Add archive index elements to the container
         bgContainer.addChild(archiveIndexImage);
         bgContainer.addChild(bgGraphics);
-        bgContainer.addChild(bgMask);
         bgContainer.addChild(archiveIndexLabelText);
-
         bgContainer.addChild(archiveIndexValueImage);
         bgContainer.addChild(bgArchiveIndexValueGraphics);
-        bgContainer.addChild(bgArchiveIndexValueMask);
         bgContainer.addChild(archiveIndexValueLabelText);
+
+        // Create scrollable container for project cards
+        const projectsContainer = new PIXI.Container();
+        projectsContainer.x = 10;
+        projectsContainer.y = 60;
+
+        // Add project cards
+        let currentY = 0;
+        const cardSpacing = 10;
+
+        projects.forEach(project => {
+            const card = createProjectCard(
+                project.title,
+                project.author,
+                project.date,
+                project.link
+            );
+            card.y = currentY;
+            projectsContainer.addChild(card);
+            currentY += card.height + cardSpacing;
+        });
+
+        bgContainer.addChild(projectsContainer);
+
+        // Create text element (keeping it for compatibility)
+        content = new PIXI.Text('', {
+            fontFamily: 'Arial',
+            fontSize: 14,
+            fill: 0x000000,
+            align: 'left'
+        });
+        content.visible = false; // Hide it since we're using cards now
 
         imageContainer.addChild(bgContainer);
 
@@ -286,4 +315,4 @@ async function initInfoSection() {
     }
 }
 
-export { initInfoSection, content };
+export { initInfoSection, content, archiveIndexValueLabelText };

@@ -42,21 +42,24 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
         // Create container for each section
         const sectionContainer = new PIXI.Container();
         section.container = sectionContainer;
+        sectionContainer.interactive = false;
 
         // Create section background
         const sectionBg = new PIXI.Graphics();
         sectionContainer.addChild(sectionBg);
+        sectionBg.interactive = false;
 
-        // Add text
-        const text = new PIXI.Text(section.text, {
+        // Add text label
+        const textLabel = new PIXI.Text(section.text, {
             fontFamily: 'Arial',
             fontSize: 16,
             fill: 0xFFFFFF,
             align: 'right'
         });
-        text.anchor.set(1, 0.5);
-        text.y = 25; // Vertically centered
-        sectionContainer.addChild(text);
+        textLabel.anchor.set(1, 0.5);
+        textLabel.y = 25; // Vertically centered
+        textLabel.interactive = false;
+        sectionContainer.addChild(textLabel);
 
         layoutContainer.addChild(sectionContainer);
     });
@@ -83,7 +86,13 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
             } else {
                 section.container.visible = true;
                 const width = (percentage / 100) * totalWidth;
-                console.log(`Showing section ${section.text} with width ${width}`);
+                
+                // Get text element and check if it fits
+                const textLabel = section.container.getChildAt(1); // Text is the second child
+                const textWidth = textLabel.width + 10; // Add some padding
+                textLabel.visible = textWidth <= width;
+                
+                console.log(`Showing section ${section.text} with width ${width}, text width: ${textWidth}`);
 
                 // Update background
                 const sectionBg = section.container.getChildAt(0);
@@ -147,9 +156,9 @@ async function initBottomLayout() {
         layoutContainer = new PIXI.Container();
         layoutContainer.x = 440;  // Position from left
         layoutContainer.y = app.screen.height - 60;  // Position at bottom
-        layoutContainer.eventMode = 'static';
-
-        
+        //layoutContainer.eventMode = 'static';
+        // Make the container non-interactable
+        layoutContainer.interactive = false;
 
         // Initial layout with equal sizes
         updateSectionSizes(0,0,0,0);
