@@ -1,6 +1,6 @@
-import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, stageSize, stageHeight, GridCell, gridCells, DragDirection } from './Config.js';
+import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, interactiveRect, stageSize, stageHeight, GridCell, gridCells, DragDirection } from './Config.js';
 import { getRandomSelectionRect } from './Utils.js';
-import { content, archiveIndexValueLabelText } from './InfoSection.js';
+import { archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes } from './BottomLayout.js';
 
 async function initImageSection() {
@@ -15,31 +15,8 @@ async function initImageSection() {
 
         let currentDragDirection;
 
-        const interactiveRect = {
-            x: 310,
-            y: 0,
-            width: 1240,
-            height: 1000,
-        };
-
-        // Handle window resizing
-        function resize() {
-            const container = document.getElementById('app-container');
-        console.log('container.clientHeight: ',container.clientHeight);
-
-        if(container.clientHeight < 1000) {
-            interactiveRect.height -= (1000 -container.clientHeight);
-        }
-        }
-
-        // Initial resize
-        resize();
-
-        // Add window resize listener
-        window.addEventListener('resize', resize);
-
-
-
+        const container = document.getElementById('app-container');
+        
         // Class to track texture statistics
         class TextureStats {
             constructor() {
@@ -183,27 +160,20 @@ async function initImageSection() {
             }
 
             /* printStats() {
-                content.text = '\nTexture Statistics:';
-                
                 console.log('\nTexture Statistics:');
                 for (const [direction, count] of Object.entries(this.textures)) {
                     const percentage = ((count / this.totalCells) * 100).toFixed(2);
                     console.log(`${direction}: ${count} cells (${percentage}%)`);
-                    content.text += `\n${direction}: ${count} cells (${percentage}%)`;
                 }
                 const totalUsed = Object.values(this.textures).reduce((a, b) => a + b, 0);
                 const totalPercentage = ((totalUsed / this.totalCells) * 100).toFixed(2);
                 console.log(`Total Used: ${totalUsed} cells (${totalPercentage}%)`);
-                content.text += `\nTotal Used: ${totalUsed} cells (${totalPercentage}%)`;
                 
                 const surroundedPercentage = ((this.surroundedEmptyCells / this.totalCells) * 100).toFixed(2);
                 console.log(`Surrounded Empty Cells: ${this.surroundedEmptyCells} (${surroundedPercentage}%)`);
-                content.text += `\nSurrounded Empty Cells: ${this.surroundedEmptyCells} (${surroundedPercentage}%)`;
                 console.log(`Number of surrounded groups: ${this.surroundedGroups.length}`);
-                content.text += `\nNumber of surrounded groups: ${this.surroundedGroups.length}`;
                 this.surroundedGroups.forEach((group, index) => {
                     console.log(`Group ${index + 1} size: ${group.length} cells`);
-                    content.text += `\nGroup ${index + 1} size: ${group.length} cells`;
                 });
                 
                 // Also update sections when printing stats
@@ -213,6 +183,22 @@ async function initImageSection() {
 
         // Create instance of TextureStats
         const textureStats = new TextureStats();
+
+        // Handle window resizing
+        function resize() {
+            
+            console.log('container.clientHeight: ',container.clientHeight);
+
+            interactiveRect.height -= (1000 -container.clientHeight);
+
+            textureStats.updateSections();
+        }
+
+        // Initial resize
+        resize();
+
+        // Add window resize listener
+        window.addEventListener('resize', resize);
 
         // Helper function to update sprite's corner mask
         const updateSpriteCornerMask = (sprite, row, col, isCorner, cornerPosition) => {

@@ -1,7 +1,9 @@
-import { app } from './Config.js';
+import { app, stageWidth } from './Config.js';
+
+const container = document.getElementById('app-container');
 
 // Total width of the layout
-const totalWidth = 1100;
+let totalWidth = 1100;
 
 // Create sections with text
 const sections = [
@@ -16,6 +18,11 @@ let layoutContainer = null;
 
 // Function to update section sizes based on percentages
 function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
+
+    if(layoutContainer == null) {
+        console.log('Layout container not initialized');
+        return;
+    }
     // Adjust percentages if total exceeds 100%
     let adjustedPercentages = [p1, p2, p3, p4];
     let total = adjustedPercentages.reduce((sum, p) => sum + p, 0);
@@ -33,7 +40,7 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
     // Create background with rounded corners
     const background = new PIXI.Graphics();
     background.beginFill(0xEEEEEE);
-    background.drawRoundedRect(0, 0, 1000, 50, 20);
+    background.drawRoundedRect(0, 0, totalWidth, 50, 20);
     background.endFill();
     layoutContainer.addChild(background);
     
@@ -160,10 +167,26 @@ async function initBottomLayout() {
         // Make the container non-interactable
         layoutContainer.interactive = false;
 
+        totalWidth = (container.clientWidth - 440) - 10; // 10 is padding, // 440 is left margin
+
         // Initial layout with equal sizes
         updateSectionSizes(0,0,0,0);
 
         app.stage.addChild(layoutContainer);
+
+        // Handle window resizing
+        function resize() {
+
+            totalWidth = (container.clientWidth - 440) - 10; // 10 is padding, // 440 is left margin
+
+            layoutContainer.y = container.clientHeight - 60;
+        }
+
+        // Initial resize
+        resize();
+
+        // Add window resize listener
+        window.addEventListener('resize', resize);
 
     } catch (error) {
         console.error('Error in initBottomLayout:', error);

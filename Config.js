@@ -53,6 +53,13 @@ var TileImageDirection;
 
 var stage, layer, leftLayer, rightLayer, selectionLayer;
 
+let interactiveRect = {
+    x: 310,
+    y: 0,
+    width: 1240,
+    height: 1000,
+};
+
 class GridCell {
     constructor(row, col, sprite) {
         this.row = row;
@@ -87,6 +94,13 @@ const projects = [
     { title: 'Artist Residency 007.', author: 'Joel Gordon', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
     { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
     { title: 'Mapping Workshops.', author: 'Vritti Mangeulley & Hibah Hanif', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
 ];
 
-export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects };
+export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects, interactiveRect };

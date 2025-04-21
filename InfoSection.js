@@ -1,7 +1,6 @@
 import { app, projects } from './Config.js';
 import { createProjectCard } from './ProjectCard.js';
 
-let content;
 let archiveIndexValueLabelText;
 
 async function initInfoSection() {
@@ -11,18 +10,14 @@ async function initInfoSection() {
         imageContainer.x = 10;  // Position from left
         imageContainer.y = 10;    // Position from top
         imageContainer.eventMode = 'static';
-        
 
         // Create a container for the background with effects
         const bgContainer = new PIXI.Container();
 
         // Load the background
         const bgTexture = await PIXI.Assets.load('assets/bg_white.png');
-        
-        
-        
-        //archiveIndex--------------------------------------
 
+        //archiveIndex--------------------------------------
         const archiveIndexRect = {
             x: 0,
             y: 0,
@@ -60,10 +55,6 @@ async function initInfoSection() {
         });
         archiveIndexLabelText.x = 12; // 10px padding from left
         archiveIndexLabelText.y = 14; // 10px padding from top
-        //archiveIndex--------------------------------------
-
-
-
 
         //archiveIndexValue--------------------------------------
 
@@ -103,7 +94,6 @@ async function initInfoSection() {
             fontStyle: 'italic'
         });
         archiveIndexValueLabelText.x = archiveIndexValueRect.x + 8; // 10px padding from left
-        archiveIndexValueLabelText.y = archiveIndexValueRect.y + 4; // 10px padding from top
         archiveIndexValueLabelText.y = 14; // 10px padding from top
 
         // Add archive index elements to the container
@@ -114,12 +104,15 @@ async function initInfoSection() {
         bgContainer.addChild(bgArchiveIndexValueGraphics);
         bgContainer.addChild(archiveIndexValueLabelText);
 
-        // Create scrollable container for project cards
-        const projectsContainer = new PIXI.Container();
-        projectsContainer.x = 10;
-        projectsContainer.y = 60;
+        // Create scrollable container
+        const scrollContainer = new PIXI.Container();
+        scrollContainer.x = 10;
+        scrollContainer.y = 60;
+        scrollContainer.width = 300;
+        scrollContainer.height = 900;
+        scrollContainer.eventMode = 'static';
 
-        // Add project cards
+        // Add project cards to scroll container
         let currentY = 0;
         const cardSpacing = 10;
 
@@ -131,188 +124,201 @@ async function initInfoSection() {
                 project.link
             );
             card.y = currentY;
-            projectsContainer.addChild(card);
+            scrollContainer.addChild(card);
             currentY += card.height + cardSpacing;
         });
 
-        bgContainer.addChild(projectsContainer);
-
-        // Create text element (keeping it for compatibility)
-        content = new PIXI.Text('', {
-            fontFamily: 'Arial',
-            fontSize: 14,
-            fill: 0x000000,
-            align: 'left'
-        });
-        content.visible = false; // Hide it since we're using cards now
-
-        imageContainer.addChild(bgContainer);
-
-        // Add the container to the stage
-        app.stage.addChild(imageContainer);
-        
-
-        // Create a container for the scroll area
-        const scrollContainer = new PIXI.Container();
-        scrollContainer.x = 0;
-        scrollContainer.y = 0;
-        scrollContainer.width = 300;
-        scrollContainer.height = 1000;
-        scrollContainer.eventMode = 'static';
-
-        // Create a mask for the scroll container
+        // Create and apply mask for scrolling
         const scrollMask = new PIXI.Graphics();
         scrollMask.beginFill(0xFFFFFF);
-        scrollMask.drawRect(0, 0, 300, 1000);
+        scrollMask.drawRect(0, 60, 300, 900); // Height adjusted to leave space for archive index
         scrollMask.endFill();
         scrollContainer.mask = scrollMask;
-        app.stage.addChild(scrollMask);
 
-        // Create text content
-        content = new PIXI.Text('', {
-            fontSize: 10,
-            fill: 0x000000,
-            wordWrap: true,
-            wordWrapWidth: 280,
-            lineHeight: 24,
-            align: 'center'
-        });
-        content.x = 10;
-        content.y = 10;
-        scrollContainer.addChild(content);
+        bgContainer.addChild(scrollContainer);
+        bgContainer.addChild(scrollMask);
 
-        // Create scrollbar background
-        const scrollbarBg = new PIXI.Graphics();
-        scrollbarBg.beginFill(0xDDDDDD);
-        scrollbarBg.drawRoundedRect(290, 0, 10, 1000, 5);
-        scrollbarBg.endFill();
-        app.stage.addChild(scrollbarBg);
+        // Calculate total content height for scrolling
+        const contentHeight = currentY;
+        const viewportHeight = 900;
 
-        // Create scrollbar thumb
-        const scrollbarThumb = new PIXI.Graphics();
-        scrollbarThumb.beginFill(0x999999);
-        scrollbarThumb.drawRoundedRect(0, 0, 6, 100, 3);
-        scrollbarThumb.endFill();
-        scrollbarThumb.x = 292;
-        scrollbarThumb.y = 2;
-        scrollbarThumb.eventMode = 'static';
-        scrollbarThumb.cursor = 'pointer';
-        app.stage.addChild(scrollbarThumb);
+        // Add scrollbar if content exceeds viewport
+        if (contentHeight > viewportHeight) {
+            // Scrollbar background
+            const scrollbarBg = new PIXI.Graphics();
+            scrollbarBg.beginFill(0xDDDDDD);
+            scrollbarBg.drawRect(290, 60, 4, viewportHeight);
+            scrollbarBg.endFill();
+            scrollbarBg.visible = false;
+            bgContainer.addChild(scrollbarBg);
 
-        // Calculate scrollbar properties
-        let contentHeight = content.height;
-        const viewportHeight = 1000;
-        let scrollableHeight = Math.max(0, contentHeight - viewportHeight);
-        let thumbHeight = Math.max(50, (viewportHeight / contentHeight) * viewportHeight);
-        const scrollTrackHeight = viewportHeight - 4;
-        scrollbarThumb.height = thumbHeight;
+            // Scrollbar thumb
+            const thumbHeight = Math.max(50, (viewportHeight / contentHeight) * viewportHeight);
+            const scrollbarThumb = new PIXI.Graphics();
+            scrollbarThumb.beginFill(0x808080);
+            scrollbarThumb.drawRect(290, 60, 4, thumbHeight);
+            scrollbarThumb.endFill();
+            scrollbarThumb.interactive = true;
+            scrollbarThumb.cursor = 'pointer';
+            scrollbarThumb.visible = false;
+            bgContainer.addChild(scrollbarThumb);
 
-        // Function to update scroll position and scrollbar
-        function updateScrollbar() {
-            contentHeight = content.height;
-            scrollableHeight = Math.max(0, contentHeight - viewportHeight);
-            thumbHeight = Math.max(50, (viewportHeight / contentHeight) * viewportHeight);
-            scrollbarThumb.height = thumbHeight;
+            // Scrolling with mouse wheel
+            // Enable mouse wheel scrolling
+            scrollContainer.eventMode = 'static';
+            scrollContainer.cursor = 'grab';
+            
+            // Variables for drag scrolling
+            let isDragging = false;
+            let dragStartY = 0;
+            let startScrollY = 0;
 
-            // Center content if it's smaller than viewport
-            if (contentHeight <= viewportHeight) {
-                scrollContainer.y = (viewportHeight - contentHeight) / 2;
-                scrollbarThumb.visible = false;
-                scrollbarBg.visible = false;
-            } else {
-                scrollbarThumb.visible = true;
-                scrollbarBg.visible = true;
-                // Keep scroll position within bounds
-                scrollContainer.y = Math.max(-scrollableHeight, Math.min(0, scrollContainer.y));
-            }
-        }
+            // Mouse wheel scrolling with smooth animation
+            let wheelTimeout;
+            let lastWheelTime = 0;
+            let accumulatedDelta = 0;
+            
+            scrollContainer.on('wheel', (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                
+                const currentTime = Date.now();
+                const timeDelta = currentTime - lastWheelTime;
+                
+                // Clear timeout if wheel event is within 150ms of last event
+                if (timeDelta < 150) {
+                    if (wheelTimeout) clearTimeout(wheelTimeout);
+                    accumulatedDelta += event.deltaY * 0.5; // Reduce sensitivity for smoother scrolling
+                } else {
+                    accumulatedDelta = event.deltaY * 0.5;
+                }
+                
+                const maxScroll = -(contentHeight - viewportHeight);
+                const targetY = Math.max(maxScroll + 60, Math.min(60, scrollContainer.y - accumulatedDelta));
+                
+                if (targetY !== scrollContainer.y) {
+                    // Kill any existing tweens
+                    gsap.killTweensOf(scrollContainer);
+                    gsap.killTweensOf(scrollbarThumb);
+                    
+                    // Set a short timeout to wait for multiple wheel events
+                    wheelTimeout = setTimeout(() => {
+                        smoothScrollTo(targetY, 0.6); // Slightly faster for wheel scrolling
+                        accumulatedDelta = 0; // Reset accumulated delta
+                    }, 50);
+                    
+                    // Smooth intermediate updates
+                    gsap.to(scrollContainer, {
+                        y: targetY,
+                        duration: 0.1,
+                        ease: 'power1.out',
+                        onUpdate: () => updateScrollbarPosition()
+                    });
+                }
+                
+                lastWheelTime = currentTime;
+            }, { passive: false });
 
-        // Initial position update
-        updateScrollbar();
-
-        // Scrollbar drag functionality
-        let isDragging = false;
-        let dragStartY = 0;
-        let startScrollY = 0;
-
-        scrollContainer.on('pointerdown', (event) => {
-            content.text += 'New text added after drag!\n'.repeat(5);
-            updateScrollbar();
-        });
-
-        scrollbarThumb.on('pointerdown', (event) => {
-            // Only allow dragging if content is larger than viewport
-            if (contentHeight > viewportHeight) {
+            // Drag scrolling with smooth animation
+            let lastDragY = 0;
+            let dragVelocity = 0;
+            let lastDragTime = 0;
+            
+            scrollContainer.on('pointerdown', (event) => {
                 isDragging = true;
                 dragStartY = event.globalY;
                 startScrollY = scrollContainer.y;
-            }
-            console.log('pointerdown', isDragging);
-        });
-
-        app.stage.on('pointermove', (event) => {
-            console.log('pointermove', isDragging);
-            if (!isDragging || contentHeight <= viewportHeight) return;
-
-            const dy = event.globalY - dragStartY;
-            const scrollRatio = dy / (scrollTrackHeight - thumbHeight);
-            const newScrollY = Math.max(
-                -scrollableHeight,
-                Math.min(0, startScrollY - (scrollableHeight * scrollRatio))
-            );
-            
-            scrollContainer.y = newScrollY;
-            const thumbY = 2 + ((Math.abs(newScrollY) / scrollableHeight) * (scrollTrackHeight - thumbHeight));
-            scrollbarThumb.y = thumbY;
-        });
-
-        app.stage.on('pointerup', () => {
-            if (isDragging) {
-                // Add new text when drag ends
-                content.text += 'New text added after drag!\n'.repeat(5);
-                updateScrollbar();
-            }
-            console.log('pointerup', isDragging);
-            isDragging = false;
-        });
-
-        // Mouse wheel scrolling
-        scrollContainer.on('wheel', (event) => {
-            // Check if mouse is within bounds
-            const mouseX = event.globalX;
-            const mouseY = event.globalY;
-            
-            // Define scroll area bounds
-            const bounds = {
-                x: 0,
-                y: 0,
-                width: 300,
-                height: 1000
-            };
-
-            // Check if mouse is within bounds and content is larger than viewport
-            if (mouseX >= bounds.x && 
-                mouseX <= bounds.x + bounds.width && 
-                mouseY >= bounds.y && 
-                mouseY <= bounds.y + bounds.height &&
-                contentHeight > viewportHeight) {
+                lastDragY = event.globalY;
+                lastDragTime = Date.now();
+                dragVelocity = 0;
+                scrollContainer.cursor = 'grabbing';
                 
-                const newScrollY = Math.max(
-                    -scrollableHeight,
-                    Math.min(0, scrollContainer.y - event.deltaY)
-                );
-                
-                scrollContainer.y = newScrollY;
-                const thumbY = 2 + ((Math.abs(newScrollY) / scrollableHeight) * (scrollTrackHeight - thumbHeight));
-                scrollbarThumb.y = thumbY;
-            }
-        });
+                // Kill any existing tweens
+                gsap.killTweensOf(scrollContainer);
+                gsap.killTweensOf(scrollbarThumb);
+            });
 
-        app.stage.addChild(scrollContainer);
+            app.stage.on('pointermove', (event) => {
+                if (!isDragging) return;
+                
+                const currentTime = Date.now();
+                const timeDelta = currentTime - lastDragTime;
+                const deltaY = event.globalY - lastDragY;
+                
+                if (timeDelta > 0) {
+                    dragVelocity = deltaY / timeDelta;
+                }
+                
+                const maxScroll = -(contentHeight - viewportHeight);
+                const targetY = Math.max(maxScroll + 60, Math.min(60, scrollContainer.y + deltaY));
+                
+                scrollContainer.y = targetY;
+                updateScrollbarPosition();
+                
+                lastDragY = event.globalY;
+                lastDragTime = currentTime;
+            });
+
+            function handleDragEnd() {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                scrollContainer.cursor = 'grab';
+                
+                // Apply momentum scrolling if there's velocity
+                if (Math.abs(dragVelocity) > 0.05) { // Lower threshold for smoother momentum
+                    const momentum = dragVelocity * 200; // Increased multiplier for more momentum
+                    const maxScroll = -(contentHeight - viewportHeight);
+                    const targetY = Math.max(maxScroll + 60, Math.min(60, scrollContainer.y + momentum));
+                    
+                    smoothScrollTo(targetY, Math.abs(dragVelocity) * 0.8 + 0.6); // Dynamic duration based on velocity
+                }
+                
+                // Reset drag state
+                dragVelocity = 0;
+            }
+
+            app.stage.on('pointerup', handleDragEnd);
+            app.stage.on('pointerupoutside', handleDragEnd);
+
+            // Helper function to smoothly scroll to a position
+            function smoothScrollTo(targetY, duration = 0.8) { // Increased base duration
+                // Kill any existing tweens
+                gsap.killTweensOf(scrollContainer);
+                gsap.killTweensOf(scrollbarThumb);
+
+                // Calculate the distance to scroll
+                const distance = Math.abs(targetY - scrollContainer.y);
+                const adjustedDuration = Math.min(1.2, duration * (distance / 500)); // Scale duration with distance
+
+                gsap.to(scrollContainer, {
+                    y: targetY,
+                    duration: adjustedDuration,
+                    ease: 'expo.out', // Changed to expo for smoother deceleration
+                    onUpdate: () => {
+                        const scrollPercent = (60 - scrollContainer.y) / (contentHeight - viewportHeight);
+                        gsap.to(scrollbarThumb, {
+                            y: 60 + (scrollPercent * (viewportHeight - thumbHeight)),
+                            duration: 0.15, // Slightly increased for smoother thumb movement
+                            ease: 'power1.out' // Added slight easing to thumb movement
+                        });
+                    }
+                });
+            }
+
+            // Helper function to update scrollbar position immediately
+            function updateScrollbarPosition() {
+                const scrollPercent = (60 - scrollContainer.y) / (contentHeight - viewportHeight);
+                scrollbarThumb.y = 60 + (scrollPercent * (viewportHeight - thumbHeight));
+            }
+        }
+
+        imageContainer.addChild(bgContainer);
+        app.stage.addChild(imageContainer);
 
     } catch (error) {
-        console.error('Error initializing info section:', error);
+        console.error('Error in initInfoSection:', error);
     }
 }
 
-export { initInfoSection, content, archiveIndexValueLabelText };
+export { initInfoSection, archiveIndexValueLabelText };
