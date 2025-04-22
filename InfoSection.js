@@ -131,7 +131,7 @@ async function initInfoSection() {
         // Add project cards to scroll container
         // Add light gray background to scroll container
         const scrollBg = new PIXI.Graphics();
-        scrollBg.beginFill(0xF8F8F8); // Very light gray
+        scrollBg.beginFill(0xFFFFFF); // Very light gray
         scrollBg.drawRect(0, 60, 300, 900);
         scrollBg.endFill();
         scrollContainer.addChild(scrollBg);
