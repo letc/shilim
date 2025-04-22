@@ -1,10 +1,26 @@
 import { app, projects } from './Config.js';
 import { createProjectCard } from './ProjectCard.js';
 
+const container = document.getElementById('app-container');
+
 let archiveIndexValueLabelText;
+let viewportHeight = 900;
 
 async function initInfoSection() {
     try {
+
+         // Handle window resizing
+         function resize() {
+
+            viewportHeight = container.clientHeight - 60;
+        }
+
+        // Initial resize
+        resize();
+
+        // Add window resize listener
+        window.addEventListener('resize', resize);
+
         // Create a container for the image section
         const imageContainer = new PIXI.Container();
         imageContainer.x = 10;  // Position from left
@@ -113,7 +129,14 @@ async function initInfoSection() {
         scrollContainer.eventMode = 'static';
 
         // Add project cards to scroll container
-        let currentY = 0;
+        // Add light gray background to scroll container
+        const scrollBg = new PIXI.Graphics();
+        scrollBg.beginFill(0xF8F8F8); // Very light gray
+        scrollBg.drawRect(0, 60, 300, 900);
+        scrollBg.endFill();
+        scrollContainer.addChild(scrollBg);
+
+        let currentY = 60;
         const cardSpacing = 10;
 
         projects.forEach(project => {
@@ -128,6 +151,8 @@ async function initInfoSection() {
             currentY += card.height + cardSpacing;
         });
 
+        //scrollContainer.height = currentY;
+
         // Create and apply mask for scrolling
         const scrollMask = new PIXI.Graphics();
         scrollMask.beginFill(0xFFFFFF);
@@ -140,8 +165,7 @@ async function initInfoSection() {
 
         // Calculate total content height for scrolling
         const contentHeight = currentY;
-        const viewportHeight = 900;
-
+        
         // Add scrollbar if content exceeds viewport
         if (contentHeight > viewportHeight) {
             // Scrollbar background

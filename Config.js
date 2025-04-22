@@ -93,14 +93,10 @@ const projects = [
     { title: 'Artist Residency 004.', author: 'Constantine and Rebecca', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'CULTURE', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
     { title: 'Artist Residency 007.', author: 'Joel Gordon', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
     { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
-    { title: 'Mapping Workshops.', author: 'Vritti Mangeulley & Hibah Hanif', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
-    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
-    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
-    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
-    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
-    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
-    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
-    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Mapping Workshops', author: 'Vritti Mangeulley & Hibah Hanif', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Shilim - a Case Study, Interim Report', author: 'Oikos', date: '2024-01-02, 1 yr', primarycategory: 'ECOLOGY', secondarycategory: 'RESEARCH', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'WCT Shillim Report', author: 'Ms. Pooja Dewoolkar, Ms. Prachi Paranjpye, Dr. Anish Andheria', date: '2024-01-02, 1 yr', primarycategory: 'RESEARCH', secondarycategory: 'ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
+    { title: 'Pune University Report Shillim', author: 'University of Pune', date: '2024-01-02, 1 yr', primarycategory: 'RESEARCH', secondarycategory: 'ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
 ];
 
 export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects, interactiveRect };
