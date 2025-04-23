@@ -71,7 +71,7 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
         layoutContainer.addChild(sectionContainer);
     });
 
-    console.log('Updating sections with percentages:', [p1, p2, p3, p4]);
+    //console.log('Updating sections with percentages:', [p1, p2, p3, p4]);
 
     // Ensure we have the layout container
     if (!layoutContainer) {
@@ -83,13 +83,13 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
 
     sections.forEach((section, index) => {
         const percentage = [p1, p2, p3, p4][index];
-        console.log(`Section ${section.text}: ${percentage}%, container:`, section.container?.visible);
+        //console.log(`Section ${section.text}: ${percentage}%, container:`, section.container?.visible);
         
         // Show and update section if percentage > 0, hide if 0
         if (section.container) {
             if (percentage <= 0) {
                 section.container.visible = false;
-                console.log(`Hiding section ${section.text}`);
+                //console.log(`Hiding section ${section.text}`);
             } else {
                 section.container.visible = true;
                 const width = (percentage / 100) * totalWidth;
@@ -99,7 +99,7 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
                 const textWidth = textLabel.width + 10; // Add some padding
                 textLabel.visible = textWidth <= width;
                 
-                console.log(`Showing section ${section.text} with width ${width}, text width: ${textWidth}`);
+                //console.log(`Showing section ${section.text} with width ${width}, text width: ${textWidth}`);
 
                 // Update background
                 const sectionBg = section.container.getChildAt(0);

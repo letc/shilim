@@ -3,6 +3,8 @@ import { getRandomSelectionRect } from './Utils.js';
 import { archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes } from './BottomLayout.js';
 
+let previousSurroundedGroupsLength;
+
 async function initImageSection() {
     try {
 
@@ -37,6 +39,11 @@ async function initImageSection() {
                 this.visited = Array(numberOfRows).fill().map(() => 
                     Array(numberOfColumns).fill(false)
                 );
+
+                this.topToBottomRightPercentage = '0';
+                this.topToBottomLeftPercentage = '0';
+                this.bottomToTopRightPercentage = '0';
+                this.bottomToTopLeftPercentage = '0';
             }
 
             // Helper function to check if a cell is within grid bounds
@@ -97,17 +104,17 @@ async function initImageSection() {
                 }
 
                 // Calculate percentages based on filled cells
-                const topToBottomRightPercentage = ((this.textures[DragDirection.TopToBottomRight] / totalFilled) * 100).toFixed(2);
-                const topToBottomLeftPercentage = ((this.textures[DragDirection.TopToBottomLeft] / totalFilled) * 100).toFixed(2);
-                const bottomToTopRightPercentage = ((this.textures[DragDirection.BottomToTopRight] / totalFilled) * 100).toFixed(2);
-                const bottomToTopLeftPercentage = ((this.textures[DragDirection.BottomToTopLeft] / totalFilled) * 100).toFixed(2);
+                this.topToBottomRightPercentage = ((this.textures[DragDirection.TopToBottomRight] / totalFilled) * 100).toFixed(2);
+                this.topToBottomLeftPercentage = ((this.textures[DragDirection.TopToBottomLeft] / totalFilled) * 100).toFixed(2);
+                this.bottomToTopRightPercentage = ((this.textures[DragDirection.BottomToTopRight] / totalFilled) * 100).toFixed(2);
+                this.bottomToTopLeftPercentage = ((this.textures[DragDirection.BottomToTopLeft] / totalFilled) * 100).toFixed(2);
 
                 // Update section sizes
                 updateSectionSizes(
-                    parseFloat(topToBottomRightPercentage),
-                    parseFloat(topToBottomLeftPercentage),
-                    parseFloat(bottomToTopRightPercentage),
-                    parseFloat(bottomToTopLeftPercentage)
+                    parseFloat(this.topToBottomRightPercentage),
+                    parseFloat(this.topToBottomLeftPercentage),
+                    parseFloat(this.bottomToTopRightPercentage),
+                    parseFloat(this.bottomToTopLeftPercentage)
                 );
 
                 //updateSectionSizes(100, 0, 0, 0);
@@ -813,6 +820,21 @@ async function initImageSection() {
             }
             //textureStats.printStats(); // Print updated statistics
             textureStats.updateSections();
+            
+            // If we found a new surrounded group
+            if (textureStats.surroundedGroups.length > previousSurroundedGroupsLength) {
+                // Add a project card based on percentages
+                if (typeof window.addRandomProject === 'function') {
+                    window.addRandomProject(
+                        textureStats.topToBottomRightPercentage,  // ART
+                        textureStats.topToBottomLeftPercentage,   // RESEARCH
+                        textureStats.bottomToTopRightPercentage,  // ECOLOGY
+                        textureStats.bottomToTopLeftPercentage    // CULTURE
+                    );
+                }
+            }
+
+            previousSurroundedGroupsLength = textureStats.surroundedGroups.length;
         });
 
         // Mouse out event

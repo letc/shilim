@@ -138,8 +138,59 @@ async function initInfoSection() {
 
         let currentY = 60;
         const cardSpacing = 10;
+        let usedProjectIndices = new Set();
 
-        projects.forEach(project => {
+        // Function to add a project based on percentages
+        function addRandomProject(artPercent, researchPercent, ecologyPercent, culturePercent) {
+            if (usedProjectIndices.size >= projects.length) {
+                console.log('All projects have been shown');
+                return;
+            }
+
+            // Convert percentages to numbers and find the highest
+            const percentages = [
+                { category: 'ART', value: parseFloat(artPercent) },
+                { category: 'RESEARCH', value: parseFloat(researchPercent) },
+                { category: 'ECOLOGY', value: parseFloat(ecologyPercent) },
+                { category: 'CULTURE', value: parseFloat(culturePercent) }
+            ].sort((a, b) => b.value - a.value);
+
+            // Find available projects that match the highest percentage category
+            let availableProjects = [];
+
+            // Try each category in descending order of percentage
+            for (const { category } of percentages) {
+                // First try primary category
+                availableProjects = projects.filter((project, index) => 
+                    !usedProjectIndices.has(index) && 
+                    project.primarycategory === category
+                );
+
+                // If no primary matches, try secondary category
+                if (availableProjects.length === 0) {
+                    availableProjects = projects.filter((project, index) => 
+                        !usedProjectIndices.has(index) && 
+                        project.secondarycategory.split(', ').includes(category)
+                    );
+                }
+
+                // If we found matches, break the loop
+                if (availableProjects.length > 0) break;
+            }
+
+            // If still no matches, use any unused project
+            if (availableProjects.length === 0) {
+                availableProjects = projects.filter((_, index) => !usedProjectIndices.has(index));
+            }
+
+            // Select random project from available ones
+            const randomIndex = Math.floor(Math.random() * availableProjects.length);
+            const project = availableProjects[randomIndex];
+            
+            // Mark this project as used
+            const projectIndex = projects.indexOf(project);
+            usedProjectIndices.add(projectIndex);
+
             const card = createProjectCard(
                 project.title,
                 project.author,
@@ -149,9 +200,21 @@ async function initInfoSection() {
             card.y = currentY;
             scrollContainer.addChild(card);
             currentY += card.height + cardSpacing;
-        });
 
-        //scrollContainer.height = currentY;
+            // Automatically scroll to show new card if needed
+            if (currentY > viewportHeight) {
+                gsap.to(scrollContainer, {
+                    y: Math.min(60, -(currentY - viewportHeight)),
+                    duration: 0.5,
+                    ease: 'power2.out'
+                });
+            }
+
+            return card;
+        }
+
+        // Export the function globally
+        window.addRandomProject = addRandomProject;
 
         // Create and apply mask for scrolling
         const scrollMask = new PIXI.Graphics();
