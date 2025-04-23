@@ -161,13 +161,13 @@ async function initBottomLayout() {
     try {
         // Create a container for the bottom layout
         layoutContainer = new PIXI.Container();
-        layoutContainer.x = 440;  // Position from left
+        layoutContainer.x = 390;  // Position from left
         layoutContainer.y = app.screen.height - 60;  // Position at bottom
         //layoutContainer.eventMode = 'static';
         // Make the container non-interactable
         layoutContainer.interactive = false;
 
-        totalWidth = (container.clientWidth - 440) - 10; // 10 is padding, // 440 is left margin
+        totalWidth = (container.clientWidth - 390) - 10; // 10 is padding, // 440 is left margin
 
         // Initial layout with equal sizes
         updateSectionSizes(0,0,0,0);
@@ -177,7 +177,7 @@ async function initBottomLayout() {
         // Handle window resizing
         function resize() {
 
-            totalWidth = (container.clientWidth - 440) - 10; // 10 is padding, // 440 is left margin
+            totalWidth = (container.clientWidth - 390) - 10; // 10 is padding, // 440 is left margin
 
             layoutContainer.y = container.clientHeight - 60;
         }

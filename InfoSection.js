@@ -140,6 +140,13 @@ async function initInfoSection() {
         const cardSpacing = 10;
         let usedProjectIndices = new Set();
 
+        // Function to clear all projects
+        function clearAllProjects() {
+            scrollContainer.removeChildren();
+            usedProjectIndices.clear();
+        }
+        window.clearAllProjects = clearAllProjects;
+
         // Function to add a project based on percentages
         function addRandomProject(artPercent, researchPercent, ecologyPercent, culturePercent) {
             if (usedProjectIndices.size >= projects.length) {

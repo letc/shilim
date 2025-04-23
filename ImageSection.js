@@ -4,6 +4,7 @@ import { archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes } from './BottomLayout.js';
 
 let previousSurroundedGroupsLength;
+let tempGridCells = [];
 
 async function initImageSection() {
     try {
@@ -192,7 +193,7 @@ async function initImageSection() {
         }
 
         // Create instance of TextureStats
-        const textureStats = new TextureStats();
+        let textureStats = new TextureStats();
 
         // Handle window resizing
         function resize() {
@@ -637,6 +638,73 @@ async function initImageSection() {
             }
         });
 
+        // Create restart button
+        const restartButton = new PIXI.Graphics();
+        function drawRestartButton(isHovered = false) {
+            restartButton.clear();
+            
+            // Add shadow
+            restartButton.beginFill(0x000000, 0.2);
+            restartButton.drawCircle(40, interactiveRect.height - 34, 25);
+            restartButton.endFill();
+            
+            // Main circle
+            restartButton.lineStyle(1, 0xCCCCCC); // Light gray outline
+            restartButton.beginFill(isHovered ? 0xF0F0F0 : 0xFFFFFF); // White fill, slightly darker on hover
+            restartButton.drawCircle(39, interactiveRect.height - 35, 25);
+            restartButton.endFill();
+        }
+        
+        drawRestartButton();
+        restartButton.eventMode = 'static';
+        restartButton.cursor = 'pointer';
+        
+        
+        // Hover effects
+        restartButton.on('pointerover', () => {
+            drawRestartButton(true);
+            gsap.to(restartButton, { alpha: 0.9, duration: 0.2 });
+        });
+        
+        restartButton.on('pointerout', () => {
+            drawRestartButton(false);
+            gsap.to(restartButton, { alpha: 1, duration: 0.2 });
+        });
+        
+        // Reset functionality
+        restartButton.on('pointertap', () => {
+            // Clear all containers
+            buttonContainer.removeChildren();
+            gridContainer.removeChildren();
+            
+            // Reset arrays and objects
+            gridCells.forEach(cell => cell.destroy());
+            gridCells.length = 0;
+            tempGridCells.length = 0;
+            
+            // Reset texture stats
+            textureStats = new TextureStats();
+            previousSurroundedGroupsLength = 0;
+            
+            // Reset selection state
+            isDragging = false;
+            startX = startY = endX = endY = 0;
+            selectionRect.clear();
+
+            // Re-add selection rectangle to grid container
+            gridContainer.addChild(selectionRect);
+
+            // Reset section sizes
+            updateSectionSizes(0, 0, 0, 0);
+
+            // Clear projects from InfoSection
+            if (typeof window.clearAllProjects === 'function') {
+                window.clearAllProjects();
+            }
+
+            archiveIndexValueLabelText.text = '0';
+        });
+        
         // Container for button sprites
         const buttonContainer = new PIXI.Container();
         buttonContainer.eventMode = 'none'; // Make container non-interactive
@@ -683,9 +751,6 @@ async function initImageSection() {
         gridContainer.on('pointerup', () => {
             isDragging = false;
 
-            // Clear existing buttons
-            buttonContainer.removeChildren();
-
             // Calculate dimensions in cells
             const cellsWidth = Math.abs(endX - startX) / cellSize;
             const cellsHeight = Math.abs(endY - startY) / cellSize;
@@ -695,6 +760,9 @@ async function initImageSection() {
                 selectionRect.clear();
                 return;
             }
+
+            // Clear existing buttons
+            buttonContainer.removeChildren();
 
             selectionRect.clear();
             let originalX1 = Math.min(startX, endX);
@@ -734,7 +802,7 @@ async function initImageSection() {
 
             currentDragDirection = getDragDirection(startX, startY, endX, endY);
             
-            let tempGridCells = [];
+            tempGridCells.length = 0;
 
             if(gridCells.length > 0){
                 for (let row = startRow; row <= endRow; row++) {
@@ -899,6 +967,7 @@ async function initImageSection() {
 
         // Add grid container to image container
         imageContainer.addChild(gridContainer);
+        imageContainer.addChild(restartButton);
         
         // Add the container to the stage
         app.stage.addChild(imageContainer);
