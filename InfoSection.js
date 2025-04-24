@@ -51,13 +51,13 @@ async function initInfoSection() {
         const bgGraphics = new PIXI.Graphics();
         bgGraphics.lineStyle(1, 0xd2d2d2, 1);
         bgGraphics.beginFill(0xFFFFFF);
-        bgGraphics.drawRoundedRect(archiveIndexRect.x, archiveIndexRect.y, archiveIndexRect.width, archiveIndexRect.height, 20);
+        bgGraphics.drawRoundedRect(archiveIndexRect.x, archiveIndexRect.y, archiveIndexRect.width, archiveIndexRect.height, 40);
         bgGraphics.endFill();
 
         // Create mask for rounded corners
         const bgMask = new PIXI.Graphics();
         bgMask.beginFill(0xFFFFFF);
-        bgMask.drawRoundedRect(archiveIndexRect.x, archiveIndexRect.y, archiveIndexRect.width, archiveIndexRect.height, 20);
+        bgMask.drawRoundedRect(archiveIndexRect.x, archiveIndexRect.y, archiveIndexRect.width, archiveIndexRect.height, 40);
         bgMask.endFill();
         archiveIndexImage.mask = bgMask;
 

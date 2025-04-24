@@ -13,11 +13,12 @@ async function initApp() {
         });
 
         // Add rounded corners and stroke to the canvas
-        app.view.style.borderRadius = '26px';
-        app.view.style.border = '2px solid #d2d2d2';
+        app.view.style.borderRadius = '40px';
+       // app.view.style.border = '1px solid rgb(213, 213, 213)';
         app.view.style.backgroundColor = '#FFFFFF';
         app.view.style.width = '1550px';
         app.view.style.height = '1000px';
+        app.view.style.boxShadow = '0 8px 20px rgba(0, 0, 0, 0.2)';
 
         // Add the Pixi canvas to our container
         document.getElementById('app-container').appendChild(app.view);

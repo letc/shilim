@@ -14,15 +14,15 @@ export function createProjectCard(title, author, date, link, x = 0, y = 0) {
     const background = new PIXI.Graphics();
     background.lineStyle(1, 0xd2d2d2, 1);
     background.beginFill(0xFFFFFF);
-    background.drawRoundedRect(0, 0, cardWidth, cardHeight, 10);
+    background.drawRoundedRect(0, 0, cardWidth, cardHeight, 26);
     background.endFill();
     cardContainer.addChild(background);
 
     // Title text
     const titleText = new PIXI.Text(title, {
-        fontFamily: 'Arial',
-        fontSize: 16,
-        fontStyle: 'italic',
+        fontFamily: 'Gelasio',
+        fontSize: 19,
+        fontStyle: 'normal',
         fill: 0x000000,
         wordWrap: true,
         wordWrapWidth: cardWidth - (padding * 2)

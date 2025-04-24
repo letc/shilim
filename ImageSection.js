@@ -548,13 +548,13 @@ async function initImageSection() {
         const bgGraphics = new PIXI.Graphics();
         bgGraphics.lineStyle(1, 0xd2d2d2, 1);
         bgGraphics.beginFill(0xFFFFFF);
-        bgGraphics.drawRoundedRect(0, 0, interactiveRect.width, interactiveRect.height, 20);
+        bgGraphics.drawRoundedRect(0, 0, interactiveRect.width, interactiveRect.height, 40);
         bgGraphics.endFill();
 
         // Create mask for rounded corners
         const bgMask = new PIXI.Graphics();
         bgMask.beginFill(0xFFFFFF);
-        bgMask.drawRoundedRect(0, 0, interactiveRect.width, interactiveRect.height, 20);
+        bgMask.drawRoundedRect(0, 0, interactiveRect.width, interactiveRect.height, 40);
         bgMask.endFill();
         backgroundImage.mask = bgMask;
 
@@ -619,14 +619,14 @@ async function initImageSection() {
 
                 // Restrict to minimum 2x2 and maximum 5x5
                 if (cellsWidth < 2) endX = startX + (endX > startX ? 2 * cellSize : -2 * cellSize);
-                if (cellsWidth > 5) endX = startX + (endX > startX ? 5 * cellSize : -5 * cellSize);
+                if (cellsWidth > 15) endX = startX + (endX > startX ? 15 * cellSize : -15 * cellSize);
                 if (cellsHeight < 2) endY = startY + (endY > startY ? 2 * cellSize : -2 * cellSize);
-                if (cellsHeight > 5) endY = startY + (endY > startY ? 5 * cellSize : -5 * cellSize);
+                if (cellsHeight > 15) endY = startY + (endY > startY ? 15 * cellSize : -15 * cellSize);
                 
                 // Draw selection rectangle
                 selectionRect.clear();
-                selectionRect.beginFill(0x00FF00, 0.2);  // Semi-transparent green
-                selectionRect.lineStyle(2, 0x00FF00);    // Green border
+                selectionRect.beginFill(0x707070, 0.1);  // Semi-transparent grey
+                //selectionRect.lineStyle(1, 0x00FF00);    // Green border
                 
                 const x = Math.min(startX, endX);
                 const y = Math.min(startY, endY);
@@ -649,7 +649,7 @@ async function initImageSection() {
             restartButton.endFill();
             
             // Main circle
-            restartButton.lineStyle(1, 0xCCCCCC); // Light gray outline
+            restartButton.lineStyle(0.4, 0xCCCCCC); // Light gray outline
             restartButton.beginFill(isHovered ? 0xF0F0F0 : 0xFFFFFF); // White fill, slightly darker on hover
             restartButton.drawCircle(39, interactiveRect.height - 35, 25);
             restartButton.endFill();
@@ -756,7 +756,7 @@ async function initImageSection() {
             const cellsHeight = Math.abs(endY - startY) / cellSize;
 
             // Enforce minimum 2x2 and maximum 5x5 on final selection
-            if (cellsWidth < 2 || cellsWidth > 5 || cellsHeight < 2 || cellsHeight > 5) {
+            if (cellsWidth < 2 || cellsWidth > 15 || cellsHeight < 2 || cellsHeight > 15) {
                 selectionRect.clear();
                 return;
             }
