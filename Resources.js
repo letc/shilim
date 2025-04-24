@@ -1,25 +1,14 @@
 import { app, TextureArray, folderPaths, numberOfRows, numberOfColumns, cellSize } from './Config.js';
+import { initInfoSection } from './InfoSection.js';
+import { initImageSection } from './ImageSection.js';
+import { initBottomLayout } from './BottomLayout.js';
 
 async function downloadAndExtractZip(zipUrl, index) {
-    let loadingText = null;
     try {
         // Check if JSZip is available
         if (typeof JSZip === 'undefined') {
             throw new Error('JSZip library is not loaded. Please check your script includes.');
         }
-
-        //console.log('loading...', zipUrl);
-        // Show loading text
-        loadingText = new PIXI.Text('Loading...', {
-            fontFamily: 'Arial',
-            fontSize: 24,
-            fill: 'black',
-            align: 'center'
-        });
-        loadingText.anchor.set(0.5);
-        loadingText.x = app.screen.width / 2;
-        loadingText.y = app.screen.height / 2;
-        app.stage.addChild(loadingText);
 
         // Download the zip file
         const response = await fetch(zipUrl);
@@ -112,53 +101,129 @@ async function downloadAndExtractZip(zipUrl, index) {
         // Wait for all files to be processed
         //console.log('Waiting for all textures to be processed...');
         await Promise.all(texturePromises.filter(p => p)); // Filter out undefined promises
-        //console.log('All textures processed');
-        
-        // Remove loading text
-        if (loadingText && loadingText.parent) {
-            app.stage.removeChild(loadingText);
-        }
 
         return true;
     } catch (error) {
         console.error('Error downloading or extracting zip:', error);
-        if (loadingText && loadingText.parent) {
-            app.stage.removeChild(loadingText);
-        }
         throw error;
     }
 }
 
 async function LoadTextures() {
     try {
-        // Create loading text
-        const loadingText = new PIXI.Text('Initializing...', {
+        // Create organization title
+        const titleText = new PIXI.Text('ORGANISATION', {
+            fontFamily: 'Arial',
+            fontSize: 32,
+            fill: 'black',
+            align: 'left'
+        });
+        titleText.anchor.set(0, 0.5);
+        titleText.x = app.screen.width / 2 - 250;
+        titleText.y = app.screen.height / 2 - 60;
+        app.stage.addChild(titleText);
+
+        // Create subtitle
+        const subtitleText = new PIXI.Text('a single line subtitle or a mission statement.', {
+            fontFamily: 'Arial',
+            fontSize: 18,
+            fill: 'black',
+            fontStyle: 'italic',
+            align: 'left'
+        });
+        subtitleText.anchor.set(0, 0.5);
+        subtitleText.x = app.screen.width / 2 - 250;
+        subtitleText.y = titleText.y + 40;
+        app.stage.addChild(subtitleText);
+
+        // Create description
+        const descriptionText = new PIXI.Text('A short description of the organisatin or this website and\narchive. This is also where any updates, announcements\nand crucial credits can go. Along with any declerations of\nsite-settings, permissions and cookie settings.', {
+            fontFamily: 'Arial',
+            fontSize: 16,
+            fill: 'black',
+            align: 'left',
+            wordWrap: true,
+            wordWrapWidth: 500
+        });
+        descriptionText.anchor.set(0, 0.5);
+        descriptionText.x = app.screen.width / 2 - 250;
+        descriptionText.y = subtitleText.y + 60;
+        app.stage.addChild(descriptionText);
+
+        // Create continue button
+        const continueText = new PIXI.Text('continue', {
+            fontFamily: 'Arial',
+            fontSize: 16,
+            fill: '#4A90E2',
+            align: 'left'
+        });
+        continueText.anchor.set(0, 0.5);
+        continueText.x = app.screen.width / 2 - 250;
+        continueText.y = descriptionText.y + 80;
+        continueText.eventMode = 'static';
+        continueText.cursor = 'pointer';
+        app.stage.addChild(continueText);
+
+        let isLoading = false;
+        let texturesLoaded = false;
+        const loadingText = new PIXI.Text('Welcome to an interactive archive of work at the Shillim Collective, please wait while the archive is loading.', {
             fontFamily: 'Arial',
             fontSize: 24,
-            fill: 0xFFFFFF,
-            align: 'center'
+            fill: 'black',
+            align: 'center',
+            wordWrapWidth: 500
         });
         loadingText.anchor.set(0.5);
         loadingText.x = app.screen.width / 2;
         loadingText.y = app.screen.height / 2;
+        loadingText.visible = false;
         app.stage.addChild(loadingText);
 
-        let index = 0;  // Counter for texture folders
-        // Process each texture folder
-        for (const folderPath of folderPaths) {
-            const zipUrl = `${folderPath}/textures.zip`;
-            await downloadAndExtractZip(zipUrl, index);
-            index++;
+        // Function to load textures
+        async function loadAllTextures() {
+            let index = 0;
+            for (const folderPath of folderPaths) {
+                const zipUrl = `${folderPath}/textures.zip`;
+                await downloadAndExtractZip(zipUrl, index);
+                index++;
+            }
+            texturesLoaded = true;
+            return true;
         }
 
-        // Remove loading text
-        if (loadingText && loadingText.parent) {
-            app.stage.removeChild(loadingText);
-        }
+        // Handle continue button click
+        continueText.on('pointertap', async () => {
+            if (isLoading) return;
+
+            // Hide organization content
+            titleText.visible = false;
+            subtitleText.visible = false;
+            descriptionText.visible = false;
+            continueText.visible = false;
+
+            if (!texturesLoaded) {
+                isLoading = true;
+                loadingText.visible = true;
+                try {
+                    await loadAllTextures();
+                } catch (error) {
+                    console.error('Error loading textures:', error);
+                    return;
+                }
+            }
+
+            loadingText.visible = false;
+            isLoading = false;
+
+            // Initialize sections
+            await initInfoSection();
+            await initImageSection();
+            await initBottomLayout();
+        });
 
         return {
             success: true,
-            message: 'All textures loaded successfully'
+            message: 'Ready to start'
         };
 
     } catch (error) {

@@ -19,9 +19,6 @@ async function initImageSection() {
         let currentDragDirection;
 
         const container = document.getElementById('app-container');
-
-        // Load the background
-        const buttonTexture = await PIXI.Assets.load('assets/button.png');
         
         // Class to track texture statistics
         class TextureStats {
@@ -674,7 +671,6 @@ async function initImageSection() {
         // Reset functionality
         restartButton.on('pointertap', () => {
             // Clear all containers
-            buttonContainer.removeChildren();
             gridContainer.removeChildren();
             
             // Reset arrays and objects
@@ -704,48 +700,6 @@ async function initImageSection() {
 
             archiveIndexValueLabelText.text = '0';
         });
-        
-        // Container for button sprites
-        const buttonContainer = new PIXI.Container();
-        buttonContainer.eventMode = 'none'; // Make container non-interactive
-        buttonContainer.sortableChildren = true;
-        buttonContainer.zIndex = 1; // Place above grid
-        app.stage.addChild(buttonContainer); // Add to main stage instead of gridContainer
-
-        // Function to create button sprite at the center of a group
-        function createButtonForGroup(group) {
-            // Calculate center of the group
-            let minCol = Infinity, minRow = Infinity;
-            let maxCol = -Infinity, maxRow = -Infinity;
-            
-            group.forEach(pos => {
-                minCol = Math.min(minCol, pos.col);
-                minRow = Math.min(minRow, pos.row);
-                maxCol = Math.max(maxCol, pos.col);
-                maxRow = Math.max(maxRow, pos.row);
-            });
-
-            // Calculate center in grid coordinates
-            const centerCol = minCol + (maxCol - minCol) / 2;
-            const centerRow = minRow + (maxRow - minRow) / 2;
-
-            // Convert to pixel coordinates
-            const centerX = centerCol * cellSize + cellSize / 2;
-            const centerY = centerRow * cellSize + cellSize / 2;
-
-            // Create button sprite
-            const button = new PIXI.Sprite(buttonTexture);
-            button.anchor.set(0.5); // Center the sprite
-            button.x = centerX + 310; //group[0].col * cellSize;//
-            button.y = centerY; //group[0].row * cellSize;//
-            button.width = 30;  // Set appropriate size
-            button.height = 30;
-            button.alpha = 0.8;
-            button.eventMode = 'none'; // Make sprite non-interactive
-            button.zIndex = 1;
-            
-            return button;
-        }
 
         // Mouse up event
         gridContainer.on('pointerup', () => {
@@ -760,9 +714,6 @@ async function initImageSection() {
                 selectionRect.clear();
                 return;
             }
-
-            // Clear existing buttons
-            buttonContainer.removeChildren();
 
             selectionRect.clear();
             let originalX1 = Math.min(startX, endX);
@@ -936,13 +887,6 @@ async function initImageSection() {
             }
             //textureStats.printStats(); // Print updated statistics
             textureStats.updateSections();
-            
-            // Clear and recreate buttons for all surrounded groups
-            buttonContainer.removeChildren();
-            textureStats.surroundedGroups.forEach(group => {
-                const button = createButtonForGroup(group);
-                buttonContainer.addChild(button);
-            });
             
             // If we found a new surrounded group
             if (textureStats.surroundedGroups.length > previousSurroundedGroupsLength) {

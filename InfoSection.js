@@ -144,6 +144,7 @@ async function initInfoSection() {
         function clearAllProjects() {
             scrollContainer.removeChildren();
             usedProjectIndices.clear();
+            currentY = 60;
         }
         window.clearAllProjects = clearAllProjects;
 
