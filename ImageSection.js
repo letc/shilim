@@ -283,7 +283,7 @@ async function initImageSection() {
             sprite.y = row * cellSize;
 
             if (isCorner) {
-                const cornerRadius = 15;
+                const cornerRadius = 20;
                 const mask = new PIXI.Graphics();
                 mask.beginFill(0xFFFFFF);
                 
