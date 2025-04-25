@@ -1,7 +1,17 @@
-const app = new PIXI.Application();
-
 const stageWidth = 1550;
 const stageHeight = 1000;
+
+// Create PIXI application with optimized settings
+const app = new PIXI.Application({
+    width: stageWidth,
+    height: stageHeight,
+    backgroundColor: 0xFFFFFF,
+    antialias: true,
+    resolution: window.devicePixelRatio || 1,
+    powerPreference: 'high-performance',
+    clearBeforeRender: true,
+    hello: true // Enable WebGL2 if available
+});
 const GRID_OFFSET_X = 310;
 
 const stageSize = 1240;

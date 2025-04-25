@@ -100,7 +100,7 @@ async function initImageSection() {
                 
                 if (totalFilled === 0) {
                     // If no cells are filled, make all sections equal
-                    updateSectionSizes(25, 25, 25, 25);
+                    updateSectionSizes(0, 0, 0, 0);
                     return;
                 }
 
