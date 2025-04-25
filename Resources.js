@@ -166,30 +166,64 @@ async function LoadTextures() {
 
         let isLoading = false;
         let texturesLoaded = false;
-        const loadingText = new PIXI.Text('Welcome to an interactive archive of work at the Shillim Collective, please wait while the archive is loading.', {
+
+        // Create loading container
+        const loadingContainer = new PIXI.Container();
+        loadingContainer.visible = false;
+        app.stage.addChild(loadingContainer);
+
+        // Create loading text
+        const loadingText = new PIXI.Text('Loading archive...', {
             fontFamily: 'Arial',
             fontSize: 24,
             fill: 'black',
             align: 'center',
+            wordWrap: true,
             wordWrapWidth: 500
         });
         loadingText.anchor.set(0.5);
         loadingText.x = app.screen.width / 2;
-        loadingText.y = app.screen.height / 2;
-        loadingText.visible = false;
-        app.stage.addChild(loadingText);
+        loadingText.y = app.screen.height / 2 - 30;
+        loadingContainer.addChild(loadingText);
 
-        // Function to load textures
-        async function loadAllTextures() {
+        // Create loading bar background
+        const loadingBarBg = new PIXI.Graphics();
+        loadingBarBg.beginFill(0xDDDDDD);
+        loadingBarBg.drawRoundedRect(app.screen.width / 2 - 100, app.screen.height / 2 + 10, 200, 10, 5);
+        loadingBarBg.endFill();
+        loadingContainer.addChild(loadingBarBg);
+
+        // Create loading bar fill
+        const loadingBarFill = new PIXI.Graphics();
+        loadingBarFill.beginFill(0x4A90E2);
+        loadingContainer.addChild(loadingBarFill);
+
+        // Start loading textures immediately in the background
+        const textureLoadingPromise = (async () => {
             let index = 0;
+            const totalFolders = folderPaths.length;
+
             for (const folderPath of folderPaths) {
                 const zipUrl = `${folderPath}/textures.zip`;
                 await downloadAndExtractZip(zipUrl, index);
+                
+                // Update loading bar
+                const progress = (index + 1) / totalFolders;
+                loadingBarFill.clear();
+                loadingBarFill.beginFill(0x4A90E2);
+                loadingBarFill.drawRoundedRect(
+                    app.screen.width / 2 - 100,
+                    app.screen.height / 2 + 10,
+                    200 * progress,
+                    10,
+                    5
+                );
+                loadingBarFill.endFill();
+                
                 index++;
             }
             texturesLoaded = true;
-            return true;
-        }
+        })();
 
         // Handle continue button click
         continueText.on('pointertap', async () => {
@@ -201,18 +235,20 @@ async function LoadTextures() {
             descriptionText.visible = false;
             continueText.visible = false;
 
+            // Show loading container while waiting for textures
             if (!texturesLoaded) {
                 isLoading = true;
-                loadingText.visible = true;
+                loadingContainer.visible = true;
                 try {
-                    await loadAllTextures();
+                    await textureLoadingPromise;
                 } catch (error) {
                     console.error('Error loading textures:', error);
+                    loadingContainer.visible = false;
                     return;
                 }
             }
 
-            loadingText.visible = false;
+            loadingContainer.visible = false;
             isLoading = false;
 
             // Initialize sections
@@ -220,6 +256,10 @@ async function LoadTextures() {
             await initImageSection();
             await initBottomLayout();
         });
+
+        
+
+        
 
         return {
             success: true,
