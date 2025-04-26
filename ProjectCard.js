@@ -7,17 +7,12 @@ export function createProjectCard(title, author, date, link, x = 0, y = 0) {
 
     // Card dimensions
     const cardWidth = 280;
-    const cardHeight = 100;
+    let cardHeight = 100;
     const padding = 15;
+    const buttonSize = 24;
+    const buttonPadding = padding;
 
-    // Create background with rounded corners
-    const background = new PIXI.Graphics();
-    background.lineStyle(1, 0xd2d2d2, 1);
-    background.beginFill(0xFFFFFF);
-    background.drawRoundedRect(0, 0, cardWidth, cardHeight, 26);
-    background.endFill();
-    cardContainer.addChild(background);
-
+    // Add text elements first to calculate total height
     // Title text
     const titleText = new PIXI.Text(title, {
         fontFamily: 'Gelasio',
@@ -29,7 +24,6 @@ export function createProjectCard(title, author, date, link, x = 0, y = 0) {
     });
     titleText.x = padding;
     titleText.y = padding;
-    cardContainer.addChild(titleText);
 
     // Author text
     const authorText = new PIXI.Text(author, {
@@ -41,7 +35,6 @@ export function createProjectCard(title, author, date, link, x = 0, y = 0) {
     });
     authorText.x = padding;
     authorText.y = titleText.y + titleText.height + 8;
-    cardContainer.addChild(authorText);
 
     // Date text
     const dateText = new PIXI.Text(date, {
@@ -53,10 +46,27 @@ export function createProjectCard(title, author, date, link, x = 0, y = 0) {
     });
     dateText.x = padding;
     dateText.y = authorText.y + authorText.height + 8;
+
+    // Calculate required height
+    const contentHeight = dateText.y + dateText.height + buttonPadding;
+    cardHeight = Math.max(cardHeight, contentHeight);
+
+    // Create background with rounded corners
+    const background = new PIXI.Graphics();
+    background.lineStyle(1, 0xd2d2d2, 1);
+    background.beginFill(0xFFFFFF);
+    background.drawRoundedRect(0, 0, cardWidth, cardHeight, 26);
+    background.endFill();
+    cardContainer.addChild(background);
+
+    // Now add the text elements to the container
+    cardContainer.addChild(titleText);
+    cardContainer.addChild(authorText);
     cardContainer.addChild(dateText);
 
+
+
     // Create button container in bottom right
-    const buttonSize = 24;
     const buttonContainer = new PIXI.Container();
     buttonContainer.x = cardWidth - buttonSize - padding;
     buttonContainer.y = cardHeight - buttonSize - padding;

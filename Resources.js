@@ -3,6 +3,9 @@ import { initInfoSection } from './InfoSection.js';
 import { initImageSection } from './ImageSection.js';
 import { initBottomLayout } from './BottomLayout.js';
 
+let loadingContainer;
+let continueText;
+
 async function downloadAndExtractZip(zipUrl, index) {
     try {
         // Check if JSZip is available
@@ -151,7 +154,7 @@ async function LoadTextures() {
         app.stage.addChild(descriptionText);
 
         // Create continue button
-        const continueText = new PIXI.Text('continue', {
+        continueText = new PIXI.Text('continue', {
             fontFamily: 'Arial',
             fontSize: 16,
             fill: '#4A90E2',
@@ -162,34 +165,35 @@ async function LoadTextures() {
         continueText.y = descriptionText.y + 80;
         continueText.eventMode = 'static';
         continueText.cursor = 'pointer';
+        continueText.visible = false;
         app.stage.addChild(continueText);
 
         let isLoading = false;
         let texturesLoaded = false;
 
         // Create loading container
-        const loadingContainer = new PIXI.Container();
-        loadingContainer.visible = false;
+        loadingContainer = new PIXI.Container();
+        loadingContainer.visible = true;
         app.stage.addChild(loadingContainer);
 
-        // Create loading text
+        //Create loading text
         const loadingText = new PIXI.Text('Loading archive...', {
             fontFamily: 'Arial',
-            fontSize: 24,
-            fill: 'black',
-            align: 'center',
+            fontSize: 18,
+            fill: '#4A90E2',
+            align: 'left',
             wordWrap: true,
             wordWrapWidth: 500
         });
         loadingText.anchor.set(0.5);
-        loadingText.x = app.screen.width / 2;
-        loadingText.y = app.screen.height / 2 - 30;
+        loadingText.x = app.screen.width / 2 - 178;
+        loadingText.y = descriptionText.y + 60;
         loadingContainer.addChild(loadingText);
 
         // Create loading bar background
         const loadingBarBg = new PIXI.Graphics();
         loadingBarBg.beginFill(0xDDDDDD);
-        loadingBarBg.drawRoundedRect(app.screen.width / 2 - 100, app.screen.height / 2 + 10, 200, 10, 5);
+        loadingBarBg.drawRoundedRect(app.screen.width / 2 - 250, descriptionText.y + 80, 200, 10, 5);
         loadingBarBg.endFill();
         loadingContainer.addChild(loadingBarBg);
 
@@ -212,8 +216,8 @@ async function LoadTextures() {
                 loadingBarFill.clear();
                 loadingBarFill.beginFill(0x4A90E2);
                 loadingBarFill.drawRoundedRect(
-                    app.screen.width / 2 - 100,
-                    app.screen.height / 2 + 10,
+                    app.screen.width / 2 - 250,
+                    descriptionText.y + 80,
                     200 * progress,
                     10,
                     5
@@ -222,6 +226,9 @@ async function LoadTextures() {
                 
                 index++;
             }
+
+            continueText.visible = true;
+            loadingContainer.visible = false;
             texturesLoaded = true;
         })();
 

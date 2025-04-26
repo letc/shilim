@@ -3,7 +3,7 @@ import { getRandomSelectionRect } from './Utils.js';
 import { archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes } from './BottomLayout.js';
 
-let previousSurroundedGroupsLength;
+let previousSurroundedGroupsLength = 1;
 let tempGridCells = [];
 
 async function initImageSection() {
@@ -549,13 +549,14 @@ async function initImageSection() {
         
 
         // Load the background
-        const backgroundTexture = await PIXI.Assets.load('assets/interactive_bg.png');
+        const backgroundTexture = await PIXI.Assets.load('assets/interactive_bg2.png');
+        const restartButtonTexture = await PIXI.Assets.load('assets/restart_bg.png');
 
         
         const backgroundImage = new PIXI.Sprite(backgroundTexture);
-        backgroundImage.x = -25;
+        backgroundImage.x = -15;
         backgroundImage.y = -10;
-        backgroundImage.width = interactiveRect.width + 50;
+        backgroundImage.width = interactiveRect.width + 30;
         backgroundImage.height = interactiveRect.height + 20;
 
         // Create a container for the background with effects
@@ -627,7 +628,6 @@ async function initImageSection() {
                 // Draw selection rectangle
                 selectionRect.clear();
                 selectionRect.beginFill(0x707070, 0.1);  // Semi-transparent grey
-                //selectionRect.lineStyle(1, 0x00FF00);    // Green border
                 
                 const x = Math.min(startX, endX);
                 const y = Math.min(startY, endY);
@@ -640,35 +640,21 @@ async function initImageSection() {
         });
 
         // Create restart button
-        const restartButton = new PIXI.Graphics();
-        function drawRestartButton(isHovered = false) {
-            restartButton.clear();
-            
-            // Add shadow
-            restartButton.beginFill(0x000000, 0.2);
-            restartButton.drawCircle(40, interactiveRect.height - 34, 25);
-            restartButton.endFill();
-            
-            // Main circle
-            restartButton.lineStyle(0.4, 0xCCCCCC); // Light gray outline
-            restartButton.beginFill(isHovered ? 0xF0F0F0 : 0xFFFFFF); // White fill, slightly darker on hover
-            restartButton.drawCircle(39, interactiveRect.height - 35, 25);
-            restartButton.endFill();
-        }
-        
-        drawRestartButton();
+        const restartButton = new PIXI.Sprite(restartButtonTexture);
+        restartButton.x = 10;
+        restartButton.y = interactiveRect.height - 60;
+        restartButton.width = 50;
+        restartButton.height = 50;
         restartButton.eventMode = 'static';
         restartButton.cursor = 'pointer';
         
         
         // Hover effects
         restartButton.on('pointerover', () => {
-            drawRestartButton(true);
             gsap.to(restartButton, { alpha: 0.9, duration: 0.2 });
         });
         
         restartButton.on('pointerout', () => {
-            drawRestartButton(false);
             gsap.to(restartButton, { alpha: 1, duration: 0.2 });
         });
         
@@ -684,7 +670,7 @@ async function initImageSection() {
             
             // Reset texture stats
             textureStats = new TextureStats();
-            previousSurroundedGroupsLength = 0;
+            previousSurroundedGroupsLength = 1;
             
             // Reset selection state
             isDragging = false;
@@ -745,13 +731,6 @@ async function initImageSection() {
             let startRow = Math.floor(y1 / cellSize);
             let endCol = Math.floor(x2 / cellSize);
             let endRow = Math.floor(y2 / cellSize);
-
-            // Clear existing grid cells
-            /* gridCells.forEach(cell => {
-                gridContainer.removeChild(cell.sprite);
-                cell.destroy();
-            });
-            gridCells.length = 0; */
 
             
 
@@ -894,6 +873,9 @@ async function initImageSection() {
             
             // If we found a new surrounded group
             if (textureStats.surroundedGroups.length > previousSurroundedGroupsLength) {
+
+                previousSurroundedGroupsLength = textureStats.surroundedGroups.length + 1;
+
                 // Add a project card based on percentages
                 if (typeof window.addRandomProject === 'function') {
                     window.addRandomProject(
@@ -905,7 +887,7 @@ async function initImageSection() {
                 }
             }
 
-            previousSurroundedGroupsLength = textureStats.surroundedGroups.length;
+            
         });
 
         // Mouse out event
