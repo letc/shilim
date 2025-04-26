@@ -1,4 +1,4 @@
-import { app, projects } from './Config.js';
+import { app, projects, PLAIN_COLORS } from './Config.js';
 import { createProjectCard } from './ProjectCard.js';
 
 const container = document.getElementById('app-container');
@@ -31,14 +31,15 @@ async function initInfoSection() {
         const bgContainer = new PIXI.Container();
 
         // Load the background
-        const bgTexture = await PIXI.Assets.load('assets/bg_white.png');
+        const bgTexture = await PIXI.Assets.load('assets/index_bg.png');
+        const indexValueTexture = await PIXI.Assets.load('assets/white_circle_bg.png');
 
         //archiveIndex--------------------------------------
         const archiveIndexRect = {
             x: 0,
             y: 0,
             width: 290,
-            height: 50,
+            height: 74,
         };
 
         const archiveIndexImage = new PIXI.Sprite(bgTexture);
@@ -47,59 +48,31 @@ async function initInfoSection() {
         archiveIndexImage.width = archiveIndexRect.width;
         archiveIndexImage.height = archiveIndexRect.height;
 
-        // Create stroke and mask using graphics
-        const bgGraphics = new PIXI.Graphics();
-        bgGraphics.lineStyle(1, 0xd2d2d2, 1);
-        bgGraphics.beginFill(0xFFFFFF);
-        bgGraphics.drawRoundedRect(archiveIndexRect.x, archiveIndexRect.y, archiveIndexRect.width, archiveIndexRect.height, 40);
-        bgGraphics.endFill();
-
-        // Create mask for rounded corners
-        const bgMask = new PIXI.Graphics();
-        bgMask.beginFill(0xFFFFFF);
-        bgMask.drawRoundedRect(archiveIndexRect.x, archiveIndexRect.y, archiveIndexRect.width, archiveIndexRect.height, 40);
-        bgMask.endFill();
-        archiveIndexImage.mask = bgMask;
-
         // Add text element with padding
         const archiveIndexLabelText = new PIXI.Text('archive index', {
-            fontFamily: 'Arial',
-            fontSize: 20,
+            fontFamily: 'Serif',
+            fontSize: 24,
             fill: 0x808080,
             align: 'left',
             fontStyle: 'italic'
         });
-        archiveIndexLabelText.x = 12; // 10px padding from left
-        archiveIndexLabelText.y = 14; // 10px padding from top
+        archiveIndexLabelText.x = 24; // 10px padding from left
+        archiveIndexLabelText.y = 19; // 10px padding from top
 
         //archiveIndexValue--------------------------------------
 
         const archiveIndexValueRect = {
-            x: 250,
-            y: 10,
-            width: 30,
-            height: 30,
+            x: 230,
+            y: 15,
+            width: 40,
+            height: 40,
         };
 
-        const archiveIndexValueImage = new PIXI.Sprite(bgTexture);
+        const archiveIndexValueImage = new PIXI.Sprite(indexValueTexture);
         archiveIndexValueImage.x = archiveIndexValueRect.x;
         archiveIndexValueImage.y = archiveIndexValueRect.y;
         archiveIndexValueImage.width = archiveIndexValueRect.width;
         archiveIndexValueImage.height = archiveIndexValueRect.height;
-
-        // Create stroke and mask using graphics
-        const bgArchiveIndexValueGraphics = new PIXI.Graphics();
-        bgArchiveIndexValueGraphics.lineStyle(1, 0xd2d2d2, 1);
-        bgArchiveIndexValueGraphics.beginFill(0xFFFFFF);
-        bgArchiveIndexValueGraphics.drawRoundedRect(archiveIndexValueRect.x, archiveIndexValueRect.y, archiveIndexValueRect.width, archiveIndexValueRect.height, 20);
-        bgArchiveIndexValueGraphics.endFill();
-
-        // Create mask for rounded corners
-        const bgArchiveIndexValueMask = new PIXI.Graphics();
-        bgArchiveIndexValueMask.beginFill(0xFFFFFF);
-        bgArchiveIndexValueMask.drawRoundedRect(archiveIndexValueRect.x, archiveIndexValueRect.y, archiveIndexValueRect.width, archiveIndexValueRect.height, 20);
-        bgArchiveIndexValueMask.endFill();
-        archiveIndexValueImage.mask = bgArchiveIndexValueMask;
 
         // Add text element with padding
         archiveIndexValueLabelText = new PIXI.Text('0', {
@@ -109,20 +82,18 @@ async function initInfoSection() {
             align: 'center',
             fontStyle: 'italic'
         });
-        archiveIndexValueLabelText.x = archiveIndexValueRect.x + 8; // 10px padding from left
-        archiveIndexValueLabelText.y = 14; // 10px padding from top
+        archiveIndexValueLabelText.x = archiveIndexValueRect.x + 13; // 10px padding from left
+        archiveIndexValueLabelText.y = 24; // 10px padding from top
 
         // Add archive index elements to the container
         bgContainer.addChild(archiveIndexImage);
-        bgContainer.addChild(bgGraphics);
         bgContainer.addChild(archiveIndexLabelText);
         bgContainer.addChild(archiveIndexValueImage);
-        bgContainer.addChild(bgArchiveIndexValueGraphics);
         bgContainer.addChild(archiveIndexValueLabelText);
 
         // Create scrollable container
         const scrollContainer = new PIXI.Container();
-        scrollContainer.x = 10;
+        scrollContainer.x = 0;
         scrollContainer.y = 60;
         scrollContainer.width = 300;
         scrollContainer.height = 900;
@@ -167,7 +138,7 @@ async function initInfoSection() {
             let availableProjects = [];
 
             // Try each category in descending order of percentage
-            for (const { category } of percentages) {
+            /* for (const { category } of percentages) {
                 // First try primary category
                 availableProjects = projects.filter((project, index) => 
                     !usedProjectIndices.has(index) && 
@@ -175,20 +146,27 @@ async function initInfoSection() {
                 );
 
                 // If no primary matches, try secondary category
-                if (availableProjects.length === 0) {
-                    availableProjects = projects.filter((project, index) => 
-                        !usedProjectIndices.has(index) && 
-                        project.secondarycategory.split(', ').includes(category)
-                    );
-                }
+                // if (availableProjects.length === 0) {
+                //     availableProjects = projects.filter((project, index) => 
+                //         !usedProjectIndices.has(index) && 
+                //         project.secondarycategory.split(', ').includes(category)
+                //     );
+                // }
 
                 // If we found matches, break the loop
                 if (availableProjects.length > 0) break;
-            }
+            } */
+
+            // First try primary category
+            availableProjects = projects.filter((project, index) => 
+                !usedProjectIndices.has(index) && 
+                project.primarycategory === percentages[0].category
+            );
 
             // If still no matches, use any unused project
             if (availableProjects.length === 0) {
-                availableProjects = projects.filter((_, index) => !usedProjectIndices.has(index));
+                return;
+                //availableProjects = projects.filter((_, index) => !usedProjectIndices.has(index));
             }
 
             // Select random project from available ones

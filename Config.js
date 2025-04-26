@@ -40,6 +40,14 @@ const DIRECTION_COLORS = {
     BottomToTopLeft: '#ffa500'    // Orange
 };
 
+// Encloser colors
+const PLAIN_COLORS = {
+    TopToBottomRight: '#f3abab',
+    TopToBottomLeft: '#9bdbf3',
+    BottomToTopRight: '#9bf3ba',
+    BottomToTopLeft: '#e4f39b'
+};
+
 // Direction enum
 const DragDirection = {
     TopToBottomRight: 'TopToBottomRight',   // x2 > x1 && y2 > y1
@@ -109,4 +117,4 @@ const projects = [
     { title: 'Pune University Report Shillim', author: 'University of Pune', date: '2024-01-02, 1 yr', primarycategory: 'RESEARCH', secondarycategory: 'ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
 ];
 
-export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects, interactiveRect };
+export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, PLAIN_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects, interactiveRect };
