@@ -19,6 +19,14 @@ async function initImageSection() {
         let currentDragDirection;
 
         const container = document.getElementById('app-container');
+
+        // Create a container for the image section
+        const imageContainer = new PIXI.Container();
+        imageContainer.x = interactiveRect.x;  // Position from left
+        imageContainer.y = interactiveRect.y;    // Position from top
+        imageContainer.width = interactiveRect.width;
+        imageContainer.height = interactiveRect.height;
+        imageContainer.eventMode = 'static';
         
         // Class to track texture statistics
         class TextureStats {
@@ -359,10 +367,22 @@ async function initImageSection() {
                         (row === endRow && col === endCol + 1)            // right adjacent
                     );
 
+                    // Calculate pixel position
+                    const pixelX = col * cellSize;
+                    const pixelY = row * cellSize;
+                    
+                    // Check if position is within imageContainer bounds
+                    const isWithinBounds = 
+                        pixelX >= 0 && 
+                        pixelX + cellSize <= imageContainer.width && 
+                        pixelY >= 0 && 
+                        pixelY + cellSize <= imageContainer.height;
+
                     if (row >= 0 && row < numberOfRows && 
                         col >= 0 && col < numberOfColumns &&
                         !(row >= startRow && row <= endRow && col >= startCol && col <= endCol) &&
-                        !isCornerOrAdjacent) {
+                        !isCornerOrAdjacent &&
+                        isWithinBounds) {
                         positions.push({row, col});
                     }
                 }
@@ -526,39 +546,23 @@ async function initImageSection() {
 
         
 
-        // Create a container for the image section
-        const imageContainer = new PIXI.Container();
-        imageContainer.x = interactiveRect.x;  // Position from left
-        imageContainer.y = interactiveRect.y;    // Position from top
-        imageContainer.eventMode = 'static';
+        
 
         // Load the background
-        const backgroundTexture = await PIXI.Assets.load('assets/bg_white.png');
+        const backgroundTexture = await PIXI.Assets.load('assets/interactive_bg.png');
+
+        
         const backgroundImage = new PIXI.Sprite(backgroundTexture);
-        backgroundImage.width = interactiveRect.width;
-        backgroundImage.height = interactiveRect.height;
+        backgroundImage.x = -25;
+        backgroundImage.y = -10;
+        backgroundImage.width = interactiveRect.width + 50;
+        backgroundImage.height = interactiveRect.height + 20;
 
         // Create a container for the background with effects
         const bgContainer = new PIXI.Container();
 
-        // Create stroke and mask using graphics
-        const bgGraphics = new PIXI.Graphics();
-        bgGraphics.lineStyle(1, 0xd2d2d2, 1);
-        bgGraphics.beginFill(0xFFFFFF);
-        bgGraphics.drawRoundedRect(0, 0, interactiveRect.width, interactiveRect.height, 40);
-        bgGraphics.endFill();
-
-        // Create mask for rounded corners
-        const bgMask = new PIXI.Graphics();
-        bgMask.beginFill(0xFFFFFF);
-        bgMask.drawRoundedRect(0, 0, interactiveRect.width, interactiveRect.height, 40);
-        bgMask.endFill();
-        backgroundImage.mask = bgMask;
-
         // Add everything to the container
         bgContainer.addChild(backgroundImage);
-        bgContainer.addChild(bgGraphics);
-        bgContainer.addChild(bgMask);
         imageContainer.addChild(bgContainer);
 
         // Create a container for the grid
