@@ -1,5 +1,6 @@
 import { app, projects, PLAIN_COLORS } from './Config.js';
 import { createProjectCard } from './ProjectCard.js';
+import { indexBg, whiteCircleBg } from './Resources.js';
 
 const container = document.getElementById('app-container');
 
@@ -30,10 +31,6 @@ async function initInfoSection() {
         // Create a container for the background with effects
         const bgContainer = new PIXI.Container();
 
-        // Load the background
-        const bgTexture = await PIXI.Assets.load('assets/index_bg.png');
-        const indexValueTexture = await PIXI.Assets.load('assets/white_circle_bg.png');
-
         //archiveIndex--------------------------------------
         const archiveIndexRect = {
             x: 0,
@@ -42,7 +39,7 @@ async function initInfoSection() {
             height: 74,
         };
 
-        const archiveIndexImage = new PIXI.Sprite(bgTexture);
+        const archiveIndexImage = new PIXI.Sprite(indexBg);
         archiveIndexImage.x = archiveIndexRect.x;
         archiveIndexImage.y = archiveIndexRect.y;
         archiveIndexImage.width = archiveIndexRect.width;
@@ -68,7 +65,7 @@ async function initInfoSection() {
             height: 40,
         };
 
-        const archiveIndexValueImage = new PIXI.Sprite(indexValueTexture);
+        const archiveIndexValueImage = new PIXI.Sprite(whiteCircleBg);
         archiveIndexValueImage.x = archiveIndexValueRect.x;
         archiveIndexValueImage.y = archiveIndexValueRect.y;
         archiveIndexValueImage.width = archiveIndexValueRect.width;
@@ -113,6 +110,12 @@ async function initInfoSection() {
 
         // Function to clear all projects
         function clearAllProjects() {
+            // Clear all project cards and their detail windows
+            scrollContainer.children.forEach(card => {
+                if (card.detailContainer) {
+                    app.stage.removeChild(card.detailContainer);
+                }
+            });
             scrollContainer.removeChildren();
             usedProjectIndices.clear();
             currentY = 60;
@@ -137,26 +140,6 @@ async function initInfoSection() {
             // Find available projects that match the highest percentage category
             let availableProjects = [];
 
-            // Try each category in descending order of percentage
-            /* for (const { category } of percentages) {
-                // First try primary category
-                availableProjects = projects.filter((project, index) => 
-                    !usedProjectIndices.has(index) && 
-                    project.primarycategory === category
-                );
-
-                // If no primary matches, try secondary category
-                // if (availableProjects.length === 0) {
-                //     availableProjects = projects.filter((project, index) => 
-                //         !usedProjectIndices.has(index) && 
-                //         project.secondarycategory.split(', ').includes(category)
-                //     );
-                // }
-
-                // If we found matches, break the loop
-                if (availableProjects.length > 0) break;
-            } */
-
             // First try primary category
             availableProjects = projects.filter((project, index) => 
                 !usedProjectIndices.has(index) && 
@@ -166,7 +149,6 @@ async function initInfoSection() {
             // If still no matches, use any unused project
             if (availableProjects.length === 0) {
                 return;
-                //availableProjects = projects.filter((_, index) => !usedProjectIndices.has(index));
             }
 
             // Select random project from available ones
@@ -181,7 +163,8 @@ async function initInfoSection() {
                 project.title,
                 project.author,
                 project.date,
-                project.link
+                project.link,
+                project.details
             );
             card.y = currentY;
             scrollContainer.addChild(card);

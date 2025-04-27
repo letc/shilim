@@ -1,6 +1,114 @@
 import { app } from './Config.js';
+import { whiteCircleBg } from './Resources.js';
 
-export function createProjectCard(title, author, date, link, x = 0, y = 0) {
+function createDetailWindow(details, link, cardBackground, x, y) {
+    const detailContainer = new PIXI.Container();
+    detailContainer.x = x;
+    detailContainer.y = y;
+
+    // Detail window dimensions
+    const detailWidth = 320;
+    const detailHeight = 400;
+    const padding = 20;
+
+    // Create background with rounded corners
+    const background = new PIXI.Graphics();
+    background.lineStyle(1, 0xd2d2d2, 1);
+    background.beginFill(0xFFFFFF);
+    background.drawRoundedRect(0, 0, detailWidth, detailHeight, 15);
+    background.endFill();
+    detailContainer.addChild(background);
+
+    // Add title
+    const detailText = new PIXI.Text(details, {
+        fontFamily: 'Gelasio',
+        fontSize: 20,
+        fontStyle: 'normal',
+        fill: 0x000000,
+        wordWrap: true,
+        wordWrapWidth: detailWidth - (padding * 2)
+    });
+    detailText.x = padding;
+    detailText.y = padding;
+    detailContainer.addChild(detailText);
+
+    // Create URL button
+    const urlButton = new PIXI.Container();
+    
+    const buttonSize = 50;
+    
+    const buttonBg = new PIXI.Sprite(whiteCircleBg);
+    buttonBg.width = buttonSize;
+    buttonBg.height = buttonSize;
+    urlButton.addChild(buttonBg);
+
+    urlButton.x = detailWidth - buttonSize - padding;
+    urlButton.y = detailHeight - buttonSize - padding;
+
+    urlButton.eventMode = 'static';
+    urlButton.cursor = 'pointer';
+
+    urlButton.on('pointerover', () => {
+        buttonBg.tint = 0x3570B2;
+    });
+
+    urlButton.on('pointerout', () => {
+        buttonBg.tint = 0xFFFFFF;
+    });
+
+    urlButton.on('pointertap', () => {
+        if (link) {
+            detailContainer.visible = false;
+        cardBackground.tint = 0xFFFFFF; // White
+            window.open(link, '_blank');
+        }
+    });
+
+    detailContainer.addChild(urlButton);
+    detailContainer.visible = false;
+    
+    // Add close button
+    const closeButton = new PIXI.Container();
+    const closeSize = 24;
+    const closeBg = new PIXI.Graphics();
+    closeBg.beginFill(0xd2d2d2);
+    closeBg.drawCircle(closeSize/2, closeSize/2, closeSize/2);
+    closeBg.endFill();
+    closeButton.addChild(closeBg);
+
+    // Add X symbol
+    const closeSymbol = new PIXI.Text('×', {
+        fontFamily: 'Arial',
+        fontSize: 20,
+        fill: 0x000000
+    });
+    closeSymbol.x = (closeSize - closeSymbol.width) / 2;
+    closeSymbol.y = (closeSize - closeSymbol.height) / 2;
+    closeButton.addChild(closeSymbol);
+
+    closeButton.x = detailWidth - closeSize - 10;
+    closeButton.y = 10;
+    closeButton.eventMode = 'static';
+    closeButton.cursor = 'pointer';
+
+    closeButton.on('pointerover', () => {
+        closeBg.tint = 0xb0b0b0;
+    });
+
+    closeButton.on('pointerout', () => {
+        closeBg.tint = 0xFFFFFF;
+    });
+
+    closeButton.on('pointertap', () => {
+        detailContainer.visible = false;
+        cardBackground.tint = 0xFFFFFF; // White
+    });
+
+    detailContainer.addChild(closeButton);
+    return detailContainer;
+}
+
+export function createProjectCard(title, author, date, link, details, x = 0, y = 0) {
     const cardContainer = new PIXI.Container();
     cardContainer.x = x;
     cardContainer.y = y;
@@ -91,12 +199,27 @@ export function createProjectCard(title, author, date, link, x = 0, y = 0) {
         buttonBg.tint = 0xFFFFFF;
     });
 
-    // Click handler to open link
+    // Create a separate container for the detail window to avoid clipping
+    const detailContainer = new PIXI.Container();
+    app.stage.addChild(detailContainer);
+
+    // Create detail window
+    const detailWindow = createDetailWindow(details, link, background, cardContainer.x + cardWidth + 20, cardContainer.y + 60);
+    detailContainer.addChild(detailWindow);
+
+    // Click handler to toggle detail window
     buttonContainer.on('pointertap', () => {
-        if (link) {
-            window.open(link, '_blank');
+        detailWindow.visible = !detailWindow.visible;
+        // Change card background color
+        if (detailWindow.visible) {
+            background.tint = 0xE6F3FF; // Light blue
+        } else {
+            background.tint = 0xFFFFFF; // White
         }
     });
+
+    // Store reference to detail container for cleanup
+    cardContainer.detailContainer = detailContainer;
 
     cardContainer.addChild(buttonContainer);
 

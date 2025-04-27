@@ -2,6 +2,7 @@ import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, interactive
 import { getRandomSelectionRect } from './Utils.js';
 import { archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes } from './BottomLayout.js';
+import { interactiveBgTexture, restartButtonTexture, whitebgTexture } from './Resources.js';
 
 let previousSurroundedGroupsLength = 1;
 let tempGridCells = [];
@@ -546,16 +547,7 @@ async function initImageSection() {
         };
 
         
-
-        
-
-        // Load the background
-        const backgroundTexture = await PIXI.Assets.load('assets/interactive_bg2.png');
-        const restartButtonTexture = await PIXI.Assets.load('assets/restart_bg.png');
-        const whitebgTexture = await PIXI.Assets.load('assets/bg_white.png');
-
-        
-        const backgroundImage = new PIXI.Sprite(backgroundTexture);
+        const backgroundImage = new PIXI.Sprite(interactiveBgTexture);
         backgroundImage.x = -15;
         backgroundImage.y = -10;
         backgroundImage.width = interactiveRect.width + 30;
@@ -698,6 +690,10 @@ async function initImageSection() {
         
         // Reset functionality
         restartButton.on('pointertap', () => {
+
+            surroundedGroupsContainer.children.forEach(cell => cell.destroy());
+            surroundedGroupsContainer.removeChildren();
+
             // Clear all containers
             gridContainer.removeChildren();
             
@@ -915,6 +911,7 @@ async function initImageSection() {
 
                 // Remove any existing surrounded group sprites
                 if (gridContainer.surroundedGroupsContainer) {
+                    surroundedGroupsContainer.children.forEach(cell => cell.destroy());
                     gridContainer.removeChild(gridContainer.surroundedGroupsContainer);
                 }
 
