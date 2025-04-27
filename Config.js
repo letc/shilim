@@ -64,6 +64,13 @@ const folderPaths = [
     'assets/illustration4'
 ];
 
+const projectType = [
+    'ART',
+    'RESEARCH',
+    'ECOLOGY',
+    'CULTURE'
+];
+
 const TextureArray = folderPaths.map(() => Array.from(Array(numberOfRows), () => Array(numberOfColumns)));
 
 // Direction images
@@ -117,4 +124,4 @@ const projects = [
     { title: 'Pune University Report Shillim', author: 'University of Pune', date: '2024-01-02, 1 yr', primarycategory: 'RESEARCH', secondarycategory: 'ECOLOGY', link: 'https://en.wikipedia.org/wiki/Studio_Oleomingus' },
 ];
 
-export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, PLAIN_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects, interactiveRect };
+export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, PLAIN_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects, interactiveRect, projectType };
