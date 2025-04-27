@@ -5,6 +5,11 @@ import { initBottomLayout } from './BottomLayout.js';
 
 let loadingContainer;
 let continueText;
+let interactiveBgTexture;
+let restartButtonTexture;
+let whitebgTexture;
+let indexBg;
+let whiteCircleBg;
 
 async function downloadAndExtractZip(zipUrl, index) {
     try {
@@ -227,9 +232,42 @@ async function LoadTextures() {
                 index++;
             }
 
-            continueText.visible = true;
-            loadingContainer.visible = false;
-            texturesLoaded = true;
+            // Load the background textures with retry logic
+            const maxRetries = 3;
+            const retryDelay = 1000; // 1 second delay between retries
+
+            async function loadTextureWithRetry(path, retries = 0) {
+                try {
+                    return await PIXI.Assets.load(path);
+                } catch (error) {
+                    if (retries < maxRetries) {
+                        console.log(`Retry ${retries + 1} for ${path}`);
+                        await new Promise(resolve => setTimeout(resolve, retryDelay));
+                        return loadTextureWithRetry(path, retries + 1);
+                    }
+                    throw new Error(`Failed to load texture ${path} after ${maxRetries} retries`);
+                }
+            }
+
+            try {
+                // Load all textures with retry logic
+                [interactiveBgTexture, restartButtonTexture, whitebgTexture, indexBg, whiteCircleBg] = await Promise.all([
+                    loadTextureWithRetry('assets/interactive_bg.png'),
+                    loadTextureWithRetry('assets/restart_bg.png'),
+                    loadTextureWithRetry('assets/bg_white.png'),
+                    loadTextureWithRetry('assets/index_bg.png'),
+                    loadTextureWithRetry('assets/white_circle_bg.png')
+                ]);
+
+                continueText.visible = true;
+                loadingContainer.visible = false;
+                texturesLoaded = true;
+            } catch (error) {
+                console.error('Failed to load background textures:', error);
+                // Update loading text to show error
+                descriptionText.text = 'Error loading textures. Please refresh the page.';
+                descriptionText.style.fill = 0xFF0000; // Red color for error
+            }
         })();
 
         // Handle continue button click
@@ -264,10 +302,6 @@ async function LoadTextures() {
             await initBottomLayout();
         });
 
-        
-
-        
-
         return {
             success: true,
             message: 'Ready to start'
@@ -279,4 +313,4 @@ async function LoadTextures() {
     }
 }
 
-export { LoadTextures };
+export { LoadTextures, interactiveBgTexture, restartButtonTexture, whitebgTexture, indexBg, whiteCircleBg };

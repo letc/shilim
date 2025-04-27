@@ -31,7 +31,7 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
         // Scale down all percentages proportionally
         const scale = 100 / total;
         adjustedPercentages = adjustedPercentages.map(p => p * scale);
-        console.log('Adjusted percentages to:', adjustedPercentages);
+        //console.log('Adjusted percentages to:', adjustedPercentages);
         [p1, p2, p3, p4] = adjustedPercentages;
     }
 

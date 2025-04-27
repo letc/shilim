@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+        }
+        .container {
+            display: flex;
+            min-height: 100vh;
+            margin: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .side-menu {
+            width: 300px;
+            background: white;
+            padding: 40px;
+            border-right: 1px solid #eee;
+            overflow-y: auto;
+            position: fixed;
+            height: calc(100vh - 40px);
+            box-sizing: border-box;
+            margin: 20px 0 20px 20px;
+            border-top-left-radius: 15px;
+            border-bottom-left-radius: 15px;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            margin-left: 300px;
+            box-sizing: border-box;
+            max-width: calc(100% - 300px);
+        }
+        .header {
+            margin-bottom: 40px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin: 10px;
+            }
+            .side-menu {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+                margin: 0;
+                border-radius: 15px 15px 0 0;
+            }
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 20px;
+            }
+        }
+        .artist-name {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .project-title {
+            font-size: 32px;
+            margin-bottom: 30px;
+            font-weight: normal;
+        }
+        .bio-section {
+            margin-bottom: 40px;
+        }
+        .bio-heading {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .bio-text {
+            line-height: 1.6;
+            color: #444;
+        }
+        .projects-section {
+            margin-top: 60px;
+        }
+        .project-item {
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            cursor: pointer;
+            position: relative;
+        }
+        .project-item:hover {
+            background-color: #f9f9f9;
+        }
+        .project-meta {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .footer {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 20px 0;
+        }
+        .icon-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+            color: #666;
+        }
+        .icon-button:hover {
+            background: #e0e0e0;
+        }
+        .home-icon {
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="side-menu">
+            <div class="artist-name">Artist Name</div>
+            
+            <div class="projects-section">
+                <div class="project-item">
+                    <div class="project-title">Project Title</div>
+                    <div class="project-meta">SAME ARTIST</div>
+                    <div class="project-meta">PROJECT DATE & DURATION</div>
+                </div>
+                <div class="project-item">
+                    <div class="project-title">Project Title</div>
+                    <div class="project-meta">SAME ARTIST</div>
+                    <div class="project-meta">PROJECT DATE & DURATION</div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <button class="icon-button" title="Help">?</button>
+                <button class="icon-button" title="Refresh">↻</button>
+                <button class="icon-button home-icon" title="Home">➜</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="bio-section">
+                <div class="bio-heading">Author, Artist or Organisation Bio :</div>
+                <div class="bio-text">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et 
+                    dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan.
+                    <br><br>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut 
+                    labore et dolore magna aliqua.
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <button class="icon-button" title="Help">?</button>
+            <button class="icon-button" title="Refresh">↻</button>
+            <button class="icon-button home-icon" title="Home">➜</button>
+        </div>
+    </div>
+</body>
+</html>
