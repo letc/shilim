@@ -134,7 +134,7 @@ async function initInfoSection() {
                 { category: 'ART', value: parseFloat(artPercent) },
                 { category: 'RESEARCH', value: parseFloat(researchPercent) },
                 { category: 'ECOLOGY', value: parseFloat(ecologyPercent) },
-                { category: 'CULTURE', value: parseFloat(culturePercent) }
+                { category: 'COMMUNITY', value: parseFloat(culturePercent) }
             ].sort((a, b) => b.value - a.value);
 
             // Find available projects that match the highest percentage category

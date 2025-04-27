@@ -42,10 +42,10 @@ const DIRECTION_COLORS = {
 
 // Encloser colors
 const PLAIN_COLORS = {
-    TopToBottomRight: '#f3abab',
-    TopToBottomLeft: '#9bdbf3',
-    BottomToTopRight: '#9bf3ba',
-    BottomToTopLeft: '#e4f39b'
+    TopToBottomRight: '#dcd6ca',
+    TopToBottomLeft: '#f0f0f0',
+    BottomToTopRight: '#dcd6ca',
+    BottomToTopLeft: '#c5d8e1'
 };
 
 // Direction enum
@@ -68,7 +68,7 @@ const projectType = [
     'ART',
     'RESEARCH',
     'ECOLOGY',
-    'CULTURE'
+    'COMMUNITY'
 ];
 
 const TextureArray = folderPaths.map(() => Array.from(Array(numberOfRows), () => Array(numberOfColumns)));
@@ -113,9 +113,9 @@ class GridCell {
 let gridCells = [];
 
 const projects = [
-    { title: 'Artist Residency 001.', author: 'Ann De Forest', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'CULTURE', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'Artist Residency 003.', author: 'Kushala Vora', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, CULTURE', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'Artist Residency 004.', author: 'Constantine and Rebecca', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'CULTURE', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
+    { title: 'Artist Residency 001.', author: 'Ann De Forest', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'COMMUNITY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
+    { title: 'Artist Residency 003.', author: 'Kushala Vora', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, COMMUNITY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
+    { title: 'Artist Residency 004.', author: 'Constantine and Rebecca', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'COMMUNITY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
     { title: 'Artist Residency 007.', author: 'Joel Gordon', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
     { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
     { title: 'Mapping Workshops', author: 'Vritti Mangeulley & Hibah Hanif', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },

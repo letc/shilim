@@ -10,7 +10,7 @@ const sections = [
     { text: 'ART', color: 0xb1c6c9, container: null },      // Light blue-gray
     { text: 'RESEARCH', color: 0x445768, container: null },  // Dark gray
     { text: 'ECOLOGY', color: 0x97a266, container: null },   // Olive green
-    { text: 'CULTURE', color: 0xBCAB99, container: null }    // Beige
+    { text: 'COMMUNITY', color: 0xBCAB99, container: null }    // Beige
 ];
 
 // Store the layout container globally
