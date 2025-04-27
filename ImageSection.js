@@ -1,10 +1,11 @@
-import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, interactiveRect, stageSize, stageHeight, GridCell, gridCells, DragDirection } from './Config.js';
+import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, interactiveRect, stageSize, stageHeight, GridCell, gridCells, DragDirection, PLAIN_COLORS, projectType } from './Config.js';
 import { getRandomSelectionRect } from './Utils.js';
 import { archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes } from './BottomLayout.js';
 
 let previousSurroundedGroupsLength = 1;
 let tempGridCells = [];
+let surroundedGroupsContainer = new PIXI.Container();
 
 async function initImageSection() {
     try {
@@ -551,6 +552,7 @@ async function initImageSection() {
         // Load the background
         const backgroundTexture = await PIXI.Assets.load('assets/interactive_bg2.png');
         const restartButtonTexture = await PIXI.Assets.load('assets/restart_bg.png');
+        const whitebgTexture = await PIXI.Assets.load('assets/bg_white.png');
 
         
         const backgroundImage = new PIXI.Sprite(backgroundTexture);
@@ -604,6 +606,16 @@ async function initImageSection() {
             selectionRect.clear();
         });
 
+        // Create project type text
+        const projectTypeText = new PIXI.Text('', {
+            fontFamily: 'Arial',
+            fontSize: 16,
+            fill: 0x4A90E2,
+            align: 'center'
+        });
+        projectTypeText.visible = false;
+        gridContainer.addChild(projectTypeText);
+
         // Mouse move event
         gridContainer.on('pointermove', (event) => {
             if (isDragging) {
@@ -636,6 +648,32 @@ async function initImageSection() {
                 
                 selectionRect.drawRect(x, y, width, height);
                 selectionRect.endFill();
+
+                // Update project type text based on drag direction
+                const direction = getDragDirection(startX, startY, endX, endY);
+                let projectIndex = 0;
+                switch(direction) {
+                    case DragDirection.TopToBottomRight:
+                        projectIndex = 0; // ART
+                        break;
+                    case DragDirection.TopToBottomLeft:
+                        projectIndex = 1; // RESEARCH
+                        break;
+                    case DragDirection.BottomToTopRight:
+                        projectIndex = 2; // ECOLOGY
+                        break;
+                    case DragDirection.BottomToTopLeft:
+                        projectIndex = 3; // CULTURE
+                        break;
+                }
+                
+                // Position text at the center of selection
+                projectTypeText.text = projectType[projectIndex];
+                projectTypeText.visible = true;
+                projectTypeText.x = x + width/2 - projectTypeText.width/2;
+                projectTypeText.y = y + height/2 - projectTypeText.height/2;
+            } else {
+                projectTypeText.visible = false;
             }
         });
 
@@ -694,7 +732,7 @@ async function initImageSection() {
         // Mouse up event
         gridContainer.on('pointerup', () => {
             isDragging = false;
-
+            projectTypeText.visible = false;
             // Calculate dimensions in cells
             const cellsWidth = Math.abs(endX - startX) / cellSize;
             const cellsHeight = Math.abs(endY - startY) / cellSize;
@@ -873,6 +911,38 @@ async function initImageSection() {
             
             // If we found a new surrounded group
             if (textureStats.surroundedGroups.length > previousSurroundedGroupsLength) {
+
+
+                // Remove any existing surrounded group sprites
+                if (gridContainer.surroundedGroupsContainer) {
+                    gridContainer.removeChild(gridContainer.surroundedGroupsContainer);
+                }
+
+                
+                gridContainer.surroundedGroupsContainer = surroundedGroupsContainer;
+                
+                
+
+                // Color all surrounded groups
+                textureStats.surroundedGroups.forEach(group => {
+                    // Get a random color from PLAIN_COLORS
+                const colors = Object.values(PLAIN_COLORS);
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                const plainColor = parseInt(randomColor.replace('#', '0x'));
+                    // Color all cells in the group
+                    group.forEach(cell => {
+                        const newSprite = new PIXI.Sprite(whitebgTexture);
+                        newSprite.width = cellSize;
+                        newSprite.height = cellSize;
+                        newSprite.tint = plainColor;
+                        newSprite.x = cell.col * cellSize;
+                        newSprite.y = cell.row * cellSize;
+                        surroundedGroupsContainer.addChild(newSprite);
+                    });
+                });
+
+                // Add the container to gridContainer
+                gridContainer.addChild(surroundedGroupsContainer);
 
                 previousSurroundedGroupsLength = textureStats.surroundedGroups.length + 1;
 
