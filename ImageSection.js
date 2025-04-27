@@ -232,7 +232,7 @@ async function initImageSection() {
             }
 
             if (isCorner) {
-                const cornerRadius = 15;
+                const cornerRadius = 20;
                 const mask = new PIXI.Graphics();
                 mask.beginFill(0xFFFFFF);
                 
@@ -600,8 +600,8 @@ async function initImageSection() {
 
         // Create project type text
         const projectTypeText = new PIXI.Text('', {
-            fontFamily: 'Arial',
-            fontSize: 16,
+            fontFamily: 'IBM Plex Mono',
+            fontSize: 20,
             fill: 0x4A90E2,
             align: 'center'
         });
@@ -627,7 +627,7 @@ async function initImageSection() {
                 if (cellsWidth < 2) endX = startX + (endX > startX ? 2 * cellSize : -2 * cellSize);
                 if (cellsWidth > 15) endX = startX + (endX > startX ? 15 * cellSize : -15 * cellSize);
                 if (cellsHeight < 2) endY = startY + (endY > startY ? 2 * cellSize : -2 * cellSize);
-                if (cellsHeight > 15) endY = startY + (endY > startY ? 15 * cellSize : -15 * cellSize);
+                if (cellsHeight > 11) endY = startY + (endY > startY ? 11 * cellSize : -11 * cellSize);
                 
                 // Draw selection rectangle
                 selectionRect.clear();
@@ -638,7 +638,7 @@ async function initImageSection() {
                 const width = Math.abs(endX - startX);
                 const height = Math.abs(endY - startY);
                 
-                selectionRect.drawRect(x, y, width, height);
+                selectionRect.drawRoundedRect(x, y, width, height,24);
                 selectionRect.endFill();
 
                 // Update project type text based on drag direction
@@ -655,7 +655,7 @@ async function initImageSection() {
                         projectIndex = 2; // ECOLOGY
                         break;
                     case DragDirection.BottomToTopLeft:
-                        projectIndex = 3; // CULTURE
+                        projectIndex = 3; // COMMUNITY
                         break;
                 }
                 
@@ -949,7 +949,7 @@ async function initImageSection() {
                         textureStats.topToBottomRightPercentage,  // ART
                         textureStats.topToBottomLeftPercentage,   // RESEARCH
                         textureStats.bottomToTopRightPercentage,  // ECOLOGY
-                        textureStats.bottomToTopLeftPercentage    // CULTURE
+                        textureStats.bottomToTopLeftPercentage    // COMMUNITY
                     );
                 }
             }
