@@ -140,6 +140,7 @@ async function initInfoSection() {
             // Find available projects that match the highest percentage category
             let primaryProjects = [];
             let secondaryProjects = [];
+            let finalProjects = [];
 
             // First try primary category
             primaryProjects = projects.filter((project, index) => 
@@ -169,10 +170,27 @@ async function initInfoSection() {
                 console.log(project.title);
             });
 
-            // Select random project from available ones
-            const randomIndex = Math.floor(Math.random() * (primaryProjects.length + secondaryProjects.length));
-            let finalProjects = primaryProjects.concat(secondaryProjects);
+            // Find common projects if both arrays are non-empty
+            if (primaryProjects.length > 0 && secondaryProjects.length > 0) {
+                finalProjects = primaryProjects.filter(primaryProject =>
+                    secondaryProjects.some(secondaryProject => secondaryProject.title === primaryProject.title)
+                );
+                // If no common projects, combine both arrays
+                if (finalProjects.length === 0) {
+                    finalProjects = primaryProjects.concat(secondaryProjects);
+                }
+            } else {
+                // If either array is empty, use the non-empty one
+                finalProjects = primaryProjects.length > 0 ? primaryProjects : secondaryProjects;
+            }
 
+            console.log('\nfinalProjects');
+            finalProjects.forEach((project) => {
+                console.log(project.title);
+            });
+
+            // Select random project from final projects
+            const randomIndex = Math.floor(Math.random() * finalProjects.length);
             const project = finalProjects[randomIndex];
             
             // Mark this project as used
