@@ -713,6 +713,7 @@ async function initImageSection() {
 
             // Re-add selection rectangle to grid container
             gridContainer.addChild(selectionRect);
+            gridContainer.addChild(projectTypeText);
 
             // Reset section sizes
             updateSectionSizes(0, 0, 0, 0);

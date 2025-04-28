@@ -138,22 +138,42 @@ async function initInfoSection() {
             ].sort((a, b) => b.value - a.value);
 
             // Find available projects that match the highest percentage category
-            let availableProjects = [];
+            let primaryProjects = [];
+            let secondaryProjects = [];
 
             // First try primary category
-            availableProjects = projects.filter((project, index) => 
+            primaryProjects = projects.filter((project, index) => 
                 !usedProjectIndices.has(index) && 
                 project.primarycategory === percentages[0].category
             );
 
-            // If still no matches, use any unused project
-            if (availableProjects.length === 0) {
+            if(percentages[1].value > 0){
+                secondaryProjects = projects.filter((project, index) => 
+                    !usedProjectIndices.has(index) && 
+                    project.secondarycategory.split(', ').includes(percentages[1].category)
+                );
+            }
+
+            // If still no matches, return
+            if (primaryProjects.length === 0 && secondaryProjects.length === 0) {
                 return;
             }
 
+            console.log('primaryProjects');
+            primaryProjects.forEach((project) => {
+                console.log(project.title);
+            });
+
+            console.log('\nsecondaryProjects');
+            secondaryProjects.forEach((project) => {
+                console.log(project.title);
+            });
+
             // Select random project from available ones
-            const randomIndex = Math.floor(Math.random() * availableProjects.length);
-            const project = availableProjects[randomIndex];
+            const randomIndex = Math.floor(Math.random() * (primaryProjects.length + secondaryProjects.length));
+            let finalProjects = primaryProjects.concat(secondaryProjects);
+
+            const project = finalProjects[randomIndex];
             
             // Mark this project as used
             const projectIndex = projects.indexOf(project);
