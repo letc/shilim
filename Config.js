@@ -111,17 +111,25 @@ class GridCell {
 }
 
 let gridCells = [];
+let projects = [];
 
-const projects = [
-    { title: 'Artist Residency 001.', author: 'Ann De Forest', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'COMMUNITY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'Artist Residency 003.', author: 'Kushala Vora', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, COMMUNITY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'Artist Residency 004.', author: 'Constantine and Rebecca', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'COMMUNITY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'Artist Residency 007.', author: 'Joel Gordon', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'Artist Residency 010.', author: 'Erin Gee', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'ECOLOGY, RESEARCH', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'Mapping Workshops', author: 'Vritti Mangeulley & Hibah Hanif', date: '2024-01-02, 1 yr', primarycategory: 'ART', secondarycategory: 'RESEARCH, ECOLOGY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'Shilim - a Case Study, Interim Report', author: 'Oikos', date: '2024-01-02, 1 yr', primarycategory: 'ECOLOGY', secondarycategory: 'RESEARCH', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'WCT Shillim Report', author: 'Ms. Pooja Dewoolkar, Ms. Prachi Paranjpye, Dr. Anish Andheria', date: '2024-01-02, 1 yr', primarycategory: 'RESEARCH', secondarycategory: 'ECOLOGY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-    { title: 'Pune University Report Shillim', author: 'University of Pune', date: '2024-01-02, 1 yr', primarycategory: 'RESEARCH', secondarycategory: 'ECOLOGY', link: 'projectpage.html', details: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.' },
-];
+// Function to load projects from JSON
+async function loadProjects() {
+    try {
+        const response = await fetch('data/projects.json');
+        if (!response.ok) throw new Error('Failed to load projects');
+        const data = await response.json();
+        projects = data.projects;
+        return data.projects;
+    } catch (error) {
+        console.error('Error loading projects:', error);
+        return [];
+    }
+}
+
+// Initialize projects
+(async () => {
+    projects = await loadProjects();
+})();
 
 export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, PLAIN_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects, interactiveRect, projectType };

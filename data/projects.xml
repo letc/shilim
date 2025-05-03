@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<projects>
+  <project>
+    <title>Artist Residency 001.</title>
+    <author>Ann De Forest</author>
+    <date>2024-01-02, 1 yr</date>
+    <primarycategory>ART</primarycategory>
+    <secondarycategory>COMMUNITY</secondarycategory>
+    <link>projectpage.html</link>
+    <details>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</details>
+  </project>
+  <project>
+    <title>Artist Residency 003.</title>
+    <author>Kushala Vora</author>
+    <date>2024-01-02, 1 yr</date>
+    <primarycategory>ART</primarycategory>
+    <secondarycategory>ECOLOGY, COMMUNITY</secondarycategory>
+    <link>projectpage.html</link>
+    <details>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</details>
+  </project>
+  <project>
+    <title>Artist Residency 004.</title>
+    <author>Constantine and Rebecca</author>
+    <date>2024-01-02, 1 yr</date>
+    <primarycategory>ART</primarycategory>
+    <secondarycategory>COMMUNITY</secondarycategory>
+    <link>projectpage.html</link>
+    <details>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</details>
+  </project>
+  <project>
+    <title>Artist Residency 007.</title>
+    <author>Joel Gordon</author>
+    <date>2024-01-02, 1 yr</date>
+    <primarycategory>ART</primarycategory>
+    <secondarycategory>RESEARCH, ECOLOGY</secondarycategory>
+    <link>projectpage.html</link>
+    <details>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</details>
+  </project>
+  <project>
+    <title>Artist Residency 010.</title>
+    <author>Erin Gee</author>
+    <date>2024-01-02, 1 yr</date>
+    <primarycategory>ART</primarycategory>
+    <secondarycategory>ECOLOGY, RESEARCH</secondarycategory>
+    <link>projectpage.html</link>
+    <details>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</details>
+  </project>
+  <project>
+    <title>Mapping Workshops</title>
+    <author>Vritti Mangeulley &amp; Hibah Hanif</author>
+    <date>2024-01-02, 1 yr</date>
+    <primarycategory>ART</primarycategory>
+    <secondarycategory>RESEARCH, ECOLOGY</secondarycategory>
+    <link>projectpage.html</link>
+    <details>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</details>
+  </project>
+  <project>
+    <title>Shilim - a Case Study, Interim Report</title>
+    <author>Oikos</author>
+    <date>2024-01-02, 1 yr</date>
+    <primarycategory>ECOLOGY</primarycategory>
+    <secondarycategory>RESEARCH</secondarycategory>
+    <link>projectpage.html</link>
+    <details>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</details>
+  </project>
+  <project>
+    <title>WCT Shillim Report</title>
+    <author>Ms. Pooja Dewoolkar, Ms. Prachi Paranjpye, Dr. Anish Andheria</author>
+    <date>2024-01-02, 1 yr</date>
+    <primarycategory>RESEARCH</primarycategory>
+    <secondarycategory>ECOLOGY</secondarycategory>
+    <link>projectpage.html</link>
+    <details>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</details>
+  </project>
+  <project>
+    <title>Pune University Report Shillim</title>
+    <author>University of Pune</author>
+    <date>2024-01-02, 1 yr</date>
+    <primarycategory>RESEARCH</primarycategory>
+    <secondarycategory>ECOLOGY</secondarycategory>
+    <link>projectpage.html</link>
+    <details>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</details>
+  </project>
+</projects>
