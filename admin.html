@@ -226,12 +226,14 @@
     <script>
         let currentProjects = [];
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const API_BASE = isDevelopment ? 'http://localhost:3000/api' : '/.netlify/functions';
+        const API_BASE = isDevelopment ? 'http://localhost:3001/api' : '/.netlify/functions';
 
         function loadProjects() {
             fetch(`${API_BASE}/projects`)
                 .then(response => response.json())
                 .then(projects => {
+                    // Ensure projects is always an array
+                    projects = Array.isArray(projects) ? projects : [];
                     currentProjects = projects;
                     
                     // Update project selector

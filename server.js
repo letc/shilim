@@ -1,36 +1,45 @@
 const express = require('express');
 const fs = require('fs/promises');
-const xml2js = require('xml2js');
 const cors = require('cors');
 const app = express();
-const port = 3000;
+const port = 3001;
 
 app.use(express.json());
 app.use(cors());
 app.use(express.static('.'));
 
-const xmlFile = './data/projects.xml';
-const parser = new xml2js.Parser({ explicitArray: false });
-const builder = new xml2js.Builder();
+const jsonFile = './data/projects.json';
 
 // Get all projects
 app.get('/api/projects', async (req, res) => {
     try {
-        const data = await fs.readFile(xmlFile, 'utf8');
-        const result = await parser.parseStringPromise(data);
-        const projects = Array.isArray(result.projects.project) ? result.projects.project : [result.projects.project];
-        res.json(projects);
+        const data = await fs.readFile(jsonFile, 'utf8');
+        const jsonData = JSON.parse(data);
+        const projects = jsonData.projects || [];
+        res.json(Array.isArray(projects) ? projects : [projects]);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        if (error.code === 'ENOENT') {
+            // If file doesn't exist, return empty array
+            res.json([]);
+        } else {
+            res.status(500).json({ error: error.message });
+        }
     }
 });
 
 // Update or add project
 app.post('/api/projects', async (req, res) => {
     try {
-        const data = await fs.readFile(xmlFile, 'utf8');
-        const result = await parser.parseStringPromise(data);
-        const projects = Array.isArray(result.projects.project) ? result.projects.project : [result.projects.project];
+        let projects = [];
+        try {
+            const data = await fs.readFile(jsonFile, 'utf8');
+            const jsonData = JSON.parse(data);
+            projects = jsonData.projects || [];
+        } catch (error) {
+            if (error.code !== 'ENOENT') throw error;
+        }
+
+        if (!Array.isArray(projects)) projects = [];
         
         const index = parseInt(req.body.projectIndex);
         const projectData = {
@@ -49,8 +58,7 @@ app.post('/api/projects', async (req, res) => {
             projects.push(projectData);
         }
 
-        const xml = builder.buildObject({ projects: { project: projects } });
-        await fs.writeFile(xmlFile, xml);
+        await fs.writeFile(jsonFile, JSON.stringify({ projects }, null, 2));
         res.json({ success: true });
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -60,15 +68,13 @@ app.post('/api/projects', async (req, res) => {
 // Delete project
 app.delete('/api/projects/:index', async (req, res) => {
     try {
-        const data = await fs.readFile(xmlFile, 'utf8');
-        const result = await parser.parseStringPromise(data);
-        const projects = Array.isArray(result.projects.project) ? result.projects.project : [result.projects.project];
+        const data = await fs.readFile(jsonFile, 'utf8');
+        const projects = JSON.parse(data);
         
         const index = parseInt(req.params.index);
         if (index >= 0 && index < projects.length) {
             projects.splice(index, 1);
-            const xml = builder.buildObject({ projects: { project: projects } });
-            await fs.writeFile(xmlFile, xml);
+            await fs.writeFile(jsonFile, JSON.stringify({ projects }, null, 2));
             res.json({ success: true });
         } else {
             res.status(404).json({ error: 'Project not found' });
