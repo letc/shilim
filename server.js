@@ -61,7 +61,8 @@ app.post('/api/projects', async (req, res) => {
 app.delete('/api/projects/:index', async (req, res) => {
     try {
         const data = await fs.readFile(jsonFile, 'utf8');
-        const projects = JSON.parse(data);
+        const jsonData = JSON.parse(data);
+        const projects = jsonData.projects || [];
         
         const index = parseInt(req.params.index);
         if (index >= 0 && index < projects.length) {

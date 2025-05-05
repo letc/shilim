@@ -322,7 +322,14 @@
                     if (result.success) {
                         loadProjects();
                         resetForm();
+                        alert('Project deleted successfully!');
+                    } else {
+                        alert('Error deleting project: ' + (result.error || 'Unknown error'));
                     }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error deleting project. Please try again.');
                 });
             }
         }
