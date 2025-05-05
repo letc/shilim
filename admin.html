@@ -342,7 +342,7 @@
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    index: data.projectIndex,
+                    index: parseInt(data.projectIndex),
                     project: {
                         title: data.title,
                         author: data.author,

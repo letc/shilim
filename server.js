@@ -41,16 +41,8 @@ app.post('/api/projects', async (req, res) => {
 
         if (!Array.isArray(projects)) projects = [];
         
-        const index = parseInt(req.body.projectIndex);
-        const projectData = {
-            title: req.body.title,
-            author: req.body.author,
-            date: req.body.date,
-            primarycategory: req.body.primarycategory,
-            secondarycategory: req.body.secondarycategory,
-            link: req.body.link,
-            details: req.body.details
-        };
+        const index = parseInt(req.body.index);
+        const projectData = req.body.project;
 
         if (index >= 0 && index < projects.length) {
             projects[index] = projectData;
