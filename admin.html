@@ -134,6 +134,29 @@
             margin-top: 10px;
         }
 
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .checkbox-item label {
+            margin: 0;
+            font-weight: normal;
+            cursor: pointer;
+        }
+
         @media (max-width: 768px) {
             .content-wrapper {
                 flex-direction: column;
@@ -196,8 +219,25 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="secondarycategory">Secondary Category:</label>
-                        <input type="text" id="secondarycategory" name="secondarycategory" required placeholder="e.g., ECOLOGY, COMMUNITY">
+                        <label>Secondary Categories:</label>
+                        <div class="checkbox-group" style="margin-top: 8px;">
+                            <div class="checkbox-item" style="margin-bottom: 8px;">
+                                <input type="checkbox" id="secondary-art" name="secondarycategory" value="ART">
+                                <label for="secondary-art">ART</label>
+                            </div>
+                            <div class="checkbox-item" style="margin-bottom: 8px;">
+                                <input type="checkbox" id="secondary-research" name="secondarycategory" value="RESEARCH">
+                                <label for="secondary-research">RESEARCH</label>
+                            </div>
+                            <div class="checkbox-item" style="margin-bottom: 8px;">
+                                <input type="checkbox" id="secondary-ecology" name="secondarycategory" value="ECOLOGY">
+                                <label for="secondary-ecology">ECOLOGY</label>
+                            </div>
+                            <div class="checkbox-item" style="margin-bottom: 8px;">
+                                <input type="checkbox" id="secondary-community" name="secondarycategory" value="COMMUNITY">
+                                <label for="secondary-community">COMMUNITY</label>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="link">Link:</label>
@@ -257,7 +297,11 @@
             document.getElementById('author').value = project.author;
             document.getElementById('date').value = project.date;
             document.getElementById('primarycategory').value = project.primarycategory;
-            document.getElementById('secondarycategory').value = project.secondarycategory;
+            // Handle secondary category checkboxes
+            const secondaryCats = project.secondarycategory.split(',').map(cat => cat.trim());
+            document.querySelectorAll('input[name="secondarycategory"]').forEach(checkbox => {
+                checkbox.checked = secondaryCats.includes(checkbox.value);
+            });
             document.getElementById('link').value = project.link;
             document.getElementById('details').value = project.details;
             
@@ -326,7 +370,9 @@
                         author: data.author,
                         date: data.date,
                         primarycategory: data.primarycategory,
-                        secondarycategory: data.secondarycategory,
+                        secondarycategory: Array.from(document.querySelectorAll('input[name="secondarycategory"]:checked'))
+                            .map(checkbox => checkbox.value)
+                            .join(', '),
                         link: data.link,
                         details: data.details
                     }
