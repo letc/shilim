@@ -170,13 +170,6 @@
             </div>
 
             <div class="right-section">
-                <div id="projectSelector" class="project-selector">
-                    <label for="projectSelect">Select Project to Edit:</label>
-                    <select id="projectSelect" onchange="selectProject(this.value)" style="width: 100%; padding: 8px;">
-                        <option value="-1">-- Select a project --</option>
-                    </select>
-                </div>
-
                 <form id="projectForm" method="POST" class="project-form" style="display: none;">
                     <h3 id="formTitle">Edit Project</h3>
                     <input type="hidden" id="projectIndex" name="projectIndex" value="-1">
@@ -236,16 +229,6 @@
                     projects = Array.isArray(projects) ? projects : [];
                     currentProjects = projects;
                     
-                    // Update project selector
-                    const projectSelect = document.getElementById('projectSelect');
-                    projectSelect.innerHTML = '<option value="-1">-- Select a project --</option>';
-                    projects.forEach((project, index) => {
-                        const option = document.createElement('option');
-                        option.value = index;
-                        option.textContent = project.title;
-                        projectSelect.appendChild(option);
-                    });
-
                     // Update project list
                     const projectList = document.getElementById('projectList');
                     projectList.innerHTML = '<h3>All Projects</h3>';
@@ -268,11 +251,6 @@
         }
 
         function selectProject(index) {
-            if (index === '-1') {
-                hideForm();
-                return;
-            }
-
             const project = currentProjects[index];
             document.getElementById('projectIndex').value = index;
             document.getElementById('title').value = project.title;
