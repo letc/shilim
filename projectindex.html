@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Index</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .search-box {
+            flex: 0 1 300px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #2196F3;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 20px;
+            min-height: calc(100vh - 150px);
+        }
+
+        .left-section {
+            flex: 1;
+            min-width: 300px;
+            overflow-y: auto;
+            padding-right: 20px;
+            border-right: 1px solid #eee;
+        }
+
+        .right-section {
+            flex: 1;
+            min-width: 400px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            position: sticky;
+            top: 20px;
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            padding: 10px;
+        }
+
+        .project-card {
+            background-color: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: fit-content;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-color: #2196F3;
+        }
+
+        .project-card.selected {
+            border-color: #2196F3;
+            background-color: #e3f2fd;
+        }
+
+        .project-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .project-card p {
+            margin: 5px 0;
+            color: #666;
+        }
+
+        .project-details {
+            display: none;
+        }
+
+        .project-details.active {
+            display: block;
+        }
+
+        .project-details h2 {
+            margin-top: 0;
+            color: #2196F3;
+        }
+
+        .details-section {
+            margin-bottom: 20px;
+        }
+
+        .details-section h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .details-section p {
+            line-height: 1.6;
+            color: #666;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: #e3f2fd;
+            color: #2196F3;
+            border-radius: 4px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .no-selection {
+            text-align: center;
+            color: #666;
+            padding: 40px;
+        }
+
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .no-results h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+
+        .no-results p {
+            margin: 0;
+            color: #666;
+        }
+
+        @media (max-width: 1024px) {
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+
+            .left-section {
+                padding-right: 0;
+                border-right: none;
+                max-height: 50vh;
+            }
+
+            .right-section {
+                min-width: 100%;
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Project Index</h2>
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="Search projects..." oninput="filterProjects()">
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="left-section">
+                <div class="project-grid" id="projectGrid">
+                    <!-- Projects will be loaded here -->
+                </div>
+            </div>
+
+            <div class="right-section" id="projectDetails">
+                <div class="no-selection">
+                    <h3>Select a project to view details</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentProjects = [];
+        let selectedProjectIndex = -1;
+
+        async function loadProjects() {
+            try {
+                const response = await fetch('data/projects.json');
+                const data = await response.json();
+                currentProjects = data.projects || [];
+                refreshProjectGrid();
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                alert('Error loading projects. Please check if projects.json exists.');
+            }
+        }
+
+        function filterProjects() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            refreshProjectGrid(searchTerm);
+        }
+
+        function refreshProjectGrid(searchTerm = '') {
+            const projectGrid = document.getElementById('projectGrid');
+            projectGrid.innerHTML = '';
+            
+            const filteredProjects = searchTerm
+                ? currentProjects.filter(project => 
+                    project.title.toLowerCase().includes(searchTerm) ||
+                    project.author.toLowerCase().includes(searchTerm) ||
+                    project.primarycategory.toLowerCase().includes(searchTerm) ||
+                    project.secondarycategory.toLowerCase().includes(searchTerm) ||
+                    project.details.toLowerCase().includes(searchTerm)
+                )
+                : currentProjects;
+            
+            if (filteredProjects.length === 0) {
+                const noResults = document.createElement('div');
+                noResults.className = 'no-results';
+                noResults.innerHTML = '<h3>No projects found</h3><p>Try adjusting your search terms</p>';
+                projectGrid.appendChild(noResults);
+                return;
+            }
+
+            filteredProjects.forEach(project => {
+                // Find the actual index in currentProjects
+                const originalIndex = currentProjects.findIndex(p => p.title === project.title);
+                const card = document.createElement('div');
+                card.className = `project-card ${originalIndex === selectedProjectIndex ? 'selected' : ''}`;
+                card.onclick = () => selectProject(originalIndex);
+                
+                // Truncate details to first 100 characters for the card
+                const truncatedDetails = project.details.length > 100 
+                    ? project.details.substring(0, 100) + '...' 
+                    : project.details;
+                
+                card.innerHTML = `
+                    <h3>${project.title}</h3>
+                    <p><strong>Author:</strong> ${project.author}</p>
+                    <p><strong>Date:</strong> ${project.date}</p>
+                    <p>${truncatedDetails}</p>
+                `;
+                projectGrid.appendChild(card);
+            });
+        }
+
+        function selectProject(index) {
+            selectedProjectIndex = index;
+            const project = currentProjects[index];
+            
+            // Update selected state in grid
+            document.querySelectorAll('.project-card').forEach((card, i) => {
+                card.classList.toggle('selected', i === index);
+            });
+            
+            // Update details section
+            const detailsSection = document.getElementById('projectDetails');
+            detailsSection.innerHTML = `
+                <h2>${project.title}</h2>
+                
+                <div class="details-section">
+                    <h3>Author</h3>
+                    <p>${project.author}</p>
+                </div>
+                
+                <div class="details-section">
+                    <h3>Date</h3>
+                    <p>${project.date}</p>
+                </div>
+                
+                <div class="details-section">
+                    <h3>Categories</h3>
+                    <p>
+                        <span class="tag">${project.primarycategory}</span>
+                        ${project.secondarycategory.split(',').map(cat => 
+                            `<span class="tag">${cat.trim()}</span>`
+                        ).join('')}
+                    </p>
+                </div>
+                
+                <div class="details-section">
+                    <h3>Details</h3>
+                    <p>${project.details}</p>
+                </div>
+                
+                <div class="details-section">
+                    <h3>Link</h3>
+                    <p><a href="${project.link}" target="_blank">${project.link}</a></p>
+                </div>
+            `;
+            
+            // Scroll the details into view on mobile
+            if (window.innerWidth <= 768) {
+                detailsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Load projects when page loads
+        document.addEventListener('DOMContentLoaded', loadProjects);
+    </script>
+</body>
+</html>
