@@ -2,7 +2,7 @@ import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, interactive
 import { getRandomSelectionRect } from './Utils.js';
 import { archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes } from './BottomLayout.js';
-import { interactiveBgTexture, restartButtonTexture, whitebgTexture } from './Resources.js';
+import { interactiveBgTexture, restartButtonTexture, whitebgTexture, leavesTexture, dragonflyTexture, frogTexture } from './Resources.js';
 
 let previousSurroundedGroupsLength = 1;
 let tempGridCells = [];
@@ -558,6 +558,33 @@ async function initImageSection() {
 
         // Add everything to the container
         bgContainer.addChild(backgroundImage);
+
+        // Add decorative elements at bottom center
+        const leaves = new PIXI.Sprite(leavesTexture);
+        leaves.anchor.set(0.5, 1); // Center-bottom anchor
+        leaves.x = interactiveRect.width / 2;
+        leaves.y = interactiveRect.height;
+        leaves.scale.set(0.8); // Adjust scale as needed
+        leaves.alpha = 0.0;
+
+        const dragonfly = new PIXI.Sprite(dragonflyTexture);
+        dragonfly.anchor.set(0.5, 1);
+        dragonfly.x = (interactiveRect.width / 2) + 10; // Offset to the left
+        dragonfly.y = interactiveRect.height - 40;
+        dragonfly.scale.set(0.6);
+        dragonfly.alpha = 0.0;
+
+        const frog = new PIXI.Sprite(frogTexture);
+        frog.anchor.set(0.5, 1);
+        frog.x = (interactiveRect.width / 2) + 15; // Offset to the right
+        frog.y = interactiveRect.height - 10;
+        frog.scale.set(0.7);
+        frog.alpha = 0.0;
+
+        bgContainer.addChild(leaves);
+        bgContainer.addChild(dragonfly);
+        bgContainer.addChild(frog);
+
         imageContainer.addChild(bgContainer);
 
         // Create a container for the grid
@@ -905,6 +932,18 @@ async function initImageSection() {
             }
             //textureStats.printStats(); // Print updated statistics
             textureStats.updateSections();
+
+            if(textureStats.surroundedGroups.length == 2){
+                gsap.to(leaves, { alpha: 1, duration: 0.6 });
+            }
+
+            if(textureStats.surroundedGroups.length == 4){
+                gsap.to(frog, { alpha: 1, duration: 0.6 });
+            }            
+
+            if(textureStats.surroundedGroups.length == 6){
+                gsap.to(dragonfly, { alpha: 1, duration: 0.6 });
+            }
             
             // If we found a new surrounded group
             if (textureStats.surroundedGroups.length > previousSurroundedGroupsLength) {

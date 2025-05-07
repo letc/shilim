@@ -10,6 +10,9 @@ let restartButtonTexture;
 let whitebgTexture;
 let indexBg;
 let whiteCircleBg;
+let leavesTexture;
+let dragonflyTexture;
+let frogTexture;
 
 async function downloadAndExtractZip(zipUrl, index) {
     try {
@@ -251,12 +254,15 @@ async function LoadTextures() {
 
             try {
                 // Load all textures with retry logic
-                [interactiveBgTexture, restartButtonTexture, whitebgTexture, indexBg, whiteCircleBg] = await Promise.all([
+                [interactiveBgTexture, restartButtonTexture, whitebgTexture, indexBg, whiteCircleBg, leavesTexture, dragonflyTexture, frogTexture] = await Promise.all([
                     loadTextureWithRetry('assets/interactive_bg.png'),
                     loadTextureWithRetry('assets/restart_bg.png'),
                     loadTextureWithRetry('assets/bg_white.png'),
                     loadTextureWithRetry('assets/index_bg.png'),
-                    loadTextureWithRetry('assets/white_circle_bg.png')
+                    loadTextureWithRetry('assets/white_circle_bg.png'),
+                    loadTextureWithRetry('assets/LEAVES2.png'),
+                    loadTextureWithRetry('assets/DRAGONFLY3.png'),
+                    loadTextureWithRetry('assets/FROG1.png'),
                 ]);
 
                 continueText.visible = true;
@@ -313,4 +319,4 @@ async function LoadTextures() {
     }
 }
 
-export { LoadTextures, interactiveBgTexture, restartButtonTexture, whitebgTexture, indexBg, whiteCircleBg };
+export { LoadTextures, interactiveBgTexture, restartButtonTexture, whitebgTexture, indexBg, whiteCircleBg, leavesTexture, dragonflyTexture, frogTexture };
