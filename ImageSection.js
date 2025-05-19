@@ -933,21 +933,10 @@ async function initImageSection() {
             //textureStats.printStats(); // Print updated statistics
             textureStats.updateSections();
 
-            if(textureStats.surroundedGroups.length == 2){
-                gsap.to(leaves, { alpha: 1, duration: 0.6 });
-            }
-
-            if(textureStats.surroundedGroups.length == 4){
-                gsap.to(frog, { alpha: 1, duration: 0.6 });
-            }            
-
-            if(textureStats.surroundedGroups.length == 6){
-                gsap.to(dragonfly, { alpha: 1, duration: 0.6 });
-            }
+            
             
             // If we found a new surrounded group
             if (textureStats.surroundedGroups.length > previousSurroundedGroupsLength) {
-
 
                 // Remove any existing surrounded group sprites
                 if (gridContainer.surroundedGroupsContainer) {
@@ -992,6 +981,17 @@ async function initImageSection() {
                         textureStats.bottomToTopLeftPercentage    // COMMUNITY
                     );
                 }
+
+                gsap.to(leaves, { alpha: 1, duration: 5 });
+                gsap.to(frog, { alpha: 1, duration: 5 });
+                gsap.to(dragonfly, { alpha: 1, duration: 5 });
+
+                // Wait for 5 seconds before fading out
+                setTimeout(() => {
+                    gsap.to(leaves, { alpha: 0, duration: 5 }); // Fade out
+                    gsap.to(frog, { alpha: 0, duration: 5 });
+                    gsap.to(dragonfly, { alpha: 0, duration: 5 });
+                }, 5000);
             }
 
             

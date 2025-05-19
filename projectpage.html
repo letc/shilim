@@ -18,8 +18,8 @@
             min-height: 100vh;
             margin: 20px;
             background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 40px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             overflow: hidden;
         }
         .side-menu {
@@ -28,12 +28,10 @@
             padding: 40px;
             border-right: 1px solid #eee;
             overflow-y: auto;
-            position: fixed;
-            height: calc(100vh - 40px);
             box-sizing: border-box;
-            margin: 20px 0 20px 20px;
-            border-top-left-radius: 15px;
-            border-bottom-left-radius: 15px;
+            height: 100%;
+            border-top-left-radius: 40px;
+            border-bottom-left-radius: 40px;
         }
         .main-content {
             flex: 1;
@@ -57,7 +55,7 @@
                 border-right: none;
                 border-bottom: 1px solid #eee;
                 margin: 0;
-                border-radius: 15px 15px 0 0;
+                border-radius: 40px 40px 0 0;
             }
             .main-content {
                 margin-left: 0;
@@ -105,18 +103,6 @@
             color: #666;
             margin-top: 5px;
         }
-        .footer {
-            margin-top: 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
-            position: sticky;
-            bottom: 0;
-            background: white;
-            padding: 20px 0;
-        }
         .icon-button {
             width: 30px;
             height: 30px;
@@ -155,12 +141,6 @@
                     <div class="project-meta">PROJECT DATE & DURATION</div>
                 </div>
             </div>
-
-            <div class="footer">
-                <button class="icon-button" title="Help">?</button>
-                <button class="icon-button" title="Refresh">↻</button>
-                <button class="icon-button home-icon" title="Home">➜</button>
-            </div>
         </div>
 
         <div class="main-content">
@@ -174,12 +154,6 @@
                     labore et dolore magna aliqua.
                 </div>
             </div>
-        </div>
-
-        <div class="footer">
-            <button class="icon-button" title="Help">?</button>
-            <button class="icon-button" title="Refresh">↻</button>
-            <button class="icon-button home-icon" title="Home">➜</button>
         </div>
     </div>
 </body>

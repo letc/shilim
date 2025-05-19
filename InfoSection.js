@@ -44,6 +44,11 @@ async function initInfoSection() {
         archiveIndexImage.y = archiveIndexRect.y;
         archiveIndexImage.width = archiveIndexRect.width;
         archiveIndexImage.height = archiveIndexRect.height;
+        archiveIndexImage.eventMode = 'static';
+        archiveIndexImage.cursor = 'pointer';
+        archiveIndexImage.on('pointerdown', () => {
+            window.location.href = 'projectindex.html';
+        });
 
         // Add text element with padding
         const archiveIndexLabelText = new PIXI.Text('archive index', {
