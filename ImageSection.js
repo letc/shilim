@@ -1,7 +1,7 @@
 import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, interactiveRect, stageSize, stageHeight, GridCell, gridCells, DragDirection, PLAIN_COLORS, projectType } from './Config.js';
 import { getRandomSelectionRect } from './Utils.js';
 import { archiveIndexValueLabelText } from './InfoSection.js';
-import { updateSectionSizes } from './BottomLayout.js';
+import { updateSectionSizes, updateTextBox } from './BottomLayout.js';
 import { interactiveBgTexture, restartButtonTexture, whitebgTexture, leavesTexture, dragonflyTexture, frogTexture } from './Resources.js';
 
 let previousSurroundedGroupsLength = 1;
@@ -1023,6 +1023,8 @@ async function initImageSection() {
                         textureStats.bottomToTopLeftPercentage    // COMMUNITY
                     );
                 }
+
+                updateTextBox();
 
                 gsap.to(leaves, { alpha: 1, duration: 5 });
                 gsap.to(frog, { alpha: 1, duration: 5 });

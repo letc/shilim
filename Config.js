@@ -71,6 +71,13 @@ const projectType = [
     'COMMUNITY'
 ];
 
+const projectDescriptionTexts = [
+    'Description 1',
+    'Description 2',
+    'Description 3',
+    'Description 4'
+];
+
 const TextureArray = folderPaths.map(() => Array.from(Array(numberOfRows), () => Array(numberOfColumns)));
 
 // Direction images
@@ -132,4 +139,4 @@ async function loadProjects() {
     projects = await loadProjects();
 })();
 
-export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, PLAIN_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects, interactiveRect, projectType };
+export { app, folderPaths, stageWidth, stageHeight, GRID_OFFSET_X, stageSize, cellSize, numberOfRows, numberOfColumns, COLORS, DIRECTION_COLORS, PLAIN_COLORS, DragDirection, TileImageDirection, TextureArray, GridCell, gridCells, projects, interactiveRect, projectType, projectDescriptionTexts };

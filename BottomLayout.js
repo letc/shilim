@@ -1,4 +1,4 @@
-import { app, stageWidth } from './Config.js';
+import { app, stageWidth, projectDescriptionTexts } from './Config.js';
 
 const container = document.getElementById('app-container');
 
@@ -13,16 +13,28 @@ const sections = [
     { text: 'COMMUNITY', color: 0xBCAB99, container: null }    // Beige
 ];
 
-// Store the layout container globally
+// Store the layout container and text elements globally
 let layoutContainer = null;
+let textBoxContainer = null;
+let textElement = null;
+
+function updateTextBox(){
+    // Update text box with random description
+    if (textBoxContainer && textElement && projectDescriptionTexts.length > 0) {
+        const randomIndex = Math.floor(Math.random() * projectDescriptionTexts.length);
+        textElement.text = projectDescriptionTexts[randomIndex];
+        textBoxContainer.visible = true;
+    }
+}
 
 // Function to update section sizes based on percentages
 function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
-
     if(layoutContainer == null) {
         console.log('Layout container not initialized');
         return;
     }
+
+    
     // Adjust percentages if total exceeds 100%
     let adjustedPercentages = [p1, p2, p3, p4];
     let total = adjustedPercentages.reduce((sum, p) => sum + p, 0);
@@ -159,6 +171,87 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
 
 async function initBottomLayout() {
     try {
+        // Create a container for the text box with shadow
+        textBoxContainer = new PIXI.Container();
+        textBoxContainer.x = 390;  // Same x as layoutContainer
+        textBoxContainer.y = app.screen.height - 145;  // Position above layoutContainer with padding
+
+        // Create shadow for text box
+        let shadow = new PIXI.Graphics();
+        shadow.beginFill(0x000000, 0.1);
+        shadow.drawRoundedRect(4, 4, (container.clientWidth - 390) - 10, 75, 40);
+        shadow.endFill();
+        textBoxContainer.addChild(shadow);
+
+        // Create text box background
+        let textBox = new PIXI.Graphics();
+        textBox.lineStyle(1, 0xd2d2d2, 1);
+        textBox.beginFill(0xFFFFFF);
+        textBox.drawRoundedRect(0, 0, (container.clientWidth - 390) - 10, 75, 40);
+        textBox.endFill();
+        textBoxContainer.addChild(textBox);
+
+        // Add text to the textbox
+        textElement = new PIXI.Text('Welcome to the interactive grid! Drag to create shapes.', {
+            fontFamily: 'Arial',
+            fontSize: 16,
+            fill: 0x808080,
+            align: 'center'
+        });
+
+        // Center the text vertically and horizontally
+        textElement.anchor.set(0.5);
+        textElement.x = ((container.clientWidth - 390) - 10) / 2;
+        textElement.y = 37;
+        
+        textBoxContainer.addChild(textElement);
+
+        // Create close button
+        const closeButton = new PIXI.Container();
+        
+        // Close button background
+        const closeButtonBg = new PIXI.Graphics();
+        closeButtonBg.beginFill(0xf0f0f0);
+        closeButtonBg.drawCircle(0, 0, 12);
+        closeButtonBg.endFill();
+        closeButton.addChild(closeButtonBg);
+
+        // Close button X symbol
+        const closeSymbol = new PIXI.Text('×', {
+            fontFamily: 'Arial',
+            fontSize: 20,
+            fill: 0x808080,
+            align: 'center'
+        });
+        closeSymbol.anchor.set(0.5);
+        closeButton.addChild(closeSymbol);
+
+        // Position close button
+        closeButton.x = (container.clientWidth - 390) - 30;
+        closeButton.y = 20;
+        closeButton.eventMode = 'static';
+        closeButton.cursor = 'pointer';
+
+        // Add hover effect
+        closeButton.on('pointerover', () => {
+            closeButtonBg.tint = 0xe0e0e0;
+        });
+        closeButton.on('pointerout', () => {
+            closeButtonBg.tint = 0xFFFFFF;
+        });
+
+        // Add click handler
+        closeButton.on('pointerdown', () => {
+            textBoxContainer.visible = false;
+        });
+
+        textBoxContainer.visible = false;
+
+        textBoxContainer.addChild(closeButton);
+
+        // Add text box container to stage
+        app.stage.addChild(textBoxContainer);
+
         // Create a container for the bottom layout
         layoutContainer = new PIXI.Container();
         layoutContainer.x = 390;  // Position from left
@@ -176,10 +269,32 @@ async function initBottomLayout() {
 
         // Handle window resizing
         function resize() {
+            totalWidth = (container.clientWidth - 390) - 10; // 10 is padding
 
-            totalWidth = (container.clientWidth - 390) - 10; // 10 is padding, // 440 is left margin
-
+            // Update layout container position
             layoutContainer.y = container.clientHeight - 60;
+            
+            // Update text box container position and size
+            textBoxContainer.y = container.clientHeight - 145;
+            
+            // Update shadow
+            shadow.clear();
+            shadow.beginFill(0x000000, 0.1);
+            shadow.drawRoundedRect(4, 4, totalWidth, 75, 40);
+            shadow.endFill();
+            
+            // Update text box
+            textBox.clear();
+            textBox.lineStyle(1, 0xd2d2d2, 1);
+            textBox.beginFill(0xFFFFFF);
+            textBox.drawRoundedRect(0, 0, totalWidth, 75, 40);
+            textBox.endFill();
+
+            // Update text position
+            textElement.x = totalWidth / 2;
+
+            // Update close button position
+            closeButton.x = totalWidth - 30;
         }
 
         // Initial resize
@@ -193,4 +308,4 @@ async function initBottomLayout() {
     }
 }
 
-export { initBottomLayout, updateSectionSizes };
+export { initBottomLayout, updateSectionSizes, updateTextBox };
