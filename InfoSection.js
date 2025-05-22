@@ -47,7 +47,7 @@ async function initInfoSection() {
         archiveIndexImage.eventMode = 'static';
         archiveIndexImage.cursor = 'pointer';
         archiveIndexImage.on('pointerdown', () => {
-            window.location.href = 'projectindex.html';
+            window.open('projectindex.html', '_blank');
         });
 
         // Add text element with padding
@@ -60,6 +60,7 @@ async function initInfoSection() {
         });
         archiveIndexLabelText.x = 24; // 10px padding from left
         archiveIndexLabelText.y = 19; // 10px padding from top
+        archiveIndexLabelText.eventMode = 'none';
 
         //archiveIndexValue--------------------------------------
 
@@ -86,6 +87,7 @@ async function initInfoSection() {
         });
         archiveIndexValueLabelText.x = archiveIndexValueRect.x + 13; // 10px padding from left
         archiveIndexValueLabelText.y = 24; // 10px padding from top
+        archiveIndexValueLabelText.eventMode = 'none';
 
         // Add archive index elements to the container
         bgContainer.addChild(archiveIndexImage);

@@ -19,6 +19,59 @@ function createDetailWindow(details, link, cardBackground, x, y) {
     background.endFill();
     detailContainer.addChild(background);
 
+    // Create hit area for better interaction
+    const hitArea = new PIXI.Rectangle(0, 0, detailWidth, detailHeight);
+    detailContainer.hitArea = hitArea;
+    detailContainer.eventMode = 'static';
+    detailContainer.cursor = 'pointer';
+
+    // Store initial position
+    const initialY = detailContainer.y;
+    let isHovered = false;
+
+    const applyHoverState = () => {
+        if (!isHovered) {
+            isHovered = true;
+            gsap.to(detailContainer, {
+                y: initialY - 5,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+            background.clear();
+            background.lineStyle(1, 0x2196F3, 1);
+            background.beginFill(0xFFFFFF);
+            background.drawRoundedRect(0, 0, detailWidth, detailHeight, 15);
+            background.endFill();
+            detailContainer.filters = [new PIXI.filters.DropShadowFilter({
+                distance: 4,
+                alpha: 0.1,
+                blur: 8,
+                quality: 3
+            })];
+        }
+    };
+
+    const removeHoverState = () => {
+        if (isHovered) {
+            isHovered = false;
+            gsap.to(detailContainer, {
+                y: initialY,
+                duration: 0.3,
+                ease: 'power2.out'
+            });
+            background.clear();
+            background.lineStyle(1, 0xd2d2d2, 1);
+            background.beginFill(0xFFFFFF);
+            background.drawRoundedRect(0, 0, detailWidth, detailHeight, 15);
+            background.endFill();
+            detailContainer.filters = [];
+        }
+    };
+
+    detailContainer.on('pointerover', applyHoverState);
+    detailContainer.on('pointerout', removeHoverState);
+    detailContainer.on('pointerupoutside', removeHoverState);
+
     // Add title
     const detailText = new PIXI.Text(details, {
         fontFamily: 'Gelasio',
@@ -172,7 +225,8 @@ export function createProjectCard(title, author, date, link, details, x = 0, y =
     cardContainer.addChild(authorText);
     cardContainer.addChild(dateText);
 
-
+    cardContainer.eventMode = 'static';
+    cardContainer.cursor = 'pointer';
 
     // Create button container in bottom right
     const buttonContainer = new PIXI.Container();

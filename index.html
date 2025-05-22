@@ -50,27 +50,9 @@
         async function init() {
             await initApp();
             await LoadTextures();
-            /* await initInfoSection();
-            await initImageSection();
-            await initBottomLayout(); */
-
-            // Example: Set sections to 90% and 10% (hiding the last two)
-            //bottomLayout.updateSectionSizes(90, 10, 0, 0);
-
-            // You can update the sections at any time using:
-            // bottomLayout.updateSectionSizes(25, 25, 25, 25); // Equal distribution
-            // bottomLayout.updateSectionSizes(90, 10, 0, 0);   // Two sections only
-            // bottomLayout.updateSectionSizes(100, 0, 0, 0);   // Single section
         }
         
         init().catch(console.error);
-
-        // Make the update function available globally for testing
-        /* window.updateSections = (p1, p2, p3, p4) => {
-            if (bottomLayout) {
-                bottomLayout.updateSectionSizes(p1, p2, p3, p4);
-            }
-        }; */
     </script>
 </body>
 </html>

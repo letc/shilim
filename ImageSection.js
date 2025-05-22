@@ -8,8 +8,50 @@ let previousSurroundedGroupsLength = 1;
 let tempGridCells = [];
 let surroundedGroupsContainer = new PIXI.Container();
 
+let currentAudio = null;
+
+function playAudio(audioPath) {
+    // Stop any currently playing audio
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+
+    // Create audio element
+    const audio = new Audio(audioPath);
+    audio.play();
+    currentAudio = audio;
+
+    // Start fade out when the audio is near the end
+    audio.addEventListener('timeupdate', () => {
+        if (audio.currentTime >= audio.duration - 15) {
+            const timeLeft = audio.duration - audio.currentTime;
+            audio.volume = timeLeft / 15;
+        }
+    });
+
+    // Clean up when audio ends
+    audio.addEventListener('ended', () => {
+        currentAudio = null;
+    });
+}
+
 async function initImageSection() {
     try {
+        // Add keyboard event listeners for audio playback
+        window.addEventListener('keydown', (event) => {
+            switch(event.key) {
+                case '1':
+                    playAudio('assets/geeqtwith15sec fadeout.mp4');
+                    break;
+                case '2':
+                    playAudio('assets/shillimmorningchorus30sec.mp4');
+                    break;
+                case '3':
+                    playAudio('assets/jigneshtune.m4v');
+                    break;
+            }
+        });
 
         const DirectionalTextureArray = {
             TopToBottomRight: TextureArray[0],
