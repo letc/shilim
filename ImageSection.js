@@ -54,10 +54,12 @@ async function initImageSection() {
         });
 
         const DirectionalTextureArray = {
-            TopToBottomRight: TextureArray[0],
-            TopToBottomLeft: TextureArray[1],
-            BottomToTopRight: TextureArray[2],
-            BottomToTopLeft: TextureArray[3]
+            Top: TextureArray[0],           // ART
+            TopRight: TextureArray[1],      // COMMUNITY
+            BottomRight: TextureArray[2],   // ECOLOGY
+            Bottom: TextureArray[3],        // RESEARCH
+            BottomLeft: TextureArray[4],    // HEALTH
+            TopLeft: TextureArray[5]        // EDUCATION
         };
 
         let currentDragDirection;
@@ -76,10 +78,12 @@ async function initImageSection() {
         class TextureStats {
             constructor() {
                 this.textures = {
-                    [DragDirection.TopToBottomRight]: 0,
-                    [DragDirection.TopToBottomLeft]: 0,
-                    [DragDirection.BottomToTopRight]: 0,
-                    [DragDirection.BottomToTopLeft]: 0
+                    [DragDirection.Top]: 0,
+                    [DragDirection.TopRight]: 0,
+                    [DragDirection.BottomRight]: 0,
+                    [DragDirection.Bottom]: 0,
+                    [DragDirection.BottomLeft]: 0,
+                    [DragDirection.TopLeft]: 0
                 };
                 this.totalCells = numberOfRows * numberOfColumns;
                 this.surroundedEmptyCells = 0;
@@ -93,10 +97,12 @@ async function initImageSection() {
                     Array(numberOfColumns).fill(false)
                 );
 
-                this.topToBottomRightPercentage = '0';
-                this.topToBottomLeftPercentage = '0';
-                this.bottomToTopRightPercentage = '0';
-                this.bottomToTopLeftPercentage = '0';
+                this.topPercentage = '0';
+                this.topRightPercentage = '0';
+                this.bottomRightPercentage = '0';
+                this.bottomPercentage = '0';
+                this.bottomLeftPercentage = '0';
+                this.topLeftPercentage = '0';
             }
 
             // Helper function to check if a cell is within grid bounds
@@ -152,25 +158,27 @@ async function initImageSection() {
                 
                 if (totalFilled === 0) {
                     // If no cells are filled, make all sections equal
-                    updateSectionSizes(0, 0, 0, 0);
+                    updateSectionSizes(0, 0, 0, 0, 0, 0);
                     return;
                 }
 
-                // Calculate percentages based on filled cells
-                this.topToBottomRightPercentage = ((this.textures[DragDirection.TopToBottomRight] / totalFilled) * 100).toFixed(2);
-                this.topToBottomLeftPercentage = ((this.textures[DragDirection.TopToBottomLeft] / totalFilled) * 100).toFixed(2);
-                this.bottomToTopRightPercentage = ((this.textures[DragDirection.BottomToTopRight] / totalFilled) * 100).toFixed(2);
-                this.bottomToTopLeftPercentage = ((this.textures[DragDirection.BottomToTopLeft] / totalFilled) * 100).toFixed(2);
+                // Calculate percentages based on filled cells for 6 directions
+                this.topPercentage = ((this.textures[DragDirection.Top] / totalFilled) * 100).toFixed(2);
+                this.topRightPercentage = ((this.textures[DragDirection.TopRight] / totalFilled) * 100).toFixed(2);
+                this.bottomRightPercentage = ((this.textures[DragDirection.BottomRight] / totalFilled) * 100).toFixed(2);
+                this.bottomPercentage = ((this.textures[DragDirection.Bottom] / totalFilled) * 100).toFixed(2);
+                this.bottomLeftPercentage = ((this.textures[DragDirection.BottomLeft] / totalFilled) * 100).toFixed(2);
+                this.topLeftPercentage = ((this.textures[DragDirection.TopLeft] / totalFilled) * 100).toFixed(2);
 
-                // Update section sizes
+                // Update section sizes with 6 values
                 updateSectionSizes(
-                    parseFloat(this.topToBottomRightPercentage),
-                    parseFloat(this.topToBottomLeftPercentage),
-                    parseFloat(this.bottomToTopRightPercentage),
-                    parseFloat(this.bottomToTopLeftPercentage)
+                    parseFloat(this.topPercentage),
+                    parseFloat(this.topRightPercentage),
+                    parseFloat(this.bottomRightPercentage),
+                    parseFloat(this.bottomPercentage),
+                    parseFloat(this.bottomLeftPercentage),
+                    parseFloat(this.topLeftPercentage)
                 );
-
-                //updateSectionSizes(100, 0, 0, 0);
 
                 archiveIndexValueLabelText.text = (this.surroundedGroups.length).toString();
             }
@@ -1059,13 +1067,37 @@ async function initImageSection() {
 }
 
 function getDragDirection(startX, startY, endX, endY) {
-    const isGoingRight = endX > startX;
-    const isGoingDown = endY > startY;
-
-    if (isGoingDown) {
-        return isGoingRight ? DragDirection.TopToBottomRight : DragDirection.TopToBottomLeft;
-    } else {
-        return isGoingRight ? DragDirection.BottomToTopRight : DragDirection.BottomToTopLeft;
+    // Calculate the angle of the drag vector
+    const dx = endX - startX;
+    const dy = endY - startY;
+    
+    // Calculate angle in degrees (0-360)
+    // atan2 returns angle in radians from -π to π
+    // We convert to degrees and normalize to 0-360
+    let angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    if (angle < 0) angle += 360;
+    
+    // Map angle to hexagonal directions (60-degree segments)
+    // Each direction covers 60 degrees:
+    // BottomRight: 330-30 (or -30 to 30 normalized)
+    // Bottom: 30-90
+    // BottomLeft: 90-150
+    // TopLeft: 150-210
+    // Top: 210-270
+    // TopRight: 270-330
+    
+    if (angle >= 330 || angle < 30) {
+        return DragDirection.BottomRight;  // Right (0°)
+    } else if (angle >= 30 && angle < 90) {
+        return DragDirection.Bottom;       // Down-Right (60°)
+    } else if (angle >= 90 && angle < 150) {
+        return DragDirection.BottomLeft;   // Down-Left (120°)
+    } else if (angle >= 150 && angle < 210) {
+        return DragDirection.TopLeft;      // Left (180°)
+    } else if (angle >= 210 && angle < 270) {
+        return DragDirection.Top;          // Up-Left (240°)
+    } else { // 270-330
+        return DragDirection.TopRight;     // Up-Right (300°)
     }
 }
 

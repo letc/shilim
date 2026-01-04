@@ -32,50 +32,63 @@ const COLORS = {
     SCROLLBAR_THUMB: '#999999'
 };
 
-// Direction colors
+// Direction colors - Hexagonal (6 directions)
 const DIRECTION_COLORS = {
-    TopToBottomRight: '#ff0000',  // Red
-    TopToBottomLeft: '#00ff00',   // Green
-    BottomToTopRight: '#0000ff',  // Blue
-    BottomToTopLeft: '#ffa500'    // Orange
+    Top: '#ff0000',           // Red - ART
+    TopRight: '#00ff00',      // Green - COMMUNITY
+    BottomRight: '#0000ff',   // Blue - ECOLOGY
+    Bottom: '#ffa500',        // Orange - RESEARCH
+    BottomLeft: '#9c27b0',    // Purple - HEALTH
+    TopLeft: '#ff9800'        // Deep Orange - EDUCATION
 };
 
-// Encloser colors
+// Encloser colors - Hexagonal (6 directions)
 const PLAIN_COLORS = {
-    TopToBottomRight: '#dcd6ca',
-    TopToBottomLeft: '#f0f0f0',
-    BottomToTopRight: '#dcd6ca',
-    BottomToTopLeft: '#c5d8e1'
+    Top: '#dcd6ca',           // ART
+    TopRight: '#f0f0f0',      // COMMUNITY
+    BottomRight: '#dcd6ca',   // ECOLOGY
+    Bottom: '#c5d8e1',        // RESEARCH
+    BottomLeft: '#e8d5e8',    // HEALTH
+    TopLeft: '#ffe4cc'        // EDUCATION
 };
 
-// Direction enum
+// Direction enum - Hexagonal (6 directions)
+// Directions are determined by angle: Top (270°±30°), TopRight (330°±30°), etc.
 const DragDirection = {
-    TopToBottomRight: 'TopToBottomRight',   // x2 > x1 && y2 > y1
-    TopToBottomLeft: 'TopToBottomLeft',     // x2 < x1 && y2 > y1
-    BottomToTopRight: 'BottomToTopRight',   // x2 > x1 && y2 < y1
-    BottomToTopLeft: 'BottomToTopLeft'      // x2 < x1 && y2 < y1
+    Top: 'Top',                   // 240° to 300° (straight up)
+    TopRight: 'TopRight',         // 300° to 360° (up and right)
+    BottomRight: 'BottomRight',   // 0° to 60° (down and right)
+    Bottom: 'Bottom',             // 60° to 120° (straight down)
+    BottomLeft: 'BottomLeft',     // 120° to 180° (down and left)
+    TopLeft: 'TopLeft'            // 180° to 240° (up and left)
 };
 
-// Define the folder paths
+// Define the folder paths - 6 hexagonal categories
 const folderPaths = [
-    'assets/illustration1',
-    'assets/illustration2',
-    'assets/illustration3',
-    'assets/illustration4'
+    'assets/illustration1',  // ART - Top
+    'assets/illustration2',  // COMMUNITY - TopRight
+    'assets/illustration3',  // ECOLOGY - BottomRight
+    'assets/illustration4',  // RESEARCH - Bottom
+    'assets/illustration5',  // HEALTH - BottomLeft
+    'assets/illustration6'   // EDUCATION - TopLeft
 ];
 
 const projectType = [
-    'ART',
-    'RESEARCH',
-    'ECOLOGY',
-    'COMMUNITY'
+    'ART',        // Top
+    'COMMUNITY',  // TopRight
+    'ECOLOGY',    // BottomRight
+    'RESEARCH',   // Bottom
+    'HEALTH',     // BottomLeft
+    'EDUCATION'   // TopLeft
 ];
 
 const projectDescriptionTexts = [
-    'Description 1',
-    'Description 2',
-    'Description 3',
-    'Description 4'
+    'Description 1',  // ART
+    'Description 2',  // COMMUNITY
+    'Description 3',  // ECOLOGY
+    'Description 4',  // RESEARCH
+    'Description 5',  // HEALTH
+    'Description 6'   // EDUCATION
 ];
 
 const TextureArray = folderPaths.map(() => Array.from(Array(numberOfRows), () => Array(numberOfColumns)));

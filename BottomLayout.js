@@ -5,12 +5,14 @@ const container = document.getElementById('app-container');
 // Total width of the layout
 let totalWidth = 1100;
 
-// Create sections with text
+// Create sections with text - 6 hexagonal categories
 const sections = [
-    { text: 'ART', color: 0xb1c6c9, container: null },      // Light blue-gray
-    { text: 'RESEARCH', color: 0x445768, container: null },  // Dark gray
-    { text: 'ECOLOGY', color: 0x97a266, container: null },   // Olive green
-    { text: 'COMMUNITY', color: 0xBCAB99, container: null }    // Beige
+    { text: 'ART', color: 0xb1c6c9, container: null },           // Light blue-gray - Top
+    { text: 'COMMUNITY', color: 0xBCAB99, container: null },     // Beige - TopRight
+    { text: 'ECOLOGY', color: 0x97a266, container: null },       // Olive green - BottomRight
+    { text: 'RESEARCH', color: 0x445768, container: null },      // Dark gray - Bottom
+    { text: 'HEALTH', color: 0x9b6b9e, container: null },        // Purple - BottomLeft
+    { text: 'EDUCATION', color: 0xd4915d, container: null }      // Deep Orange - TopLeft
 ];
 
 // Store the layout container and text elements globally
@@ -27,8 +29,8 @@ function updateTextBox(){
     }
 }
 
-// Function to update section sizes based on percentages
-function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
+// Function to update section sizes based on percentages - 6 hexagonal directions
+function updateSectionSizes(p1 = 16.67, p2 = 16.67, p3 = 16.67, p4 = 16.67, p5 = 16.67, p6 = 16.67) {
     if(layoutContainer == null) {
         console.log('Layout container not initialized');
         return;
@@ -36,7 +38,7 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
 
     
     // Adjust percentages if total exceeds 100%
-    let adjustedPercentages = [p1, p2, p3, p4];
+    let adjustedPercentages = [p1, p2, p3, p4, p5, p6];
     let total = adjustedPercentages.reduce((sum, p) => sum + p, 0);
     
     if (total > 100) {
@@ -44,7 +46,7 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
         const scale = 100 / total;
         adjustedPercentages = adjustedPercentages.map(p => p * scale);
         //console.log('Adjusted percentages to:', adjustedPercentages);
-        [p1, p2, p3, p4] = adjustedPercentages;
+        [p1, p2, p3, p4, p5, p6] = adjustedPercentages;
     }
 
     layoutContainer.removeChildren();
@@ -83,7 +85,7 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
         layoutContainer.addChild(sectionContainer);
     });
 
-    //console.log('Updating sections with percentages:', [p1, p2, p3, p4]);
+    //console.log('Updating sections with percentages:', [p1, p2, p3, p4, p5, p6]);
 
     // Ensure we have the layout container
     if (!layoutContainer) {
@@ -94,7 +96,7 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
     let currentX = 0;
 
     sections.forEach((section, index) => {
-        const percentage = [p1, p2, p3, p4][index];
+        const percentage = [p1, p2, p3, p4, p5, p6][index];
         //console.log(`Section ${section.text}: ${percentage}%, container:`, section.container?.visible);
         
         // Show and update section if percentage > 0, hide if 0
@@ -119,7 +121,7 @@ function updateSectionSizes(p1 = 25, p2 = 25, p3 = 25, p4 = 25) {
             
                 // Apply rounded corners based on position
                 const isFirst = currentX === 0;
-                const isLast = index === sections.findLastIndex((_, i) => [p1, p2, p3, p4][i] > 0);
+                const isLast = index === sections.findLastIndex((_, i) => [p1, p2, p3, p4, p5, p6][i] > 0);
                 const radius = 20;
 
                 // Draw main rectangle
@@ -262,8 +264,8 @@ async function initBottomLayout() {
 
         totalWidth = (container.clientWidth - 390) - 10; // 10 is padding, // 440 is left margin
 
-        // Initial layout with equal sizes
-        updateSectionSizes(0,0,0,0);
+        // Initial layout with equal sizes - 6 categories
+        updateSectionSizes(0,0,0,0,0,0);
 
         app.stage.addChild(layoutContainer);
 

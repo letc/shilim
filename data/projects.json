@@ -3,83 +3,145 @@
     {
       "title": "Artist Residency 001.",
       "author": "Ann De Forest",
+      "startdate": "2024-01-02",
+      "enddate": "2025-01-02",
       "date": "2024-01-02, 1 yr",
       "primarycategory": "ART",
       "secondarycategory": "COMMUNITY",
       "link": "projectpage.html",
-      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+      "shortdescription": "Exploring the intersection of traditional art practices and community engagement.",
+      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      "thumbnail": "assets/thumbnail/thumbnail_1767542964891.png"
     },
     {
       "title": "Artist Residency 003.",
       "author": "Kushala Vora",
+      "startdate": "2024-01-02",
+      "enddate": "2025-01-02",
       "date": "2024-01-02, 1 yr",
       "primarycategory": "ART",
       "secondarycategory": "ECOLOGY, COMMUNITY",
       "link": "projectpage.html",
-      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+      "shortdescription": "Art-based ecological awareness project connecting communities with nature.",
+      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      "thumbnail": ""
     },
     {
       "title": "Artist Residency 004.",
       "author": "Constantine and Rebecca",
+      "startdate": "2024-01-02",
+      "enddate": "2025-01-02",
       "date": "2024-01-02, 1 yr",
       "primarycategory": "ART",
       "secondarycategory": "COMMUNITY",
       "link": "projectpage.html",
-      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+      "shortdescription": "Collaborative art installation bringing together diverse community voices.",
+      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      "thumbnail": ""
     },
     {
       "title": "Artist Residency 007.",
       "author": "Joel Gordon",
+      "startdate": "2024-01-02",
+      "enddate": "2025-01-02",
       "date": "2024-01-02, 1 yr",
       "primarycategory": "ART",
       "secondarycategory": "RESEARCH, ECOLOGY",
       "link": "projectpage.html",
-      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+      "shortdescription": "Research-driven artistic exploration of ecological systems and patterns.",
+      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      "thumbnail": ""
     },
     {
       "title": "Artist Residency 010.",
       "author": "Erin Gee",
+      "startdate": "2024-01-02",
+      "enddate": "2025-01-02",
       "date": "2024-01-02, 1 yr",
       "primarycategory": "ART",
       "secondarycategory": "ECOLOGY, RESEARCH",
       "link": "projectpage.html",
-      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+      "shortdescription": "Interactive art examining the relationship between ecology and human behavior.",
+      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      "thumbnail": ""
     },
     {
       "title": "Mapping Workshops",
       "author": "Vritti Mangeulley & Hibah Hanif",
+      "startdate": "2024-01-02",
+      "enddate": "2025-01-02",
       "date": "2024-01-02, 1 yr",
       "primarycategory": "ART",
       "secondarycategory": "RESEARCH, ECOLOGY",
       "link": "projectpage.html",
-      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+      "shortdescription": "Participatory mapping workshops documenting ecological and cultural landscapes.",
+      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      "thumbnail": ""
     },
     {
       "title": "Shilim - a Case Study, Interim Report",
       "author": "Oikos",
+      "startdate": "2024-01-02",
+      "enddate": "2025-01-02",
       "date": "2024-01-02, 1 yr",
       "primarycategory": "ECOLOGY",
       "secondarycategory": "RESEARCH",
       "link": "projectpage.html",
-      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+      "shortdescription": "Comprehensive ecological assessment and biodiversity study of the Shilim region.",
+      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      "thumbnail": ""
     },
     {
       "title": "WCT Shillim Report",
       "author": "Ms. Pooja Dewoolkar, Ms. Prachi Paranjpye, Dr. Anish Andheria",
+      "startdate": "2024-01-02",
+      "enddate": "2025-01-02",
       "date": "2024-01-02, 1 yr",
       "primarycategory": "RESEARCH",
       "secondarycategory": "ECOLOGY",
       "link": "projectpage.html",
-      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+      "shortdescription": "Wildlife conservation trust study on local fauna and habitat preservation.",
+      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      "thumbnail": ""
     },
     {
       "title": "Pune University Report Shillim",
       "author": "University of Pune",
+      "startdate": "2024-01-02",
+      "enddate": "2025-01-02",
       "date": "2024-01-02, 1 yr",
       "primarycategory": "RESEARCH",
       "secondarycategory": "ECOLOGY",
       "link": "projectpage.html",
-      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book."
+      "shortdescription": "Academic research report on biodiversity and environmental conditions in Shillim.",
+      "details": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+      "thumbnail": ""
+    },
+    {
+      "title": "Community Health Initiative",
+      "author": "Dr. Sarah Williams",
+      "startdate": "2025-06-15",
+      "enddate": "2025-12-15",
+      "date": "2025-06-15, 6 mo",
+      "primarycategory": "HEALTH",
+      "secondarycategory": "COMMUNITY, EDUCATION",
+      "link": "projectpage.html",
+      "shortdescription": "Community-based health program promoting preventive care and wellness education.",
+      "details": "A comprehensive health and wellness program focused on preventive care and community health education. This initiative brings together healthcare professionals and community members to address local health challenges and promote sustainable wellness practices.",
+      "thumbnail": ""
+    },
+    {
+      "title": "Environmental Education Program",
+      "author": "Green Learning Institute",
+      "startdate": "2025-09-01",
+      "enddate": "2026-09-01",
+      "date": "2025-09-01, 1 yr",
+      "primarycategory": "EDUCATION",
+      "secondarycategory": "ECOLOGY, COMMUNITY",
+      "link": "projectpage.html",
+      "shortdescription": "Educational workshops teaching sustainable practices and environmental stewardship.",
+      "details": "An educational initiative designed to teach sustainable practices and environmental awareness to local communities. The program combines hands-on workshops, field studies, and interactive learning experiences to foster ecological literacy and environmental stewardship.",
+      "thumbnail": ""
     }
   ]
 }

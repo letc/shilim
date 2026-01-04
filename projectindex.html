@@ -102,6 +102,14 @@
             height: fit-content;
         }
 
+        .project-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
         .project-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -148,6 +156,13 @@
         .details-section p {
             line-height: 1.6;
             color: #666;
+        }
+
+        .project-thumbnail {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            margin-bottom: 15px;
         }
 
         .tag {
@@ -265,6 +280,7 @@
                     project.author.toLowerCase().includes(searchTerm) ||
                     project.primarycategory.toLowerCase().includes(searchTerm) ||
                     project.secondarycategory.toLowerCase().includes(searchTerm) ||
+                    (project.shortdescription && project.shortdescription.toLowerCase().includes(searchTerm)) ||
                     project.details.toLowerCase().includes(searchTerm)
                 )
                 : currentProjects;
@@ -284,16 +300,26 @@
                 card.className = `project-card ${originalIndex === selectedProjectIndex ? 'selected' : ''}`;
                 card.onclick = () => selectProject(originalIndex);
                 
-                // Truncate details to first 100 characters for the card
-                const truncatedDetails = project.details.length > 100 
-                    ? project.details.substring(0, 100) + '...' 
-                    : project.details;
+                // Use short description or truncate details
+                const displayText = project.shortdescription || 
+                    (project.details.length > 100 ? project.details.substring(0, 100) + '...' : project.details);
+                
+                // Format date display
+                const dateDisplay = project.startdate && project.enddate 
+                    ? `${project.startdate} to ${project.enddate}` 
+                    : project.date;
+                
+                // Thumbnail image HTML
+                const thumbnailHtml = project.thumbnail 
+                    ? `<img src="${project.thumbnail}" alt="${project.title}" onerror="this.style.display='none'">` 
+                    : '';
                 
                 card.innerHTML = `
+                    ${thumbnailHtml}
                     <h3>${project.title}</h3>
                     <p><strong>Author:</strong> ${project.author}</p>
-                    <p><strong>Date:</strong> ${project.date}</p>
-                    <p>${truncatedDetails}</p>
+                    <p><strong>Date:</strong> ${dateDisplay}</p>
+                    <p>${displayText}</p>
                 `;
                 projectGrid.appendChild(card);
             });
@@ -308,10 +334,29 @@
                 card.classList.toggle('selected', i === index);
             });
             
+            // Format date display
+            const dateDisplay = project.startdate && project.enddate 
+                ? `${project.startdate} to ${project.enddate}` 
+                : project.date;
+            
+            // Thumbnail image HTML
+            const thumbnailHtml = project.thumbnail 
+                ? `<img src="${project.thumbnail}" alt="${project.title}" class="project-thumbnail" onerror="this.style.display='none'">` 
+                : '';
+            
+            // Short description section
+            const shortDescHtml = project.shortdescription 
+                ? `<div class="details-section">
+                    <h3>Summary</h3>
+                    <p>${project.shortdescription}</p>
+                </div>` 
+                : '';
+            
             // Update details section
             const detailsSection = document.getElementById('projectDetails');
             detailsSection.innerHTML = `
                 <h2>${project.title}</h2>
+                ${thumbnailHtml}
                 
                 <div class="details-section">
                     <h3>Author</h3>
@@ -319,8 +364,8 @@
                 </div>
                 
                 <div class="details-section">
-                    <h3>Date</h3>
-                    <p>${project.date}</p>
+                    <h3>Duration</h3>
+                    <p>${dateDisplay}</p>
                 </div>
                 
                 <div class="details-section">
@@ -333,8 +378,10 @@
                     </p>
                 </div>
                 
+                ${shortDescHtml}
+                
                 <div class="details-section">
-                    <h3>Details</h3>
+                    <h3>Description</h3>
                     <p>${project.details}</p>
                 </div>
                 
