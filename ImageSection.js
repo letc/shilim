@@ -722,17 +722,23 @@ async function initImageSection() {
                 const direction = getDragDirection(startX, startY, endX, endY);
                 let projectIndex = 0;
                 switch(direction) {
-                    case DragDirection.TopToBottomRight:
+                    case DragDirection.Top:
                         projectIndex = 0; // ART
                         break;
-                    case DragDirection.TopToBottomLeft:
-                        projectIndex = 1; // RESEARCH
+                    case DragDirection.TopRight:
+                        projectIndex = 1; // COMMUNITY
                         break;
-                    case DragDirection.BottomToTopRight:
+                    case DragDirection.BottomRight:
                         projectIndex = 2; // ECOLOGY
                         break;
-                    case DragDirection.BottomToTopLeft:
-                        projectIndex = 3; // COMMUNITY
+                    case DragDirection.Bottom:
+                        projectIndex = 3; // RESEARCH
+                        break;
+                    case DragDirection.BottomLeft:
+                        projectIndex = 4; // HEALTH
+                        break;
+                    case DragDirection.TopLeft:
+                        projectIndex = 5; // EDUCATION
                         break;
                 }
                 
@@ -793,7 +799,7 @@ async function initImageSection() {
             gridContainer.addChild(projectTypeText);
 
             // Reset section sizes
-            updateSectionSizes(0, 0, 0, 0);
+            updateSectionSizes(0, 0, 0, 0, 0, 0);
 
             // Clear projects from InfoSection
             if (typeof window.clearAllProjects === 'function') {
