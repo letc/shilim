@@ -123,9 +123,9 @@ async function downloadAndExtractZip(zipUrl, index) {
 async function LoadTextures() {
     try {
         // Create organization title
-        const titleText = new PIXI.Text('ORGANISATION', {
-            fontFamily: 'Arial',
-            fontSize: 32,
+        const titleText = new PIXI.Text('SHILLIM INSTITUTE', {
+            fontFamily: 'Trebuchet MS',
+            fontSize: 30,
             fill: 'black',
             align: 'left'
         });
@@ -135,12 +135,14 @@ async function LoadTextures() {
         app.stage.addChild(titleText);
 
         // Create subtitle
-        const subtitleText = new PIXI.Text('a single line subtitle or a mission statement.', {
-            fontFamily: 'Arial',
-            fontSize: 18,
+        const subtitleText = new PIXI.Text('Inspiring Commitment to Action through Sustainable art practices in the Sahyadri Western Ghats India.', {
+            fontFamily: 'Lucida Grande',
+            fontSize: 17,
             fill: 'black',
-            fontStyle: 'italic',
-            align: 'left'
+            //fontStyle: 'italic',
+            align: 'left',
+            wordWrap: true,
+            wordWrapWidth: 600
         });
         subtitleText.anchor.set(0, 0.5);
         subtitleText.x = app.screen.width / 2 - 250;
@@ -148,29 +150,29 @@ async function LoadTextures() {
         app.stage.addChild(subtitleText);
 
         // Create description
-        const descriptionText = new PIXI.Text('A short description of the organisatin or this website and\narchive. This is also where any updates, announcements\nand crucial credits can go. Along with any declerations of\nsite-settings, permissions and cookie settings.', {
-            fontFamily: 'Arial',
-            fontSize: 16,
+        const descriptionText = new PIXI.Text('Located in the Western Ghats, The Shillim Institute safeguards approximately 2000 acres of land in the Northern region of this mountain range, which has been declared a UNESCO World Heritage Site and a biodiversity conservation hotspot. The Institute has enlisted local communities as forest guards, and introduced thousands of native plant species, resulting in the flourishing of over a million trees comprising 64 diverse species.\n\nThe Pavna Collective is a consortium of conservation, ecology, and arts organizations, convened by the Shillim Institute. Among its initiatives, the Pavna Collective sponsors 3-6 art residencies a year, fellowships, Mapping Workshop, Cultural documentation and Skill development programs in the Sayadri ranges.', {
+            fontFamily: 'Lucida Grande',
+            fontSize: 15,
             fill: 'black',
             align: 'left',
             wordWrap: true,
-            wordWrapWidth: 500
+            wordWrapWidth: 600
         });
         descriptionText.anchor.set(0, 0.5);
         descriptionText.x = app.screen.width / 2 - 250;
-        descriptionText.y = subtitleText.y + 60;
+        descriptionText.y = subtitleText.y + 160;
         app.stage.addChild(descriptionText);
 
         // Create continue button
-        continueText = new PIXI.Text('continue', {
-            fontFamily: 'Arial',
+        continueText = new PIXI.Text('CONTINUE', {
+            fontFamily: 'Lucida Grande',
             fontSize: 16,
             fill: '#4A90E2',
             align: 'left'
         });
-        continueText.anchor.set(0, 0.5);
+        continueText.anchor.set(0, 0.45);
         continueText.x = app.screen.width / 2 - 250;
-        continueText.y = descriptionText.y + 80;
+        continueText.y = descriptionText.y + 160;
         continueText.eventMode = 'static';
         continueText.cursor = 'pointer';
         continueText.visible = false;
@@ -185,23 +187,23 @@ async function LoadTextures() {
         app.stage.addChild(loadingContainer);
 
         //Create loading text
-        const loadingText = new PIXI.Text('Loading archive...', {
-            fontFamily: 'Arial',
-            fontSize: 18,
-            fill: '#4A90E2',
+        const loadingText = new PIXI.Text('LOADING ARCHIVE...', {
+            fontFamily: 'Lucida Grande',
+            fontSize: 16,
+            fill: '#3092cfff',
             align: 'left',
             wordWrap: true,
             wordWrapWidth: 500
         });
-        loadingText.anchor.set(0.5);
+        loadingText.anchor.set(0.45); //edited from 0,5 to align fonts.
         loadingText.x = app.screen.width / 2 - 178;
-        loadingText.y = descriptionText.y + 60;
+        loadingText.y = descriptionText.y + 160;
         loadingContainer.addChild(loadingText);
 
         // Create loading bar background
         const loadingBarBg = new PIXI.Graphics();
         loadingBarBg.beginFill(0xDDDDDD);
-        loadingBarBg.drawRoundedRect(app.screen.width / 2 - 250, descriptionText.y + 80, 200, 10, 5);
+        loadingBarBg.drawRoundedRect(app.screen.width / 2 - 250, descriptionText.y + 120, 600, 10, 1);
         loadingBarBg.endFill();
         loadingContainer.addChild(loadingBarBg);
 
@@ -225,10 +227,10 @@ async function LoadTextures() {
                 loadingBarFill.beginFill(0x4A90E2);
                 loadingBarFill.drawRoundedRect(
                     app.screen.width / 2 - 250,
-                    descriptionText.y + 80,
-                    200 * progress,
+                    descriptionText.y + 120,
+                    600 * progress,
                     10,
-                    5
+                    1
                 );
                 loadingBarFill.endFill();
                 
