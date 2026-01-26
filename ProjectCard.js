@@ -1,14 +1,17 @@
 import { app } from './Config.js';
 import { whiteCircleBg } from './Resources.js';
 
-function createDetailWindow(details, link, cardBackground, x, y) {
+// Track currently open detail window
+let currentOpenDetailWindow = null;
+
+function createDetailWindow(artistDetails, details, link, cardBackground, x, y) {
     const detailContainer = new PIXI.Container();
     detailContainer.x = x;
     detailContainer.y = y;
 
     // Detail window dimensions
     const detailWidth = 320;
-    const detailHeight = 400;
+    const detailHeight = 500;
     const padding = 20;
 
     // Create background with rounded corners
@@ -72,18 +75,179 @@ function createDetailWindow(details, link, cardBackground, x, y) {
     detailContainer.on('pointerout', removeHoverState);
     detailContainer.on('pointerupoutside', removeHoverState);
 
-    // Add title
+    // Create scrollable content container
+    const scrollContainer = new PIXI.Container();
+    const scrollbarWidth = 8;
+    const closeButtonHeight = 24 + 10; // closeSize + top margin
+    const topPadding = closeButtonHeight + 10; // Space for close button + extra margin
+    const contentWidth = detailWidth - (padding * 2) - scrollbarWidth - 5;
+    const scrollAreaHeight = detailHeight - topPadding - padding - 70; // Reserve space for button at bottom
+
+    let currentY = 0;
+
+    // Add Artist Details Section
+    if (artistDetails) {
+        const artistTitle = new PIXI.Text('Artist Details', {
+            fontFamily: 'Gelasio',
+            fontSize: 18,
+            fontWeight: 'bold',
+            fill: 0x2196F3,
+            wordWrap: true,
+            wordWrapWidth: contentWidth
+        });
+        artistTitle.x = 0;
+        artistTitle.y = currentY;
+        scrollContainer.addChild(artistTitle);
+        currentY += artistTitle.height + 10;
+
+        const artistText = new PIXI.Text(artistDetails, {
+            fontFamily: 'Gelasio',
+            fontSize: 16,
+            fontStyle: 'normal',
+            fill: 0x444444,
+            wordWrap: true,
+            wordWrapWidth: contentWidth,
+            lineHeight: 24
+        });
+        artistText.x = 0;
+        artistText.y = currentY;
+        scrollContainer.addChild(artistText);
+        currentY += artistText.height + 20;
+
+        // Add separator line
+        const separator = new PIXI.Graphics();
+        separator.lineStyle(2, 0x999999, 1);
+        separator.moveTo(0, 0);
+        separator.lineTo(contentWidth, 0);
+        separator.stroke();
+        separator.x = 0;
+        separator.y = currentY;
+        scrollContainer.addChild(separator);
+        currentY += 20;
+
+    }
+
+    // Add Project Details Section
+    const projectTitle = new PIXI.Text('Project Details', {
+        fontFamily: 'Gelasio',
+        fontSize: 18,
+        fontWeight: 'bold',
+        fill: 0x2196F3,
+        wordWrap: true,
+        wordWrapWidth: contentWidth
+    });
+    projectTitle.x = 0;
+    projectTitle.y = currentY;
+    scrollContainer.addChild(projectTitle);
+    currentY += projectTitle.height + 10;
+
     const detailText = new PIXI.Text(details, {
         fontFamily: 'Gelasio',
-        fontSize: 20,
+        fontSize: 16,
         fontStyle: 'normal',
-        fill: 0x000000,
+        fill: 0x444444,
         wordWrap: true,
-        wordWrapWidth: detailWidth - (padding * 2)
+        wordWrapWidth: contentWidth,
+        lineHeight: 24
     });
-    detailText.x = padding;
-    detailText.y = padding;
-    detailContainer.addChild(detailText);
+    detailText.x = 0;
+    detailText.y = currentY;
+    scrollContainer.addChild(detailText);
+    currentY += detailText.height;
+
+    const totalContentHeight = currentY;
+
+    // Position scroll container
+    scrollContainer.x = padding;
+    scrollContainer.y = topPadding;
+
+    // Create mask for scrollable area
+    const scrollMask = new PIXI.Graphics();
+    scrollMask.beginFill(0xFFFFFF);
+    scrollMask.drawRect(padding, topPadding, contentWidth, scrollAreaHeight);
+    scrollMask.endFill();
+    detailContainer.addChild(scrollMask);
+    scrollContainer.mask = scrollMask;
+
+    detailContainer.addChild(scrollContainer);
+
+    // Create scrollbar if content exceeds visible area
+    if (totalContentHeight > scrollAreaHeight) {
+        const scrollbarHeight = Math.max(30, (scrollAreaHeight / totalContentHeight) * scrollAreaHeight);
+        const scrollbarTrack = new PIXI.Graphics();
+        scrollbarTrack.beginFill(0xE0E0E0);
+        scrollbarTrack.drawRoundedRect(detailWidth - scrollbarWidth - padding, topPadding, scrollbarWidth, scrollAreaHeight, 4);
+        scrollbarTrack.endFill();
+        detailContainer.addChild(scrollbarTrack);
+
+        const scrollbarThumb = new PIXI.Graphics();
+        scrollbarThumb.beginFill(0xAAAAAA);
+        scrollbarThumb.drawRoundedRect(0, 0, scrollbarWidth, scrollbarHeight, 4);
+        scrollbarThumb.endFill();
+        scrollbarThumb.x = detailWidth - scrollbarWidth - padding;
+        scrollbarThumb.y = topPadding;
+        scrollbarThumb.eventMode = 'static';
+        scrollbarThumb.cursor = 'pointer';
+        detailContainer.addChild(scrollbarThumb);
+        
+        // Store reference to scrollbar thumb
+        detailContainer.scrollbarThumb = scrollbarThumb;
+
+        let isDragging = false;
+        let dragStartY = 0;
+        let scrollStartY = 0;
+
+        const updateScrollPosition = (thumbY) => {
+            const maxThumbY = scrollAreaHeight - scrollbarHeight;
+            const clampedY = Math.max(0, Math.min(maxThumbY, thumbY));
+            scrollbarThumb.y = topPadding + clampedY;
+            const scrollRatio = clampedY / maxThumbY;
+            const maxScroll = totalContentHeight - scrollAreaHeight;
+            scrollContainer.y = topPadding - (scrollRatio * maxScroll);
+        };
+
+        scrollbarThumb.on('pointerdown', (event) => {
+            isDragging = true;
+            dragStartY = event.global.y;
+            scrollStartY = scrollbarThumb.y - topPadding;
+        });
+
+        detailContainer.on('pointermove', (event) => {
+            if (isDragging) {
+                const deltaY = event.global.y - dragStartY;
+                updateScrollPosition(scrollStartY + deltaY);
+            }
+        });
+
+        detailContainer.on('pointerup', () => {
+            isDragging = false;
+        });
+
+        detailContainer.on('pointerupoutside', () => {
+            isDragging = false;
+        });
+
+        // Mouse wheel scrolling
+        detailContainer.on('wheel', (event) => {
+            const scrollDelta = event.deltaY * 0.5;
+            const currentScrollRatio = (scrollbarThumb.y - topPadding) / (scrollAreaHeight - scrollbarHeight);
+            const maxScroll = totalContentHeight - scrollAreaHeight;
+            const currentScroll = currentScrollRatio * maxScroll;
+            const newScroll = Math.max(0, Math.min(maxScroll, currentScroll + scrollDelta));
+            const newScrollRatio = newScroll / maxScroll;
+            updateScrollPosition(newScrollRatio * (scrollAreaHeight - scrollbarHeight));
+        });
+
+        scrollbarThumb.on('pointerover', () => {
+            scrollbarThumb.tint = 0x888888;
+        });
+
+        scrollbarThumb.on('pointerout', () => {
+            scrollbarThumb.tint = 0xFFFFFF;
+        });
+    } else {
+        detailContainer.addChild(scrollContainer);
+    }
 
     // Create URL button
     const urlButton = new PIXI.Container();
@@ -152,16 +316,24 @@ function createDetailWindow(details, link, cardBackground, x, y) {
         closeBg.tint = 0xFFFFFF;
     });
 
+        if (currentOpenDetailWindow === detailContainer) {
+            currentOpenDetailWindow = null;
+        }
     closeButton.on('pointertap', () => {
         detailContainer.visible = false;
         cardBackground.tint = 0xFFFFFF; // White
     });
 
     detailContainer.addChild(closeButton);
+    
+    // Store references for scroll position reset
+    detailContainer.scrollContainer = scrollContainer;
+    detailContainer.topPadding = topPadding;
+    
     return detailContainer;
 }
 
-export function createProjectCard(title, author, date, link, details, x = 0, y = 0) {
+export function createProjectCard(title, author, date, link, details, artistDetails = '', x = 0, y = 0) {
     const cardContainer = new PIXI.Container();
     cardContainer.x = x;
     cardContainer.y = y;
@@ -258,16 +430,35 @@ export function createProjectCard(title, author, date, link, details, x = 0, y =
     app.stage.addChild(detailContainer);
 
     // Create detail window
-    const detailWindow = createDetailWindow(details, link, background, cardContainer.x + cardWidth + 20, cardContainer.y + 60);
+    const detailWindow = createDetailWindow(artistDetails, details, link, background, cardContainer.x + cardWidth + 20, cardContainer.y + 60);
     detailContainer.addChild(detailWindow);
 
     // Click handler to toggle detail window
     buttonContainer.on('pointertap', () => {
+        // Close any previously open detail window
+        if (currentOpenDetailWindow && currentOpenDetailWindow !== detailWindow) {
+            currentOpenDetailWindow.visible = false;
+            // Reset the previous card background
+            if (currentOpenDetailWindow.cardBackground) {
+                currentOpenDetailWindow.cardBackground.tint = 0xFFFFFF;
+            }
+        }
+
         detailWindow.visible = !detailWindow.visible;
-        // Change card background color
+        
+        // Reset scroll position when opening
         if (detailWindow.visible) {
+            detailWindow.scrollContainer.y = detailWindow.topPadding;
+            if (detailWindow.scrollbarThumb) {
+                detailWindow.scrollbarThumb.y = detailWindow.topPadding;
+            }
+            currentOpenDetailWindow = detailWindow;
+            detailWindow.cardBackground = background;
             background.tint = 0xE6F3FF; // Light blue
         } else {
+            if (currentOpenDetailWindow === detailWindow) {
+                currentOpenDetailWindow = null;
+            }
             background.tint = 0xFFFFFF; // White
         }
     });

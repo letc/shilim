@@ -299,7 +299,11 @@
                         <textarea id="shortdescription" name="shortdescription" rows="2" required placeholder="Brief one-line description (max 150 characters)"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="details">Long Description:</label>
+                        <label for="artistdescription">Artist Description:</label>
+                        <textarea id="artistdescription" name="artistdescription" rows="4" placeholder="Artist bio and background"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="details">Project Details:</label>
                         <textarea id="details" name="details" rows="6" required placeholder="Detailed project description"></textarea>
                     </div>
                     <div class="form-group">
@@ -415,6 +419,7 @@
             
             document.getElementById('link').value = project.link;
             document.getElementById('shortdescription').value = project.shortdescription || '';
+            document.getElementById('artistdescription').value = project.artistdescription || '';
             document.getElementById('details').value = project.details;
             
             // Handle thumbnail
@@ -553,6 +558,7 @@
                     .join(', '),
                 link: formData.get('link'),
                 shortdescription: formData.get('shortdescription'),
+                artistdescription: formData.get('artistdescription'),
                 details: formData.get('details'),
                 thumbnail: thumbnailPath
             };

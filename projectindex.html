@@ -28,41 +28,85 @@
             border-radius: 40px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
             box-sizing: border-box;
-            overflow: auto;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            gap: 20px;
             padding-bottom: 10px;
             border-bottom: 1px solid #eee;
+            flex-shrink: 0;
+            background-color: white;
+            z-index: 10;
         }
 
         .search-box {
-            flex: 0 1 300px;
-            padding-right: 20px;
+            display: flex;
+            flex: 1;
+            gap: 20px;
+            align-items: center;
         }
 
         .search-box input {
-            width: 100%;
+            flex: 1;
             padding: 8px 12px;
             border: 1px solid #ddd;
             border-radius: 40px;
             font-size: 14px;
             transition: border-color 0.3s ease;
         }
+        
+        .search-box select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 40px;
+            font-size: 14px;
+            background-color: white;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            min-width: 160px;
+        }
+        
+        .project-count {
+            background-image: url('assets/white_circle_bg.png');
+            background-size: cover;
+            background-position: center;
+            padding: 8px 12px;
+            border-radius: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: auto;
+            width: 40px;
+            height: 40px;
+        }
+        
+        .project-count span {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
 
-        .search-box input:focus {
+        .search-box input:focus,
+        .search-box select:focus {
             outline: none;
+            border-color: #2196F3;
+        }
+        
+        .search-box select:hover {
             border-color: #2196F3;
         }
 
         .content-wrapper {
             display: flex;
             gap: 20px;
-            min-height: calc(100vh - 150px);
+            flex: 1;
+            overflow-y: auto;
+            margin-top: 20px;
         }
 
         .left-section {
@@ -208,6 +252,30 @@
         }
 
         @media (max-width: 768px) {
+            .search-box {
+                flex-wrap: wrap;
+            }
+            
+            .search-box input {
+                flex: 1 1 100%;
+                margin-bottom: 10px;
+                margin-right: 0;
+            }
+            
+            .search-box select {
+                flex: 1 1 calc(50% - 5px);
+                min-width: unset;
+            }
+            
+            .search-box select:nth-of-type(1) {
+                margin-right: 10px;
+            }
+            
+            .project-count {
+                flex: 1 1 100%;
+                margin-top: 10px;
+            }
+        
             .content-wrapper {
                 flex-direction: column;
             }
@@ -231,6 +299,27 @@
             <h2>Project Index</h2>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search projects..." oninput="filterProjects()">
+                <select id="primaryCategoryFilter" onchange="filterProjects()">
+                    <option value="">All Primary Categories</option>
+                    <option value="ART">ART</option>
+                    <option value="COMMUNITY">COMMUNITY</option>
+                    <option value="ECOLOGY">ECOLOGY</option>
+                    <option value="RESEARCH">RESEARCH</option>
+                    <option value="HEALTH">HEALTH</option>
+                    <option value="EDUCATION">EDUCATION</option>
+                </select>
+                <select id="secondaryCategoryFilter" onchange="filterProjects()">
+                    <option value="">All Secondary Categories</option>
+                    <option value="ART">ART</option>
+                    <option value="COMMUNITY">COMMUNITY</option>
+                    <option value="ECOLOGY">ECOLOGY</option>
+                    <option value="RESEARCH">RESEARCH</option>
+                    <option value="HEALTH">HEALTH</option>
+                    <option value="EDUCATION">EDUCATION</option>
+                </select>
+                <div class="project-count" id="projectCount">
+                    <span id="projectCountText">0 Projects</span>
+                </div>
             </div>
         </div>
 
@@ -267,23 +356,39 @@
 
         function filterProjects() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            refreshProjectGrid(searchTerm);
+            const primaryCategory = document.getElementById('primaryCategoryFilter').value;
+            const secondaryCategory = document.getElementById('secondaryCategoryFilter').value;
+            refreshProjectGrid(searchTerm, primaryCategory, secondaryCategory);
         }
 
-        function refreshProjectGrid(searchTerm = '') {
+        function refreshProjectGrid(searchTerm = '', primaryCategory = '', secondaryCategory = '') {
             const projectGrid = document.getElementById('projectGrid');
             projectGrid.innerHTML = '';
             
-            const filteredProjects = searchTerm
-                ? currentProjects.filter(project => 
+            const filteredProjects = currentProjects.filter(project => {
+                // Text search filter
+                const matchesSearch = !searchTerm || 
                     project.title.toLowerCase().includes(searchTerm) ||
                     project.author.toLowerCase().includes(searchTerm) ||
                     project.primarycategory.toLowerCase().includes(searchTerm) ||
                     project.secondarycategory.toLowerCase().includes(searchTerm) ||
                     (project.shortdescription && project.shortdescription.toLowerCase().includes(searchTerm)) ||
-                    project.details.toLowerCase().includes(searchTerm)
-                )
-                : currentProjects;
+                    project.details.toLowerCase().includes(searchTerm);
+                
+                // Primary category filter
+                const matchesPrimary = !primaryCategory || 
+                    project.primarycategory === primaryCategory;
+                
+                // Secondary category filter (check if it's in comma-separated list)
+                const matchesSecondary = !secondaryCategory || 
+                    project.secondarycategory.split(',').map(cat => cat.trim()).includes(secondaryCategory);
+                
+                return matchesSearch && matchesPrimary && matchesSecondary;
+            });
+            
+            // Update project count
+            const projectCountText = document.getElementById('projectCountText');
+            projectCountText.textContent = `${filteredProjects.length}`;
             
             if (filteredProjects.length === 0) {
                 const noResults = document.createElement('div');

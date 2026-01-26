@@ -209,7 +209,8 @@ async function initInfoSection() {
                 project.author,
                 project.date,
                 project.link,
-                project.details
+                project.details,
+                project.artistdescription || ''
             );
             card.y = currentY;
             scrollContainer.addChild(card);

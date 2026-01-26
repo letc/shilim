@@ -747,6 +747,9 @@ async function initImageSection() {
                 projectTypeText.visible = true;
                 projectTypeText.x = x + width/2 - projectTypeText.width/2;
                 projectTypeText.y = y + height/2 - projectTypeText.height/2;
+                // Bring selectionRect and text to the front, with text on top
+                gridContainer.setChildIndex(selectionRect, gridContainer.children.length - 1);
+                gridContainer.setChildIndex(projectTypeText, gridContainer.children.length - 1);
             } else {
                 projectTypeText.visible = false;
             }
