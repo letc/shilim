@@ -115,10 +115,21 @@
             overflow-y: auto;
             padding-right: 20px;
             border-right: 1px solid #eee;
+            transition: flex 0.3s ease;
+        }
+        
+        .left-section.full-width {
+            flex: 1;
+            border-right: none;
+            padding-right: 0;
+        }
+        
+        .left-section.half-width {
+            flex: 0.5;
         }
 
         .right-section {
-            flex: 1;
+            flex: 0.5;
             min-width: 400px;
             padding: 20px;
             background-color: #f9f9f9;
@@ -127,6 +138,38 @@
             top: 20px;
             max-height: calc(100vh - 150px);
             overflow-y: auto;
+            display: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .right-section.visible {
+            display: block;
+        }
+        
+        .close-details {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .close-details:hover {
+            background-color: #2196F3;
+            color: white;
+            border-color: #2196F3;
         }
 
         .project-grid {
@@ -134,6 +177,10 @@
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             padding: 10px;
+        }
+        
+        .left-section.full-width .project-grid {
+            grid-template-columns: repeat(3, 1fr);
         }
 
         .project-card {
@@ -324,13 +371,14 @@
         </div>
 
         <div class="content-wrapper">
-            <div class="left-section">
+            <div class="left-section full-width">
                 <div class="project-grid" id="projectGrid">
                     <!-- Projects will be loaded here -->
                 </div>
             </div>
 
             <div class="right-section" id="projectDetails">
+                <button class="close-details" onclick="closeDetails()" title="Close details">×</button>
                 <div class="no-selection">
                     <h3>Select a project to view details</h3>
                 </div>
@@ -434,6 +482,13 @@
             selectedProjectIndex = index;
             const project = currentProjects[index];
             
+            // Show right section and adjust left section width
+            const leftSection = document.querySelector('.left-section');
+            const rightSection = document.getElementById('projectDetails');
+            leftSection.classList.remove('full-width');
+            leftSection.classList.add('half-width');
+            rightSection.classList.add('visible');
+            
             // Update selected state in grid
             document.querySelectorAll('.project-card').forEach((card, i) => {
                 card.classList.toggle('selected', i === index);
@@ -460,6 +515,7 @@
             // Update details section
             const detailsSection = document.getElementById('projectDetails');
             detailsSection.innerHTML = `
+                <button class="close-details" onclick="closeDetails()" title="Close details">×</button>
                 <h2>${project.title}</h2>
                 ${thumbnailHtml}
                 
@@ -500,6 +556,22 @@
             if (window.innerWidth <= 768) {
                 detailsSection.scrollIntoView({ behavior: 'smooth' });
             }
+        }
+        
+        function closeDetails() {
+            const leftSection = document.querySelector('.left-section');
+            const rightSection = document.getElementById('projectDetails');
+            
+            // Hide right section and expand left section
+            rightSection.classList.remove('visible');
+            leftSection.classList.remove('half-width');
+            leftSection.classList.add('full-width');
+            
+            // Clear selection
+            selectedProjectIndex = -1;
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.classList.remove('selected');
+            });
         }
 
         // Load projects when page loads
