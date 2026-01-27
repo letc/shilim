@@ -168,6 +168,21 @@
     <div class="container">
         <h1>Project Page Admin</h1>
         
+        <h2>Load Existing JSON</h2>
+        <div class="form-group">
+            <label>Upload JSON File</label>
+            <input type="file" id="jsonFileInput" accept=".json">
+            <button class="btn btn-secondary" onclick="loadFromFile()" style="margin-left: 10px;">Load from File</button>
+        </div>
+        <div class="form-group">
+            <label>Or Load from URL</label>
+            <div style="display: flex; gap: 10px;">
+                <input type="text" id="jsonUrlInput" placeholder="e.g., data/sampleprojectpage.json">
+                <button class="btn btn-secondary" onclick="loadFromURL()">Load from URL</button>
+            </div>
+        </div>
+        
+        <h2>Artist Information</h2>
         <div class="form-group">
             <label for="author">Author/Artist Name</label>
             <input type="text" id="author" placeholder="Enter artist name">
@@ -195,6 +210,79 @@
 
     <script>
         let projects = [];
+
+        window.loadFromFile = function() {
+            const fileInput = document.getElementById('jsonFileInput');
+            const file = fileInput.files[0];
+            if (!file) {
+                alert('Please select a file first');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    populateFromJSON(data);
+                    alert('JSON loaded successfully!');
+                } catch (error) {
+                    alert('Error parsing JSON file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        window.loadFromURL = async function() {
+            const url = document.getElementById('jsonUrlInput').value;
+            if (!url) {
+                alert('Please enter a URL');
+                return;
+            }
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Failed to fetch: ' + response.statusText);
+                const data = await response.json();
+                populateFromJSON(data);
+                alert('JSON loaded successfully!');
+            } catch (error) {
+                alert('Error loading JSON: ' + error.message);
+            }
+        }
+
+        function populateFromJSON(data) {
+            // Populate artist info
+            document.getElementById('author').value = data.author || '';
+            document.getElementById('artistdescription').value = data.artistdescription || '';
+            
+            // Populate projects
+            projects = [];
+            if (data.projects && Array.isArray(data.projects)) {
+                data.projects.forEach((project, index) => {
+                    const newProject = {
+                        id: Date.now() + index,
+                        title: project.title || '',
+                        startdate: project.startdate || '',
+                        enddate: project.enddate || '',
+                        sections: []
+                    };
+                    
+                    if (project.sections && Array.isArray(project.sections)) {
+                        project.sections.forEach((section, sIndex) => {
+                            newProject.sections.push({
+                                id: Date.now() + index * 1000 + sIndex,
+                                sectiontype: section.sectiontype,
+                                value: section.value
+                            });
+                        });
+                    }
+                    
+                    projects.push(newProject);
+                });
+            }
+            
+            renderProjects();
+        }
 
         window.addProject = function() {
             const project = {
