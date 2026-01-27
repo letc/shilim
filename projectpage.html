@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: http: https:; media-src 'self' http: https:; frame-src https://www.youtube.com https://player.vimeo.com; connect-src 'self';">
     <title>Project Page</title>
+    <script src="security.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -360,9 +362,18 @@
         function initializePage() {
             if (!projectData) return;
 
-            // Set artist name and bio
-            document.getElementById('artistName').textContent = projectData.author;
-            document.getElementById('bioText').textContent = projectData.artistdescription;
+            // Validate JSON structure
+            try {
+                SecurityUtils.validateProjectPageJSON(projectData);
+            } catch (error) {
+                console.error('Invalid JSON structure:', error);
+                alert('Error: Invalid project data structure');
+                return;
+            }
+
+            // Set artist name and bio (using textContent for safety)
+            document.getElementById('artistName').textContent = SecurityUtils.sanitizeText(projectData.author || '');
+            document.getElementById('bioText').textContent = SecurityUtils.sanitizeText(projectData.artistdescription || '');
 
             // Populate projects list
             const projectsList = document.getElementById('projectsList');
@@ -373,19 +384,32 @@
                 projectItem.className = 'project-item' + (index === 0 ? ' active' : '');
                 
                 const dateDisplay = project.startdate && project.enddate
-                    ? `${project.startdate} to ${project.enddate}`
-                    : project.date;
+                    ? `${SecurityUtils.escapeHtml(project.startdate)} to ${SecurityUtils.escapeHtml(project.enddate)}`
+                    : SecurityUtils.escapeHtml(project.date || '');
                 
-                projectItem.innerHTML = `
-                    <div class="project-title">${project.title}</div>
-                    <div class="project-meta">${projectData.author}</div>
-                    <div class="project-meta">${dateDisplay}</div>
-                    <div class="project-circle"></div>
-                `;
+                // Create elements safely
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'project-title';
+                titleDiv.textContent = project.title;
+                
+                const authorDiv = document.createElement('div');
+                authorDiv.className = 'project-meta';
+                authorDiv.textContent = projectData.author;
+                
+                const dateDiv = document.createElement('div');
+                dateDiv.className = 'project-meta';
+                dateDiv.innerHTML = dateDisplay;
+                
+                const circleDiv = document.createElement('div');
+                circleDiv.className = 'project-circle';
+                
+                projectItem.appendChild(titleDiv);
+                projectItem.appendChild(authorDiv);
+                projectItem.appendChild(dateDiv);
+                projectItem.appendChild(circleDiv);
                 
                 // Add click handler only to the circle
-                const circle = projectItem.querySelector('.project-circle');
-                circle.onclick = () => loadProject(index);
+                circleDiv.onclick = () => loadProject(index);
                 
                 projectsList.appendChild(projectItem);
             });
@@ -418,9 +442,10 @@
                 sectionDiv.className = 'content-section';
 
                 if (section.sectiontype === 'text' && section.value) {
-                    sectionDiv.innerHTML = `
-                        <div class="text-content">${section.value}</div>
-                    `;
+                    const textDiv = document.createElement('div');
+                    textDiv.className = 'text-content';
+                    textDiv.textContent = SecurityUtils.sanitizeText(section.value);
+                    sectionDiv.appendChild(textDiv);
                     projectContent.appendChild(sectionDiv);
                 }
 
@@ -439,26 +464,62 @@
         function createImageCarousel(images, container, carouselId) {
             if (images.length === 0) return;
 
-            const carouselHTML = `
-                <div class="carousel-container">
-                    <div class="carousel-wrapper">
-                        <div class="carousel-images" id="carouselImages${carouselId}">
-                            ${images.map(img => `<img src="${img.filename}" alt="Project image">`).join('')}
-                        </div>
-                        ${images.length > 1 ? `
-                            <button class="carousel-button prev" onclick="moveCarousel(${carouselId}, -1)">‹</button>
-                            <button class="carousel-button next" onclick="moveCarousel(${carouselId}, 1)">›</button>
-                        ` : ''}
-                    </div>
-                    ${images.length > 1 ? `
-                        <div class="carousel-dots" id="carouselDots${carouselId}">
-                            ${images.map((_, i) => `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${carouselId}, ${i})"></div>`).join('')}
-                        </div>
-                    ` : ''}
-                </div>
-            `;
+            const carouselContainer = document.createElement('div');
+            carouselContainer.className = 'carousel-container';
             
-            container.innerHTML = carouselHTML;
+            const carouselWrapper = document.createElement('div');
+            carouselWrapper.className = 'carousel-wrapper';
+            
+            const carouselImages = document.createElement('div');
+            carouselImages.className = 'carousel-images';
+            carouselImages.id = `carouselImages${carouselId}`;
+            
+            // Safely create image elements
+            images.forEach(img => {
+                const sanitizedUrl = SecurityUtils.sanitizeUrl(img.filename || '');
+                if (SecurityUtils.validateImageUrl(sanitizedUrl)) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = sanitizedUrl;
+                    imgElement.alt = 'Project image';
+                    carouselImages.appendChild(imgElement);
+                }
+            });
+            
+            carouselWrapper.appendChild(carouselImages);
+            
+            if (images.length > 1) {
+                const prevBtn = document.createElement('button');
+                prevBtn.className = 'carousel-button prev';
+                prevBtn.textContent = '‹';
+                prevBtn.onclick = () => moveCarousel(carouselId, -1);
+                
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'carousel-button next';
+                nextBtn.textContent = '›';
+                nextBtn.onclick = () => moveCarousel(carouselId, 1);
+                
+                carouselWrapper.appendChild(prevBtn);
+                carouselWrapper.appendChild(nextBtn);
+                
+                // Create dots
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'carousel-dots';
+                dotsContainer.id = `carouselDots${carouselId}`;
+                
+                images.forEach((_, i) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                    dot.onclick = () => goToSlide(carouselId, i);
+                    dotsContainer.appendChild(dot);
+                });
+                
+                carouselContainer.appendChild(carouselWrapper);
+                carouselContainer.appendChild(dotsContainer);
+            } else {
+                carouselContainer.appendChild(carouselWrapper);
+            }
+            
+            container.appendChild(carouselContainer);
             
             // Store carousel state
             if (!window.carousels) window.carousels = {};
@@ -506,55 +567,68 @@
         }
 
         function createVideoPlayer(videoData, container) {
-            const videoSource = videoData.source || videoData;
-            const description = videoData.description || '';
+            const videoSource = SecurityUtils.sanitizeUrl(videoData.source || videoData || '');
+            const description = SecurityUtils.escapeHtml(videoData.description || '');
 
-            let videoHTML = '';
+            if (!SecurityUtils.validateVideoUrl(videoSource)) {
+                console.warn('Invalid video URL:', videoSource);
+                return;
+            }
+
+            const videoContainer = document.createElement('div');
+            videoContainer.className = 'video-container';
 
             // Check if it's a YouTube link
             if (videoSource.includes('youtube.com') || videoSource.includes('youtu.be')) {
                 const videoId = extractYouTubeId(videoSource);
-                videoHTML = `
-                    <div class="video-container">
-                        <iframe class="video-player" height="450" 
-                            src="https://www.youtube.com/embed/${videoId}" 
-                            frameborder="0" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                            allowfullscreen>
-                        </iframe>
-                        ${description ? `<div class="video-description">${description}</div>` : ''}
-                    </div>
-                `;
+                if (videoId) {
+                    const iframe = document.createElement('iframe');
+                    iframe.className = 'video-player';
+                    iframe.height = '450';
+                    iframe.src = `https://www.youtube.com/embed/${SecurityUtils.escapeHtml(videoId)}`;
+                    iframe.frameBorder = '0';
+                    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+                    iframe.allowFullscreen = true;
+                    videoContainer.appendChild(iframe);
+                }
             }
             // Check if it's a Vimeo link
             else if (videoSource.includes('vimeo.com')) {
                 const videoId = extractVimeoId(videoSource);
-                videoHTML = `
-                    <div class="video-container">
-                        <iframe class="video-player" height="450" 
-                            src="https://player.vimeo.com/video/${videoId}" 
-                            frameborder="0" 
-                            allow="autoplay; fullscreen; picture-in-picture" 
-                            allowfullscreen>
-                        </iframe>
-                        ${description ? `<div class="video-description">${description}</div>` : ''}
-                    </div>
-                `;
+                if (videoId) {
+                    const iframe = document.createElement('iframe');
+                    iframe.className = 'video-player';
+                    iframe.height = '450';
+                    iframe.src = `https://player.vimeo.com/video/${SecurityUtils.escapeHtml(videoId)}`;
+                    iframe.frameBorder = '0';
+                    iframe.allow = 'autoplay; fullscreen; picture-in-picture';
+                    iframe.allowFullscreen = true;
+                    videoContainer.appendChild(iframe);
+                }
             }
             // Direct video file
             else {
-                videoHTML = `
-                    <div class="video-container">
-                        <video class="video-player" controls>
-                            <source src="${videoSource}" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                        ${description ? `<div class="video-description">${description}</div>` : ''}
-                    </div>
-                `;
+                const video = document.createElement('video');
+                video.className = 'video-player';
+                video.controls = true;
+                
+                const source = document.createElement('source');
+                source.src = videoSource;
+                source.type = 'video/mp4';
+                
+                video.appendChild(source);
+                video.appendChild(document.createTextNode('Your browser does not support the video tag.'));
+                videoContainer.appendChild(video);
             }
 
-            container.innerHTML = videoHTML;
+            if (description) {
+                const descDiv = document.createElement('div');
+                descDiv.className = 'video-description';
+                descDiv.innerHTML = description;
+                videoContainer.appendChild(descDiv);
+            }
+
+            container.appendChild(videoContainer);
         }
 
         function extractYouTubeId(url) {

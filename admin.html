@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self';">
     <title>Project Admin</title>
+    <script src="security.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -317,6 +319,11 @@
     </div>
 
     <script>
+        // Protect admin page with authentication
+        if (!SecurityUtils.protectAdminPage()) {
+            throw new Error('Unauthorized access');
+        }
+
         let currentProjects = [];
         const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
         const API_BASE = isDevelopment ? 'http://localhost:3001/api' : '/.netlify/functions';

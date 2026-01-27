@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self';">
     <title>Project Page Admin</title>
+    <script src="security.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -209,9 +211,19 @@
     </div>
 
     <script>
+        // Protect admin page with authentication
+        if (!SecurityUtils.protectAdminPage()) {
+            throw new Error('Unauthorized access');
+        }
+
         let projects = [];
 
         window.loadFromFile = function() {
+            if (!SecurityUtils.rateLimiter.check('loadFile', 5)) {
+                alert('Too many requests. Please wait a moment.');
+                return;
+            }
+
             const fileInput = document.getElementById('jsonFileInput');
             const file = fileInput.files[0];
             if (!file) {
@@ -219,13 +231,22 @@
                 return;
             }
             
+            try {
+                SecurityUtils.validateFileUpload(file, ['.json'], 5 * 1024 * 1024);
+            } catch (error) {
+                alert(error.message);
+                return;
+            }
+            
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const data = JSON.parse(e.target.result);
+                    SecurityUtils.validateProjectPageJSON(data);
                     populateFromJSON(data);
                     alert('JSON loaded successfully!');
                 } catch (error) {
+                    console.error('Error parsing JSON:', error);
                     alert('Error parsing JSON file: ' + error.message);
                 }
             };
@@ -233,27 +254,40 @@
         }
 
         window.loadFromURL = async function() {
+            if (!SecurityUtils.rateLimiter.check('loadURL', 5)) {
+                alert('Too many requests. Please wait a moment.');
+                return;
+            }
+
             const url = document.getElementById('jsonUrlInput').value;
             if (!url) {
                 alert('Please enter a URL');
                 return;
             }
             
+            const sanitizedUrl = SecurityUtils.sanitizeUrl(url);
+            if (!sanitizedUrl || sanitizedUrl !== url) {
+                alert('Invalid URL detected');
+                return;
+            }
+            
             try {
-                const response = await fetch(url);
+                const response = await fetch(sanitizedUrl);
                 if (!response.ok) throw new Error('Failed to fetch: ' + response.statusText);
                 const data = await response.json();
+                SecurityUtils.validateProjectPageJSON(data);
                 populateFromJSON(data);
                 alert('JSON loaded successfully!');
             } catch (error) {
+                console.error('Error loading JSON:', error);
                 alert('Error loading JSON: ' + error.message);
             }
         }
 
         function populateFromJSON(data) {
-            // Populate artist info
-            document.getElementById('author').value = data.author || '';
-            document.getElementById('artistdescription').value = data.artistdescription || '';
+            // Sanitize and populate artist info
+            document.getElementById('author').value = SecurityUtils.sanitizeText(data.author || '', 500);
+            document.getElementById('artistdescription').value = SecurityUtils.sanitizeText(data.artistdescription || '', 5000);
             
             // Populate projects
             projects = [];
@@ -261,7 +295,7 @@
                 data.projects.forEach((project, index) => {
                     const newProject = {
                         id: Date.now() + index,
-                        title: project.title || '',
+                        title: SecurityUtils.sanitizeText(project.title || '', 500),
                         startdate: project.startdate || '',
                         enddate: project.enddate || '',
                         sections: []
@@ -269,10 +303,30 @@
                     
                     if (project.sections && Array.isArray(project.sections)) {
                         project.sections.forEach((section, sIndex) => {
+                            let sanitizedValue = section.value;
+                            
+                            if (section.sectiontype === 'text') {
+                                sanitizedValue = SecurityUtils.sanitizeText(section.value, 10000);
+                            } else if (section.sectiontype === 'image' && Array.isArray(section.value)) {
+                                sanitizedValue = section.value.map(img => ({
+                                    filename: SecurityUtils.sanitizeUrl(img.filename || '')
+                                })).filter(img => SecurityUtils.validateImageUrl(img.filename));
+                            } else if (section.sectiontype === 'video' && typeof section.value === 'object') {
+                                const videoUrl = SecurityUtils.sanitizeUrl(section.value.source || '');
+                                if (SecurityUtils.validateVideoUrl(videoUrl)) {
+                                    sanitizedValue = {
+                                        source: videoUrl,
+                                        description: SecurityUtils.sanitizeText(section.value.description || '', 1000)
+                                    };
+                                } else {
+                                    return; // Skip invalid video
+                                }
+                            }
+                            
                             newProject.sections.push({
                                 id: Date.now() + index * 1000 + sIndex,
                                 sectiontype: section.sectiontype,
-                                value: section.value
+                                value: sanitizedValue
                             });
                         });
                     }
