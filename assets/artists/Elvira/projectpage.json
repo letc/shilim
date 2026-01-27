@@ -1,0 +1,35 @@
+{
+  "author": "Elvira",
+  "artistdescription": "Elvira is a multi-media artist whose collaborative process is inherent to the work.",
+  "projects": [
+    {
+      "title": "Elvira",
+      "startdate": "2025-01-01",
+      "enddate": "2025-01-25",
+      "sections": [
+        {
+          "sectiontype": "text",
+          "value": "Collaborative Engagement. Sharing artistic techniques as a way to build a sense of community. This residency broke down conventional boundaries between craft and art. Integrating and examining traditional categories of “artisanal” and “artistic” is a key element."
+        },
+        {
+          "sectiontype": "image",
+          "value": [
+            {
+              "filename": "image1.jpg"
+            },
+            {
+              "filename": "image2.jpg"
+            }
+          ]
+        },
+        {
+          "sectiontype": "video",
+          "value": {
+            "source": "https://www.youtube.com/watch?v=wDchsz8nmbo",
+            "description": "A sample 1080p video using 5 second video clips stitched together to create a one minute video. We use this for benchmarks and testing. You can find out more about our recent speed and performance update which used this video here"
+          }
+        }
+      ]
+    }
+  ]
+}
