@@ -6,7 +6,7 @@
     <title>Project Page</title>
     <style>
         body {
-            font-family: 'Lucida Grande'; //, sans-serif;
+            font-family: 'Lucida Grande';
             margin: 0;
             padding: 0;
             background-color: #f0f2f5;
@@ -216,14 +216,20 @@
             color: #444;
             white-space: pre-wrap;
             margin-top: 30px;
-            margin-right: 140px;
+            margin-left: 0;
+            margin-right: 0;
+            padding: 0 40px;
+            text-align: justify;
+            column-count: 2;
+            column-gap: 40px;
+            column-rule: 1px solid #eee;
         }
         
         .carousel-container {
             position: relative;
             width: 100%;
-            max-width: 800px;
-            margin-right: 120px auto;
+            max-width: 900px;
+            margin: 0 auto;
         }
         
         .carousel-wrapper {
@@ -234,14 +240,17 @@
         
         .carousel-images {
             display: flex;
+            gap: 16px;
             transition: transform 0.3s ease;
+            padding: 0 8px;
         }
         
         .carousel-images img {
-            width: 100%;
+            width: calc(50% - 8px);
             flex-shrink: 0;
             border-radius: 8px;
             object-fit: cover;
+            height: auto;
         }
         
         .carousel-button {
@@ -310,6 +319,11 @@
             margin-top: 10px;
             color: #666;
             font-style: italic;
+            column-count: 2;
+            column-gap: 40px;
+            column-rule: 1px solid #eee;
+            padding: 0 40px;
+            text-align: justify;
         }
         
         .section-heading {
@@ -474,12 +488,14 @@
             const carousel = window.carousels[carouselId];
             if (!carousel) return;
 
-            carousel.currentSlide += direction;
+            // Move by 2 images (to show next pair)
+            carousel.currentSlide += direction * 2;
             
+            const maxSlides = carousel.totalSlides - 2;
             if (carousel.currentSlide < 0) {
-                carousel.currentSlide = carousel.totalSlides - 1;
-            } else if (carousel.currentSlide >= carousel.totalSlides) {
                 carousel.currentSlide = 0;
+            } else if (carousel.currentSlide > maxSlides) {
+                carousel.currentSlide = maxSlides >= 0 ? maxSlides : 0;
             }
 
             updateCarousel(carouselId);
@@ -489,7 +505,7 @@
             const carousel = window.carousels[carouselId];
             if (!carousel) return;
 
-            carousel.currentSlide = slideIndex;
+            carousel.currentSlide = slideIndex * 2;
             updateCarousel(carouselId);
         }
 
@@ -499,11 +515,14 @@
             const dots = document.querySelectorAll(`#carouselDots${carouselId} .carousel-dot`);
 
             if (imagesContainer) {
-                imagesContainer.style.transform = `translateX(-${carousel.currentSlide * 100}%)`;
+                // Account for gap (16px) when calculating translation
+                // Each image + gap takes up ~(50% + 8px) per image
+                const translateAmount = carousel.currentSlide * (50 + 1.6) + '%';
+                imagesContainer.style.transform = `translateX(-${translateAmount})`;
             }
 
             dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === carousel.currentSlide);
+                dot.classList.toggle('active', i === Math.floor(carousel.currentSlide / 2));
             });
         }
 

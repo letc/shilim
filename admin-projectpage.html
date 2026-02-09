@@ -141,6 +141,12 @@
         .image-item input {
             flex: 1;
         }
+        /* CKEditor editable area: limit height and enable scrollbar when content overflows */
+        .ck-editor__editable_inline,
+        .ck-editor__editable {
+            max-height: 140px;
+            overflow-y: auto;
+        }
         .json-preview {
             background: #f5f5f5;
             padding: 15px;
@@ -163,6 +169,8 @@
             margin-top: 30px;
         }
     </style>
+    <!-- CKEditor 5 Classic (CDN) -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/35.3.0/classic/ckeditor.js"></script>
 </head>
 <body>
     <div class="container">
@@ -190,7 +198,7 @@
         
         <div class="form-group">
             <label for="artistdescription">Artist Bio</label>
-            <textarea id="artistdescription" placeholder="Enter artist biography"></textarea>
+            <div id="editor-artistbio" style="height:200px;"></div>
         </div>
         
         <h2>Projects</h2>
@@ -250,10 +258,42 @@
             }
         }
 
+        // Convert plain text with newlines to HTML for CKEditor
+        function textToHtml(text) {
+            if (!text) return '';
+            
+            // First, handle literal \n sequences (escaped newlines in JSON strings)
+            text = text.replace(/\\n/g, '\n');
+            
+            // Check if text already contains HTML tags
+            const hasHtml = /<[^>]+>/.test(text);
+            
+            if (hasHtml) {
+                // If HTML is present, just convert remaining \n to <br> tags
+                return text.replace(/\n/g, '<br>');
+            } else {
+                // Convert plain text: newlines to paragraph breaks
+                return text
+                    .split('\n\n')
+                    .map(para => '<p>' + para.replace(/\n/g, '<br>') + '</p>')
+                    .join('');
+            }
+        }
+
+        function setArtistBioData(bioText) {
+            if (window.ckEditors && window.ckEditors['editor-artistbio']) {
+                window.ckEditors['editor-artistbio'].setData(textToHtml(bioText));
+            } else {
+                // If editor not ready yet, retry after a short delay
+                setTimeout(() => setArtistBioData(bioText), 100);
+            }
+        }
+
         function populateFromJSON(data) {
             // Populate artist info
             document.getElementById('author').value = data.author || '';
-            document.getElementById('artistdescription').value = data.artistdescription || '';
+            // Set CKEditor data for artist bio (with retry if not ready)
+            setArtistBioData(data.artistdescription || '');
             
             // Populate projects
             projects = [];
@@ -321,6 +361,27 @@
             renderProjects();
         }
 
+        window.moveSection = function(projectId, sectionId, direction) {
+            const project = projects.find(p => p.id === projectId);
+            if (!project) return;
+            
+            const index = project.sections.findIndex(s => s.id === sectionId);
+            if (index === -1) return;
+            
+            // Calculate new index
+            const newIndex = index + direction;
+            
+            // Check bounds
+            if (newIndex < 0 || newIndex >= project.sections.length) return;
+            
+            // Swap sections
+            const temp = project.sections[index];
+            project.sections[index] = project.sections[newIndex];
+            project.sections[newIndex] = temp;
+            
+            renderProjects();
+        }
+
         window.addImage = function(projectId, sectionId) {
             const project = projects.find(p => p.id === projectId);
             if (!project) return;
@@ -356,6 +417,16 @@
 
         window.renderProjects = function() {
             const container = document.getElementById('projectsList');
+            // destroy existing CKEditor instances (but preserve Artist Bio editor)
+            if (window.ckEditors) {
+                Object.keys(window.ckEditors).forEach(k => {
+                    // skip the Artist Bio editor, only destroy text section editors
+                    if (k === 'editor-artistbio') return;
+                    try { window.ckEditors[k].destroy().catch(() => {}); } catch (e) {}
+                    try { window.ckEditors[k] = null; } catch (e) {}
+                    delete window.ckEditors[k];
+                });
+            }
             container.innerHTML = '';
 
             projects.forEach((project, projectIndex) => {
@@ -408,16 +479,47 @@
                         sectionCard.innerHTML = `
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                                 <label style="margin: 0;"><strong>Text Section ${sectionIndex + 1}</strong></label>
-                                <button class="btn btn-danger btn-circle" onclick="removeSection(${project.id}, ${section.id})" title="Remove section">×</button>
+                                <div style="display: flex; gap: 5px;">
+                                    ${sectionIndex > 0 ? `<button class="btn btn-secondary" onclick="moveSection(${project.id}, ${section.id}, -1)" title="Move up">↑</button>` : ''}
+                                    ${sectionIndex < project.sections.length - 1 ? `<button class="btn btn-secondary" onclick="moveSection(${project.id}, ${section.id}, 1)" title="Move down">↓</button>` : ''}
+                                    <button class="btn btn-danger btn-circle" onclick="removeSection(${project.id}, ${section.id})" title="Remove section">×</button>
+                                </div>
                             </div>
-                            <textarea onchange="updateValue(${project.id}, ${section.id}, null, this.value)">${section.value}</textarea>
+                            <div id="editor-container-${project.id}-${section.id}" style="height:200px;">
+                                <div id="editor-${project.id}-${section.id}" style="height:100%;"></div>
+                            </div>
                         `;
                         sectionsContainer.appendChild(sectionCard);
+
+                        // initialize CKEditor Classic for this text section
+                        window.ckEditors = window.ckEditors || {};
+                        const editorId = `editor-${project.id}-${section.id}`;
+                        setTimeout(() => {
+                            try {
+                                ClassicEditor.create(document.querySelector(`#${editorId}`), {
+                                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'undo', 'redo']
+                                }).then(editor => {
+                                    // set initial data (convert plain text to HTML)
+                                    editor.setData(textToHtml(section.value || ''));
+                                    editor.model.document.on('change:data', () => {
+                                        try { updateValue(project.id, section.id, null, editor.getData()); } catch (e) {}
+                                    });
+                                    window.ckEditors[editorId] = editor;
+                                }).catch(err => console.warn('CKEditor init failed for', editorId, err));
+                            } catch (e) {
+                                console.warn('CKEditor setup error for', editorId, e);
+                            }
+                        }, 0);
+                    
                     } else if (section.sectiontype === 'image') {
                         sectionCard.innerHTML = `
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                                 <label style="margin: 0;"><strong>Image Section ${sectionIndex + 1}</strong></label>
-                                <button class="btn btn-danger btn-circle" onclick="removeSection(${project.id}, ${section.id})" title="Remove section">×</button>
+                                <div style="display: flex; gap: 5px;">
+                                    ${sectionIndex > 0 ? `<button class="btn btn-secondary" onclick="moveSection(${project.id}, ${section.id}, -1)" title="Move up">↑</button>` : ''}
+                                    ${sectionIndex < project.sections.length - 1 ? `<button class="btn btn-secondary" onclick="moveSection(${project.id}, ${section.id}, 1)" title="Move down">↓</button>` : ''}
+                                    <button class="btn btn-danger btn-circle" onclick="removeSection(${project.id}, ${section.id})" title="Remove section">×</button>
+                                </div>
                             </div>
                             <div class="image-list" id="images-${section.id}"></div>
                             <button class="btn btn-secondary btn-sm" onclick="addImage(${project.id}, ${section.id})">+ Add Image</button>
@@ -462,7 +564,11 @@
 
         window.generateJSON = function() {
             const author = document.getElementById('author').value;
-            const artistdescription = document.getElementById('artistdescription').value;
+            // Get CKEditor data for artist bio
+            let artistdescription = '';
+            if (window.ckEditors && window.ckEditors['editor-artistbio']) {
+                artistdescription = window.ckEditors['editor-artistbio'].getData();
+            }
 
             const data = {
                 author: author,
@@ -496,6 +602,27 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
+
+        // CKEditor instances are initialized per text section and update section.value on change
+        
+        // Initialize CKEditor for Artist Bio
+        window.ckEditors = window.ckEditors || {};
+        setTimeout(() => {
+            try {
+                ClassicEditor.create(document.querySelector('#editor-artistbio'), {
+                    toolbar: ['heading', '|', 'bold', 'italic', 'link', 'undo', 'redo']
+                }).then(editor => {
+                    // set initial data
+                    editor.setData('');
+                    editor.model.document.on('change:data', () => {
+                        try { /* artist bio updates are handled in generateJSON */ } catch (e) {}
+                    });
+                    window.ckEditors['editor-artistbio'] = editor;
+                }).catch(err => console.warn('CKEditor init failed for Artist Bio', err));
+            } catch (e) {
+                console.warn('CKEditor setup error for Artist Bio', e);
+            }
+        }, 100);
 
         // Initialize with one project
         addProject();

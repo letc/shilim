@@ -346,6 +346,9 @@
             <h2>Project Index</h2>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search projects..." oninput="filterProjects()">
+                <select id="yearFilter" onchange="filterProjects()">
+                    <option value="">All Years</option>
+                </select>
                 <select id="primaryCategoryFilter" onchange="filterProjects()">
                     <option value="">All Primary Categories</option>
                     <option value="ART">ART</option>
@@ -395,6 +398,7 @@
                 const response = await fetch('data/projects.json');
                 const data = await response.json();
                 currentProjects = data.projects || [];
+                populateYearFilter();
                 refreshProjectGrid();
             } catch (error) {
                 console.error('Error loading projects:', error);
@@ -402,14 +406,35 @@
             }
         }
 
-        function filterProjects() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const primaryCategory = document.getElementById('primaryCategoryFilter').value;
-            const secondaryCategory = document.getElementById('secondaryCategoryFilter').value;
-            refreshProjectGrid(searchTerm, primaryCategory, secondaryCategory);
+        function populateYearFilter() {
+            const years = new Set();
+            currentProjects.forEach(project => {
+                if (project.startdate) {
+                    const year = new Date(project.startdate).getFullYear();
+                    years.add(year);
+                }
+            });
+            
+            const yearSelect = document.getElementById('yearFilter');
+            const sortedYears = Array.from(years).sort((a, b) => b - a);
+            
+            sortedYears.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
         }
 
-        function refreshProjectGrid(searchTerm = '', primaryCategory = '', secondaryCategory = '') {
+        function filterProjects() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const yearFilter = document.getElementById('yearFilter').value;
+            const primaryCategory = document.getElementById('primaryCategoryFilter').value;
+            const secondaryCategory = document.getElementById('secondaryCategoryFilter').value;
+            refreshProjectGrid(searchTerm, yearFilter, primaryCategory, secondaryCategory);
+        }
+
+        function refreshProjectGrid(searchTerm = '', yearFilter = '', primaryCategory = '', secondaryCategory = '') {
             const projectGrid = document.getElementById('projectGrid');
             projectGrid.innerHTML = '';
             
@@ -423,6 +448,10 @@
                     (project.shortdescription && project.shortdescription.toLowerCase().includes(searchTerm)) ||
                     project.details.toLowerCase().includes(searchTerm);
                 
+                // Year filter
+                const matchesYear = !yearFilter || 
+                    (project.startdate && new Date(project.startdate).getFullYear().toString() === yearFilter);
+                
                 // Primary category filter
                 const matchesPrimary = !primaryCategory || 
                     project.primarycategory === primaryCategory;
@@ -431,7 +460,7 @@
                 const matchesSecondary = !secondaryCategory || 
                     project.secondarycategory.split(',').map(cat => cat.trim()).includes(secondaryCategory);
                 
-                return matchesSearch && matchesPrimary && matchesSecondary;
+                return matchesSearch && matchesYear && matchesPrimary && matchesSecondary;
             });
             
             // Update project count
