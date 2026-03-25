@@ -1034,10 +1034,12 @@ async function initImageSection() {
                 // Add a project card based on percentages
                 if (typeof window.addRandomProject === 'function') {
                     window.addRandomProject(
-                        textureStats.topToBottomRightPercentage,  // ART
-                        textureStats.topToBottomLeftPercentage,   // RESEARCH
-                        textureStats.bottomToTopRightPercentage,  // ECOLOGY
-                        textureStats.bottomToTopLeftPercentage    // COMMUNITY
+                        textureStats.topPercentage,           // ART
+                        textureStats.topRightPercentage,      // COMMUNITY
+                        textureStats.bottomRightPercentage,   // ECOLOGY
+                        textureStats.bottomPercentage,        // RESEARCH
+                        textureStats.bottomLeftPercentage,    // HEALTH
+                        textureStats.topLeftPercentage         // EDUCATION
                     );
                 }
 

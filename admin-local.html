@@ -3,212 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Admin (Local)</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .header-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .content-wrapper {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .left-section {
-            flex: 1;
-            min-width: 300px;
-            max-height: calc(100vh - 150px);
-            overflow-y: auto;
-            padding-right: 20px;
-            border-right: 1px solid #eee;
-        }
-
-        .right-section {
-            flex: 2;
-            min-width: 400px;
-        }
-
-        .project-form {
-            background-color: #f9f9f9;
-            padding: 20px;
-            border-radius: 4px;
-            margin-top: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        .actions {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
-
-        button {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        button[type="submit"] {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        button.secondary {
-            background-color: #f0f0f0;
-            color: #333;
-        }
-
-        button.export {
-            background-color: #2196F3;
-            color: white;
-        }
-
-        .project-list {
-            margin-top: 20px;
-        }
-
-        .project-item {
-            background-color: #f9f9f9;
-            padding: 15px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .project-item:hover {
-            transform: translateX(5px);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .project-item h3 {
-            margin: 0 0 10px 0;
-        }
-
-        .project-item p {
-            margin: 5px 0;
-        }
-
-        .checkbox-group {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .checkbox-item input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-        }
-
-        .checkbox-item label {
-            margin: 0;
-            font-weight: normal;
-            cursor: pointer;
-        }
-
-        .thumbnail-preview {
-            margin-top: 10px;
-            max-width: 300px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            padding: 5px;
-        }
-
-        .thumbnail-preview img {
-            max-width: 100%;
-            border-radius: 4px;
-        }
-
-        .date-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .duration-display {
-            margin-top: 10px;
-            padding: 10px;
-            background-color: #e8f5e9;
-            border-radius: 4px;
-            font-weight: bold;
-            color: #2e7d32;
-        }
-
-        @media (max-width: 768px) {
-            .content-wrapper {
-                flex-direction: column;
-            }
-
-            .left-section {
-                max-height: 400px;
-                padding-right: 0;
-                border-right: none;
-                border-bottom: 1px solid #eee;
-                padding-bottom: 20px;
-            }
-
-            .right-section {
-                min-width: 100%;
-            }
-        }
-    </style>
+    <title>Project Admin (Local) — Shillim Institute</title>
+    <link rel="stylesheet" href="shilim.css">
 </head>
-<body>
-    <div class="container">
-        <div class="header">
+<body class="page-admin">
+    <div class="container container--admin">
+        <div class="admin-header">
             <h2>Project Management (Local)</h2>
             <div class="header-actions">
                 <button type="button" onclick="exportProjects()" class="export">Export Projects</button>
@@ -216,14 +16,14 @@
             </div>
         </div>
 
-        <div class="content-wrapper">
-            <div class="left-section">
+        <div class="admin-content">
+            <div class="admin-left">
                 <div id="projectList" class="project-list">
                     <h3>All Projects</h3>
                 </div>
             </div>
 
-            <div class="right-section">
+            <div class="admin-right">
                 <form id="projectForm" class="project-form" style="display: none;">
                     <h3 id="formTitle">Edit Project</h3>
                     <input type="hidden" id="projectIndex" name="projectIndex" value="-1">

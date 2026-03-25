@@ -130,7 +130,7 @@ async function initInfoSection() {
         window.clearAllProjects = clearAllProjects;
 
         // Function to add a project based on percentages
-        function addRandomProject(artPercent, researchPercent, ecologyPercent, culturePercent) {
+        function addRandomProject(artPercent, communityPercent, ecologyPercent, researchPercent, healthPercent, educationPercent) {
             if (usedProjectIndices.size >= projects.length) {
                 console.log('All projects have been shown');
                 return;
@@ -138,10 +138,12 @@ async function initInfoSection() {
 
             // Convert percentages to numbers and find the highest
             const percentages = [
-                { category: 'ART', value: parseFloat(artPercent) },
-                { category: 'RESEARCH', value: parseFloat(researchPercent) },
-                { category: 'ECOLOGY', value: parseFloat(ecologyPercent) },
-                { category: 'COMMUNITY', value: parseFloat(culturePercent) }
+                { category: 'ART', value: parseFloat(artPercent) || 0 },
+                { category: 'COMMUNITY', value: parseFloat(communityPercent) || 0 },
+                { category: 'ECOLOGY', value: parseFloat(ecologyPercent) || 0 },
+                { category: 'RESEARCH', value: parseFloat(researchPercent) || 0 },
+                { category: 'HEALTH', value: parseFloat(healthPercent) || 0 },
+                { category: 'EDUCATION', value: parseFloat(educationPercent) || 0 }
             ].sort((a, b) => b.value - a.value);
 
             // Find available projects that match the highest percentage category
