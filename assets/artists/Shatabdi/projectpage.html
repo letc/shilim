@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Page</title>
+    <style>
+        body {
+            font-family: 'Lucida Grande';
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            display: flex;
+            width: 1550px;
+            height: 1000px;
+            max-width: 95vw;
+            max-height: 95vh;
+            aspect-ratio: 1550/1000;
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            overflow: auto;
+            box-sizing: border-box;
+        }
+        .side-menu {
+            width: 330px;
+            background: white;
+            padding: 40px 40px;
+            border-right: 1px solid #eee;
+            overflow-y: scroll;
+            box-sizing: border-box;
+            height: 100%;
+            border-top-left-radius: 40px;
+            border-bottom-left-radius: 40px;
+        }
+        
+        .side-menu::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .side-menu::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+            margin: 60px 0;
+        }
+        
+        .side-menu::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        .side-menu::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        .main-content {
+            flex: 1;
+            padding: 40px 40px;
+            box-sizing: border-box;
+            overflow-y: scroll;
+        }
+        
+        .main-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .main-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+            margin: 60px 0;
+        }
+        
+        .main-content::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 10px;
+        }
+        
+        .main-content::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        .header {
+            margin-bottom: 40px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                margin: 10px;
+            }
+            .side-menu {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #eee;
+                margin: 0;
+                border-radius: 40px 40px 0 0;
+            }
+            .main-content {
+                margin-left: 0;
+                max-width: 100%;
+                padding: 20px;
+            }
+        }
+        .artist-name {
+            font-size: 24px;
+            color: #666;
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        .project-title {
+            font-size: 18px;
+            margin-bottom: 8px;
+            font-weight: normal;
+            font-style: italic;
+            font-family: Georgia, 'Times New Roman', serif;
+            color: #333;
+        }
+        .bio-section {
+            margin-top: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .bio-heading {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .bio-text {
+            line-height: 1.6;
+            color: #444;
+        }
+        .projects-section {
+            margin-top: 60px;
+        }
+        .project-item {
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            position: relative;
+            background-color: #f8f8f8;
+            border-radius: 15px;
+            border: 1px solid #e5e5e5;
+            transition: background-color 0.2s ease;
+        }
+         .project-circle {
+            position: absolute;
+            right: 15px;
+            bottom: 15px;
+            width: 30px;
+            height: 30px;
+            -webkit-mask-image: url('assets/white_circle_bg.png');
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            -webkit-mask-size: contain;
+            mask-image: url('assets/white_circle_bg.png');
+            mask-repeat: no-repeat;
+            mask-position: center;
+            mask-size: contain;
+            background-color: white; /* default fill */
+            cursor: pointer;
+        }
+
+        .project-item:hover {
+            background-color: #efefef;
+        }
+        .project-meta {
+            font-size: 10px;
+            color: #888;
+            margin-top: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+        .icon-button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            font-size: 16px;
+            color: #666;
+        }
+        .icon-button:hover {
+            background: #e0e0e0;
+        }
+        .home-icon {
+            transform: rotate(180deg);
+        }
+        
+        .project-item.active {
+            /* No background highlighting */
+        }
+
+        .project-item.active .project-circle {
+            background-color: #b3d9e8; /* only the circle shape gets tinted */
+            transform: scale(1.1);
+        }
+
+        
+        .content-section {
+            margin-bottom: 40px;
+        }
+        
+        .text-content {
+            line-height: 1.5;
+            color: #444;
+            white-space: pre-wrap;
+            margin-top: 30px;
+            margin-left: 0;
+            margin-right: 0;
+            padding: 0 40px;
+            text-align: justify;
+            column-count: 2;
+            column-gap: 40px;
+            column-rule: 1px solid #eee;
+        }
+        
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .carousel-wrapper {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+        
+        .carousel-images {
+            display: flex;
+            gap: 16px;
+            transition: transform 0.3s ease;
+            padding: 0 8px;
+        }
+        
+        .carousel-images img {
+            width: calc(50% - 8px);
+            flex-shrink: 0;
+            border-radius: 8px;
+            object-fit: cover;
+            height: auto;
+        }
+        
+        .carousel-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        
+        .carousel-button:hover {
+            background: white;
+        }
+        
+        .carousel-button.prev {
+            left: 10px;
+        }
+        
+        .carousel-button.next {
+            right: 10px;
+        }
+        
+        .carousel-dots {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ddd;
+            cursor: pointer;
+        }
+        
+        .carousel-dot.active {
+            background: #2196F3;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        
+        .video-player {
+            width: 100%;
+            border-radius: 8px;
+            background: #000;
+        }
+        
+        .video-description {
+            margin-top: 10px;
+            color: #666;
+            font-style: italic;
+            column-count: 2;
+            column-gap: 40px;
+            column-rule: 1px solid #eee;
+            padding: 0 40px;
+            text-align: justify;
+        }
+        
+        .section-heading {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="side-menu">
+            <div class="artist-name" id="artistName">Artist Name</div>
+            
+            <div class="bio-section">
+                <div class="bio-heading">Author, Artist or Organisation Bio :</div>
+                <div class="bio-text" id="bioText">
+                    <!-- Bio will be loaded here -->
+                </div>
+            </div>
+            
+            <div class="projects-section" id="projectsList">
+                <!-- Projects will be loaded here -->
+            </div>
+        </div>
+
+        <div class="main-content" id="mainContent">
+            <div id="projectContent">
+                <!-- Project content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projectData = null;
+        let currentProjectIndex = 0;
+
+        async function loadProjectData() {
+            try {
+                const response = await fetch('projectpage.json');
+                projectData = await response.json();
+                initializePage();
+            } catch (error) {
+                console.error('Error loading project data:', error);
+                alert('Error loading project data. Please check if sampleprojectpage.json exists.');
+            }
+        }
+
+        function initializePage() {
+            if (!projectData) return;
+
+            // Set artist name and bio
+            document.getElementById('artistName').textContent = projectData.author;
+            document.getElementById('bioText').textContent = projectData.artistdescription;
+
+            // Populate projects list
+            const projectsList = document.getElementById('projectsList');
+            projectsList.innerHTML = '';
+            
+            projectData.projects.forEach((project, index) => {
+                const projectItem = document.createElement('div');
+                projectItem.className = 'project-item' + (index === 0 ? ' active' : '');
+                
+                const dateDisplay = project.startdate && project.enddate
+                    ? `${project.startdate} to ${project.enddate}`
+                    : project.date;
+                
+                projectItem.innerHTML = `
+                    <div class="project-title">${project.title}</div>
+                    <div class="project-meta">${projectData.author}</div>
+                    <div class="project-meta">${dateDisplay}</div>
+                    <div class="project-circle"></div>
+                `;
+                
+                // Add click handler only to the circle
+                const circle = projectItem.querySelector('.project-circle');
+                circle.onclick = () => loadProject(index);
+                
+                projectsList.appendChild(projectItem);
+            });
+
+            // Load first project by default
+            if (projectData.projects.length > 0) {
+                loadProject(0);
+            }
+        }
+
+        function loadProject(index) {
+            currentProjectIndex = index;
+            const project = projectData.projects[index];
+
+            // Update active state
+            document.querySelectorAll('.project-item').forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+
+            // Clear and populate project content
+            const projectContent = document.getElementById('projectContent');
+            projectContent.innerHTML = '';
+
+            if (!project.sections || project.sections.length === 0) {
+                return;
+            }
+
+            project.sections.forEach((section, sectionIndex) => {
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'content-section';
+
+                if (section.sectiontype === 'text' && section.value) {
+                    sectionDiv.innerHTML = `
+                        <div class="text-content">${section.value}</div>
+                    `;
+                    projectContent.appendChild(sectionDiv);
+                }
+
+                if (section.sectiontype === 'image' && section.value && section.value.length > 0) {
+                    createImageCarousel(section.value, sectionDiv, sectionIndex);
+                    projectContent.appendChild(sectionDiv);
+                }
+
+                if (section.sectiontype === 'video' && section.value) {
+                    createVideoPlayer(section.value, sectionDiv);
+                    projectContent.appendChild(sectionDiv);
+                }
+            });
+        }
+
+        function createImageCarousel(images, container, carouselId) {
+            if (images.length === 0) return;
+
+            const carouselHTML = `
+                <div class="carousel-container">
+                    <div class="carousel-wrapper">
+                        <div class="carousel-images" id="carouselImages${carouselId}">
+                            ${images.map(img => `<img src="${img.filename}" alt="Project image">`).join('')}
+                        </div>
+                        ${images.length > 1 ? `
+                            <button class="carousel-button prev" onclick="moveCarousel(${carouselId}, -1)">‹</button>
+                            <button class="carousel-button next" onclick="moveCarousel(${carouselId}, 1)">›</button>
+                        ` : ''}
+                    </div>
+                    ${images.length > 1 ? `
+                        <div class="carousel-dots" id="carouselDots${carouselId}">
+                            ${images.map((_, i) => `<div class="carousel-dot ${i === 0 ? 'active' : ''}" onclick="goToSlide(${carouselId}, ${i})"></div>`).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            container.innerHTML = carouselHTML;
+            
+            // Store carousel state
+            if (!window.carousels) window.carousels = {};
+            window.carousels[carouselId] = {
+                currentSlide: 0,
+                totalSlides: images.length
+            };
+        }
+
+        function moveCarousel(carouselId, direction) {
+            const carousel = window.carousels[carouselId];
+            if (!carousel) return;
+
+            // Move by 2 images (to show next pair)
+            carousel.currentSlide += direction * 2;
+            
+            const maxSlides = carousel.totalSlides - 2;
+            if (carousel.currentSlide < 0) {
+                carousel.currentSlide = 0;
+            } else if (carousel.currentSlide > maxSlides) {
+                carousel.currentSlide = maxSlides >= 0 ? maxSlides : 0;
+            }
+
+            updateCarousel(carouselId);
+        }
+
+        function goToSlide(carouselId, slideIndex) {
+            const carousel = window.carousels[carouselId];
+            if (!carousel) return;
+
+            carousel.currentSlide = slideIndex * 2;
+            updateCarousel(carouselId);
+        }
+
+        function updateCarousel(carouselId) {
+            const carousel = window.carousels[carouselId];
+            const imagesContainer = document.getElementById(`carouselImages${carouselId}`);
+            const dots = document.querySelectorAll(`#carouselDots${carouselId} .carousel-dot`);
+
+            if (imagesContainer) {
+                // Account for gap (16px) when calculating translation
+                // Each image + gap takes up ~(50% + 8px) per image
+                const translateAmount = carousel.currentSlide * (50 + 1.6) + '%';
+                imagesContainer.style.transform = `translateX(-${translateAmount})`;
+            }
+
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === Math.floor(carousel.currentSlide / 2));
+            });
+        }
+
+        function createVideoPlayer(videoData, container) {
+            const videoSource = videoData.source || videoData;
+            const description = videoData.description || '';
+
+            let videoHTML = '';
+
+            // Check if it's a YouTube link
+            if (videoSource.includes('youtube.com') || videoSource.includes('youtu.be')) {
+                const videoId = extractYouTubeId(videoSource);
+                videoHTML = `
+                    <div class="video-container">
+                        <iframe class="video-player" height="450" 
+                            src="https://www.youtube.com/embed/${videoId}" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                        ${description ? `<div class="video-description">${description}</div>` : ''}
+                    </div>
+                `;
+            }
+            // Check if it's a Vimeo link
+            else if (videoSource.includes('vimeo.com')) {
+                const videoId = extractVimeoId(videoSource);
+                videoHTML = `
+                    <div class="video-container">
+                        <iframe class="video-player" height="450" 
+                            src="https://player.vimeo.com/video/${videoId}" 
+                            frameborder="0" 
+                            allow="autoplay; fullscreen; picture-in-picture" 
+                            allowfullscreen>
+                        </iframe>
+                        ${description ? `<div class="video-description">${description}</div>` : ''}
+                    </div>
+                `;
+            }
+            // Direct video file
+            else {
+                videoHTML = `
+                    <div class="video-container">
+                        <video class="video-player" controls>
+                            <source src="${videoSource}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                        ${description ? `<div class="video-description">${description}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            container.innerHTML = videoHTML;
+        }
+
+        function extractYouTubeId(url) {
+            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+            const match = url.match(regex);
+            return match ? match[1] : '';
+        }
+
+        function extractVimeoId(url) {
+            const regex = /vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/([^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?)/;
+            const match = url.match(regex);
+            return match ? match[3] : '';
+        }
+
+        // Load data when page loads
+        document.addEventListener('DOMContentLoaded', loadProjectData);
+    </script>
+</body>
+</html>
