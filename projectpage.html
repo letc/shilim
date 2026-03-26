@@ -50,7 +50,7 @@
 
             // Set artist name and bio
             document.getElementById('artistName').textContent = projectData.author;
-            document.getElementById('bioText').textContent = projectData.artistdescription;
+            document.getElementById('bioText').innerHTML = projectData.artistdescription;
 
             // Populate projects list
             const projectsList = document.getElementById('projectsList');
@@ -131,7 +131,7 @@
                 <div class="carousel-container">
                     <div class="carousel-wrapper">
                         <div class="carousel-images" id="carouselImages${carouselId}">
-                            ${images.map(img => `<img src="${img.filename}" alt="Project image">`).join('')}
+                            ${images.map(img => `<img src="${img.filename}" alt="Project image" onclick="openLightbox('${img.filename}')">`).join('')}
                         </div>
                         ${images.length > 1 ? `
                             <button class="carousel-button prev" onclick="moveCarousel(${carouselId}, -1)">‹</button>
@@ -145,9 +145,9 @@
                     ` : ''}
                 </div>
             `;
-            
+
             container.innerHTML = carouselHTML;
-            
+
             // Store carousel state
             if (!window.carousels) window.carousels = {};
             window.carousels[carouselId] = {
@@ -160,14 +160,12 @@
             const carousel = window.carousels[carouselId];
             if (!carousel) return;
 
-            // Move by 2 images (to show next pair)
-            carousel.currentSlide += direction * 2;
-            
-            const maxSlides = carousel.totalSlides - 2;
+            carousel.currentSlide += direction;
+
             if (carousel.currentSlide < 0) {
                 carousel.currentSlide = 0;
-            } else if (carousel.currentSlide > maxSlides) {
-                carousel.currentSlide = maxSlides >= 0 ? maxSlides : 0;
+            } else if (carousel.currentSlide >= carousel.totalSlides) {
+                carousel.currentSlide = carousel.totalSlides - 1;
             }
 
             updateCarousel(carouselId);
@@ -177,7 +175,7 @@
             const carousel = window.carousels[carouselId];
             if (!carousel) return;
 
-            carousel.currentSlide = slideIndex * 2;
+            carousel.currentSlide = slideIndex;
             updateCarousel(carouselId);
         }
 
@@ -187,15 +185,37 @@
             const dots = document.querySelectorAll(`#carouselDots${carouselId} .carousel-dot`);
 
             if (imagesContainer) {
-                // Account for gap (16px) when calculating translation
-                // Each image + gap takes up ~(50% + 8px) per image
-                const translateAmount = carousel.currentSlide * (50 + 1.6) + '%';
-                imagesContainer.style.transform = `translateX(-${translateAmount})`;
+                const translateAmount = carousel.currentSlide * 100;
+                imagesContainer.style.transform = `translateX(-${translateAmount}%)`;
             }
 
             dots.forEach((dot, i) => {
-                dot.classList.toggle('active', i === Math.floor(carousel.currentSlide / 2));
+                dot.classList.toggle('active', i === carousel.currentSlide);
             });
+        }
+
+        // Lightbox functions
+        function openLightbox(imageSrc) {
+            const overlay = document.createElement('div');
+            overlay.className = 'lightbox-overlay';
+            overlay.innerHTML = `
+                <button class="lightbox-close">&times;</button>
+                <img src="${imageSrc}" alt="Fullscreen image">
+            `;
+            document.body.appendChild(overlay);
+            // Trigger transition
+            requestAnimationFrame(() => overlay.classList.add('active'));
+
+            overlay.querySelector('.lightbox-close').onclick = () => closeLightbox(overlay);
+            overlay.onclick = (e) => { if (e.target === overlay) closeLightbox(overlay); };
+            document.addEventListener('keydown', function handler(e) {
+                if (e.key === 'Escape') { closeLightbox(overlay); document.removeEventListener('keydown', handler); }
+            });
+        }
+
+        function closeLightbox(overlay) {
+            overlay.classList.remove('active');
+            setTimeout(() => overlay.remove(), 300);
         }
 
         function createVideoPlayer(videoData, container) {
