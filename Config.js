@@ -34,22 +34,22 @@ const COLORS = {
 
 // Direction colors - Hexagonal (6 directions)
 const DIRECTION_COLORS = {
-    Top: '#ff0000',           // Red - ART
-    TopRight: '#00ff00',      // Green - COMMUNITY
-    BottomRight: '#0000ff',   // Blue - ECOLOGY
-    Bottom: '#ffa500',        // Orange - RESEARCH
-    BottomLeft: '#9c27b0',    // Purple - HEALTH
-    TopLeft: '#ff9800'        // Deep Orange - EDUCATION
+    Top: '#e16d6d',           // Red - ART
+    TopRight: '#77e1b1',      // Green - COMMUNITY
+    BottomRight: '#6092e2',   // Blue - ECOLOGY
+    Bottom: '#76dd89',        // Orange - RESEARCH
+    BottomLeft: '#47729a',    // Purple - HEALTH
+    TopLeft: '#4b4b4b'        // Deep Orange - EDUCATION
 };
 
 // Encloser colors - Hexagonal (6 directions)
 const PLAIN_COLORS = {
-    Top: '#dcd6ca',           // ART
-    TopRight: '#f0f0f0',      // COMMUNITY
+    Top: '#d2d0cb',           // ART
+    TopRight: '#d2cdcd',      // COMMUNITY
     BottomRight: '#dcd6ca',   // ECOLOGY
     Bottom: '#c5d8e1',        // RESEARCH
-    BottomLeft: '#e8d5e8',    // HEALTH
-    TopLeft: '#ffe4cc'        // EDUCATION
+    BottomLeft: '#d5e8d5',    // HEALTH
+    TopLeft: '#e8dfd6'        // EDUCATION
 };
 
 // Direction enum - Hexagonal (6 directions)
