@@ -25,6 +25,7 @@
         </div>
 
         <div class="main-content custom-scroll" id="mainContent">
+            <h2 class="project-heading" id="projectHeading">Project Title</h2>
             <div id="projectContent">
                 <!-- Project content will be loaded here -->
             </div>
@@ -111,6 +112,9 @@
             document.querySelectorAll('.project-item').forEach((item, i) => {
                 item.classList.toggle('active', i === index);
             });
+
+            // Set project heading
+            document.getElementById('projectHeading').textContent = project.title;
 
             // Clear and populate project content
             const projectContent = document.getElementById('projectContent');
