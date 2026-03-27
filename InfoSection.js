@@ -51,12 +51,12 @@ async function initInfoSection() {
         });
 
         // Add text element with padding
-        const archiveIndexLabelText = new PIXI.Text('ARCHIVE INDEX', {
-            fontFamily: 'Lucida Grande',
-            fontSize: 18,
-            fill: 0x808080,
+        const archiveIndexLabelText = new PIXI.Text('archive index', {
+            fontFamily: 'Georgia',
+            fontSize: 21,
+            fill: 0xB0B0B0,
             align: 'left',
-            //fontStyle: 'italic'
+            fontStyle: 'italic'
         });
         archiveIndexLabelText.x = 24; // 10px padding from left
         archiveIndexLabelText.y = 24; // 10px padding from top

@@ -171,79 +171,16 @@ function createDetailWindow(artistDetails, details, link, cardBackground, x, y) 
 
     detailContainer.addChild(scrollContainer);
 
-    // Create scrollbar if content exceeds visible area
+    // Scrollable content (no visible scrollbar)
     if (totalContentHeight > scrollAreaHeight) {
-        const scrollbarHeight = Math.max(30, (scrollAreaHeight / totalContentHeight) * scrollAreaHeight);
-        const scrollbarTrack = new PIXI.Graphics();
-        scrollbarTrack.beginFill(0xE0E0E0);
-        scrollbarTrack.drawRoundedRect(detailWidth - scrollbarWidth - padding, topPadding, scrollbarWidth, scrollAreaHeight, 4);
-        scrollbarTrack.endFill();
-        detailContainer.addChild(scrollbarTrack);
-
-        const scrollbarThumb = new PIXI.Graphics();
-        scrollbarThumb.beginFill(0xAAAAAA);
-        scrollbarThumb.drawRoundedRect(0, 0, scrollbarWidth, scrollbarHeight, 4);
-        scrollbarThumb.endFill();
-        scrollbarThumb.x = detailWidth - scrollbarWidth - padding;
-        scrollbarThumb.y = topPadding;
-        scrollbarThumb.eventMode = 'static';
-        scrollbarThumb.cursor = 'pointer';
-        detailContainer.addChild(scrollbarThumb);
-        
-        // Store reference to scrollbar thumb
-        detailContainer.scrollbarThumb = scrollbarThumb;
-
-        let isDragging = false;
-        let dragStartY = 0;
-        let scrollStartY = 0;
-
-        const updateScrollPosition = (thumbY) => {
-            const maxThumbY = scrollAreaHeight - scrollbarHeight;
-            const clampedY = Math.max(0, Math.min(maxThumbY, thumbY));
-            scrollbarThumb.y = topPadding + clampedY;
-            const scrollRatio = clampedY / maxThumbY;
-            const maxScroll = totalContentHeight - scrollAreaHeight;
-            scrollContainer.y = topPadding - (scrollRatio * maxScroll);
-        };
-
-        scrollbarThumb.on('pointerdown', (event) => {
-            isDragging = true;
-            dragStartY = event.global.y;
-            scrollStartY = scrollbarThumb.y - topPadding;
-        });
-
-        detailContainer.on('pointermove', (event) => {
-            if (isDragging) {
-                const deltaY = event.global.y - dragStartY;
-                updateScrollPosition(scrollStartY + deltaY);
-            }
-        });
-
-        detailContainer.on('pointerup', () => {
-            isDragging = false;
-        });
-
-        detailContainer.on('pointerupoutside', () => {
-            isDragging = false;
-        });
+        let scrollY = 0;
+        const maxScroll = totalContentHeight - scrollAreaHeight;
 
         // Mouse wheel scrolling
         detailContainer.on('wheel', (event) => {
             const scrollDelta = event.deltaY * 0.5;
-            const currentScrollRatio = (scrollbarThumb.y - topPadding) / (scrollAreaHeight - scrollbarHeight);
-            const maxScroll = totalContentHeight - scrollAreaHeight;
-            const currentScroll = currentScrollRatio * maxScroll;
-            const newScroll = Math.max(0, Math.min(maxScroll, currentScroll + scrollDelta));
-            const newScrollRatio = newScroll / maxScroll;
-            updateScrollPosition(newScrollRatio * (scrollAreaHeight - scrollbarHeight));
-        });
-
-        scrollbarThumb.on('pointerover', () => {
-            scrollbarThumb.tint = 0x888888;
-        });
-
-        scrollbarThumb.on('pointerout', () => {
-            scrollbarThumb.tint = 0xFFFFFF;
+            scrollY = Math.max(0, Math.min(maxScroll, scrollY + scrollDelta));
+            scrollContainer.y = topPadding - scrollY;
         });
     } else {
         detailContainer.addChild(scrollContainer);
@@ -259,6 +196,19 @@ function createDetailWindow(artistDetails, details, link, cardBackground, x, y) 
     buttonBg.height = buttonSize;
     urlButton.addChild(buttonBg);
 
+    // Triangle arrow inside detail button
+    const detailArrow = new PIXI.Graphics();
+    detailArrow.beginFill(0xAAAAAA);
+    const detailArrowSize = 16;
+    const daCx = buttonSize / 2 + 2;
+    const daCy = buttonSize / 2;
+    detailArrow.moveTo(daCx - detailArrowSize * 0.4, daCy - detailArrowSize * 0.5);
+    detailArrow.lineTo(daCx + detailArrowSize * 0.5, daCy);
+    detailArrow.lineTo(daCx - detailArrowSize * 0.4, daCy + detailArrowSize * 0.5);
+    detailArrow.closePath();
+    detailArrow.endFill();
+    urlButton.addChild(detailArrow);
+
     urlButton.x = detailWidth - buttonSize - padding;
     urlButton.y = detailHeight - buttonSize - padding;
 
@@ -267,10 +217,12 @@ function createDetailWindow(artistDetails, details, link, cardBackground, x, y) 
 
     urlButton.on('pointerover', () => {
         buttonBg.tint = 0x3570B2;
+        detailArrow.tint = 0xFFFFFF;
     });
 
     urlButton.on('pointerout', () => {
         buttonBg.tint = 0xFFFFFF;
+        detailArrow.tint = 0xFFFFFF;
     });
 
     urlButton.on('pointertap', () => {
@@ -342,15 +294,15 @@ export function createProjectCard(title, author, date, link, details, artistDeta
     const cardWidth = 280;
     let cardHeight = 100;
     const padding = 15;
-    const buttonSize = 24;
+    const buttonSize = 48;
     const buttonPadding = padding;
 
     // Add text elements first to calculate total height
     // Title text
     const titleText = new PIXI.Text(title, {
-        fontFamily: 'Gelasio',
-        fontSize: 19,
-        fontStyle: 'normal',
+        fontFamily: 'Georgia',
+        fontSize: 22,
+        fontStyle: 'italic',
         fill: 0x000000,
         wordWrap: true,
         wordWrapWidth: cardWidth - (padding * 2)
@@ -361,7 +313,7 @@ export function createProjectCard(title, author, date, link, details, artistDeta
     // Author text
     const authorText = new PIXI.Text(author, {
         fontFamily: 'Arial',
-        fontSize: 14,
+        fontSize: 16,
         fill: 0x808080,
         wordWrap: true,
         wordWrapWidth: cardWidth - (padding * 2)
@@ -372,7 +324,7 @@ export function createProjectCard(title, author, date, link, details, artistDeta
     // Date text
     const dateText = new PIXI.Text(date, {
         fontFamily: 'Arial',
-        fontSize: 14,
+        fontSize: 16,
         fill: 0x808080,
         wordWrap: true,
         wordWrapWidth: cardWidth - (padding * 2)
@@ -411,6 +363,19 @@ export function createProjectCard(title, author, date, link, details, artistDeta
     buttonBg.drawCircle(buttonSize/2, buttonSize/2, buttonSize/2);
     buttonBg.endFill();
     buttonContainer.addChild(buttonBg);
+
+    // Triangle arrow inside button
+    const arrow = new PIXI.Graphics();
+    arrow.beginFill(0xFFFFFF);
+    const arrowSize = 16;
+    const cx = buttonSize / 2 + 2; // slight right offset to visually center the triangle
+    const cy = buttonSize / 2;
+    arrow.moveTo(cx - arrowSize * 0.4, cy - arrowSize * 0.5);
+    arrow.lineTo(cx + arrowSize * 0.5, cy);
+    arrow.lineTo(cx - arrowSize * 0.4, cy + arrowSize * 0.5);
+    arrow.closePath();
+    arrow.endFill();
+    buttonContainer.addChild(arrow);
 
     // Make button interactive
     buttonContainer.eventMode = 'static';
