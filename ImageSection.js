@@ -5,7 +5,7 @@ import { updateSectionSizes, updateTextBox } from './BottomLayout.js';
 import { interactiveBgTexture, restartButtonTexture, whitebgTexture, leavesTexture, dragonflyTexture, frogTexture } from './Resources.js';
 import { tutorialDragDone, tutorialSurroundDone } from './Tutorial.js';
 
-let previousSurroundedGroupsLength = 1;
+let previousSurroundedGroupsLength = 0;
 let tempGridCells = [];
 let surroundedGroupsContainer = new PIXI.Container();
 
@@ -791,7 +791,7 @@ async function initImageSection() {
             
             // Reset texture stats
             textureStats = new TextureStats();
-            previousSurroundedGroupsLength = 1;
+            previousSurroundedGroupsLength = 0;
             
             // Reset selection state
             isDragging = false;
@@ -1033,7 +1033,7 @@ async function initImageSection() {
                 // Add the container to gridContainer
                 gridContainer.addChild(surroundedGroupsContainer);
 
-                previousSurroundedGroupsLength = textureStats.surroundedGroups.length + 1;
+                previousSurroundedGroupsLength = textureStats.surroundedGroups.length;
 
                 // Add a project card based on percentages
                 if (typeof window.addRandomProject === 'function') {
@@ -1046,8 +1046,6 @@ async function initImageSection() {
                         textureStats.topLeftPercentage         // EDUCATION
                     );
                 }
-
-                updateTextBox();
 
                 // Notify tutorial that an enclosed space was created
                 tutorialSurroundDone();
