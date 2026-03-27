@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Page</title>
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Madurai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Lucida Grande';
+            font-family: 'Hind Madurai', 'Lucida Grande', sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f0f2f5;
@@ -23,22 +24,25 @@
             max-width: 95vw;
             max-height: 95vh;
             aspect-ratio: 1550/1000;
-            background: white;
-            border-radius: 40px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            overflow: auto;
+            gap: 0;
+            background: transparent;
+            border-radius: 0;
+            box-shadow: none;
+            overflow: visible;
+            position: relative;
             box-sizing: border-box;
         }
         .side-menu {
-            width: 330px;
+            width: 430px;
             background: white;
             padding: 40px 40px;
-            border-right: 1px solid #eee;
+            padding-right: 140px;
             overflow-y: scroll;
             box-sizing: border-box;
             height: 100%;
-            border-top-left-radius: 40px;
-            border-bottom-left-radius: 40px;
+            border-radius: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            z-index: 1;
         }
         
         /* Hide scrollbar but keep scrollable */
@@ -54,6 +58,11 @@
             padding: 40px 40px;
             box-sizing: border-box;
             overflow-y: scroll;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-left: -120px;
+            z-index: 2;
         }
         
         /* Hide scrollbar but keep scrollable */
@@ -77,14 +86,18 @@
                 height: auto;
                 position: relative;
                 border-right: none;
-                border-bottom: 1px solid #eee;
                 margin: 0;
-                border-radius: 40px 40px 0 0;
+                border-radius: 24px;
             }
             .main-content {
                 margin-left: 0;
                 max-width: 100%;
                 padding: 20px;
+                border-radius: 24px;
+            }
+            .page-buttons {
+                position: fixed;
+                bottom: 10px;
             }
         }
         .artist-name {
@@ -92,6 +105,7 @@
             color: #666;
             margin-bottom: 10px;
             font-style: italic;
+            font-family: Georgia, 'Times New Roman', serif;
         }
         .project-title {
             font-size: 18px;
@@ -353,6 +367,88 @@
             color: #333;
             margin-bottom: 15px;
         }
+
+        /* Page action buttons */
+        .page-buttons {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 1550px;
+            max-width: 95vw;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 20px;
+            pointer-events: none;
+            z-index: 100;
+            box-sizing: border-box;
+        }
+        .page-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: white;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto;
+            transition: background 0.2s ease, transform 0.2s ease;
+            color: #888;
+            font-size: 18px;
+        }
+        .page-btn:hover {
+            background: #f5f5f5;
+            transform: scale(1.08);
+        }
+        .page-btn svg {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: #888;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        .help-popup {
+            position: fixed;
+            bottom: 80px;
+            left: calc(50% - 1550px / 2 + 20px);
+            background: white;
+            border-radius: 16px;
+            padding: 24px 28px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+            width: 300px;
+            z-index: 200;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #555;
+        }
+        .help-popup.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        .help-popup h4 {
+            margin: 0 0 10px;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 16px;
+            color: #333;
+            font-weight: normal;
+        }
+        .help-popup p {
+            margin: 0 0 8px;
+        }
+        .help-popup p:last-child {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -377,6 +473,23 @@
                 <!-- Project content will be loaded here -->
             </div>
         </div>
+    </div>
+
+    <!-- Page buttons -->
+    <div class="page-buttons">
+        <button class="page-btn help-btn" onclick="toggleHelp()" title="Help">
+            <span style="font-family: Georgia, serif; font-size: 20px; font-style: italic; color: #888;">?</span>
+        </button>
+        <button class="page-btn home-btn" onclick="window.location.href='../../index.html'" title="Home">
+            <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-4 0a1 1 0 01-1-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 01-1 1h-2z"/></svg>
+        </button>
+    </div>
+
+    <!-- Help popup -->
+    <div class="help-popup" id="helpPopup">
+        <h4>Shilim Institute Archive</h4>
+        <p>Click on a project circle to view its content. Use the carousel arrows to browse images, and click any image to view it fullscreen.</p>
+        <p>Press Escape or click outside to close.</p>
     </div>
 
     <script>
@@ -612,6 +725,19 @@
         }
 
         
+        // Help popup toggle
+        function toggleHelp() {
+            const popup = document.getElementById('helpPopup');
+            popup.classList.toggle('visible');
+        }
+        document.addEventListener('click', function(e) {
+            const popup = document.getElementById('helpPopup');
+            if (popup && popup.classList.contains('visible') &&
+                !e.target.closest('.help-btn') && !e.target.closest('.help-popup')) {
+                popup.classList.remove('visible');
+            }
+        });
+
         // Lightbox functions
         function openLightbox(imageSrc) {
             const overlay = document.createElement('div');

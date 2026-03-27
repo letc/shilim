@@ -2,6 +2,7 @@ import { app, TextureArray, folderPaths, numberOfRows, numberOfColumns, cellSize
 import { initInfoSection } from './InfoSection.js';
 import { initImageSection } from './ImageSection.js';
 import { initBottomLayout } from './BottomLayout.js';
+import { startTutorial } from './Tutorial.js';
 
 let loadingContainer;
 let continueText;
@@ -308,6 +309,9 @@ async function LoadTextures() {
             await initInfoSection();
             await initImageSection();
             await initBottomLayout();
+
+            // Start the tutorial overlay
+            startTutorial();
         });
 
         return {

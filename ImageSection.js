@@ -3,6 +3,7 @@ import { getRandomSelectionRect } from './Utils.js';
 import { archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes, updateTextBox } from './BottomLayout.js';
 import { interactiveBgTexture, restartButtonTexture, whitebgTexture, leavesTexture, dragonflyTexture, frogTexture } from './Resources.js';
+import { tutorialDragDone, tutorialSurroundDone } from './Tutorial.js';
 
 let previousSurroundedGroupsLength = 1;
 let tempGridCells = [];
@@ -992,6 +993,9 @@ async function initImageSection() {
             //textureStats.printStats(); // Print updated statistics
             textureStats.updateSections();
 
+            // Notify tutorial that a drag was completed
+            tutorialDragDone();
+
             
             
             // If we found a new surrounded group
@@ -1044,6 +1048,9 @@ async function initImageSection() {
                 }
 
                 updateTextBox();
+
+                // Notify tutorial that an enclosed space was created
+                tutorialSurroundDone();
 
                 gsap.to(leaves, { alpha: 1, duration: 5 });
                 gsap.to(frog, { alpha: 1, duration: 5 });

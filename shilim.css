@@ -541,30 +541,41 @@ body.page-index {
    PAGE-SPECIFIC: projectpage.html
    ========================================================================== */
 body.page-projectpage {
-    font-family: 'Lucida Grande', sans-serif;
+    font-family: 'Hind Madurai', 'Lucida Grande', sans-serif;
     background-color: #f0f2f5;
 }
 
 .container--projectpage {
     display: flex;
-    overflow: auto;
+    gap: 0;
+    overflow: visible;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+    position: relative;
 }
 
 .side-menu {
-    width: 330px;
+    width: 430px;
     background: white;
     padding: 40px;
-    border-right: 1px solid #eee;
+    padding-right: 140px;
     overflow-y: scroll;
     height: 100%;
-    border-top-left-radius: 40px;
-    border-bottom-left-radius: 40px;
+    border-radius: 30px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    z-index: 1;
 }
 
 .main-content {
     flex: 1;
     padding: 40px;
     overflow-y: scroll;
+    background: white;
+    border-radius: 30px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+    margin-left: -120px;
+    z-index: 2;
 }
 
 .artist-name {
@@ -572,6 +583,7 @@ body.page-projectpage {
     color: #666;
     margin-bottom: 10px;
     font-style: italic;
+    font-family: Georgia, 'Times New Roman', serif;
 }
 .project-title {
     font-size: 18px;
@@ -580,6 +592,90 @@ body.page-projectpage {
     font-style: italic;
     font-family: Georgia, 'Times New Roman', serif;
     color: #333;
+}
+
+/* Page action buttons — positioned outside container flow */
+.page-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1550px;
+    max-width: 95vw;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 20px;
+    pointer-events: none;
+    z-index: 100;
+    box-sizing: border-box;
+}
+.page-btn {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: white;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    transition: background 0.2s ease, transform 0.2s ease;
+    color: #888;
+    font-size: 18px;
+}
+.page-btn:hover {
+    background: #f5f5f5;
+    transform: scale(1.08);
+}
+.page-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: #888;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* Help popup */
+.help-popup {
+    position: fixed;
+    bottom: 80px;
+    left: calc(50% - 1550px / 2 + 20px);
+    background: white;
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    width: 300px;
+    z-index: 200;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #555;
+}
+.help-popup.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+.help-popup h4 {
+    margin: 0 0 10px;
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 16px;
+    color: #333;
+    font-weight: normal;
+}
+.help-popup p {
+    margin: 0 0 8px;
+}
+.help-popup p:last-child {
+    margin-bottom: 0;
 }
 
 .bio-section {
@@ -791,24 +887,28 @@ body.page-projectpage {
     .container--projectpage {
         flex-direction: column;
         margin: 10px;
+        gap: 12px;
     }
     .side-menu {
         width: 100%;
         height: auto;
         position: relative;
-        border-right: none;
-        border-bottom: 1px solid #eee;
-        border-radius: 40px 40px 0 0;
+        border-radius: 24px;
     }
     .main-content {
         margin-left: 0;
         max-width: 100%;
         padding: 20px;
+        border-radius: 24px;
     }
     .text-content,
     .video-description {
         column-count: 1;
         padding: 0;
+    }
+    .page-buttons {
+        position: fixed;
+        bottom: 10px;
     }
 }
 
@@ -1003,4 +1103,52 @@ body.page-admin-projectpage {
     padding: 20px 0;
     border-top: 2px solid #e0e0e0;
     margin-top: 30px;
+}
+
+/* --------------------------------------------------------------------------
+   TUTORIAL OVERLAY
+   -------------------------------------------------------------------------- */
+#tutorial-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 80px;
+    pointer-events: none;
+}
+
+#tutorial-box {
+    pointer-events: auto;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12),
+                0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 28px 36px 24px;
+    max-width: 480px;
+    min-width: 320px;
+    text-align: center;
+    cursor: pointer;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#tutorial-text {
+    font-family: 'Lucida Grande', 'Trebuchet MS', Arial, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    margin: 0 0 12px 0;
+    white-space: pre-line;
+}
+
+#tutorial-hint {
+    display: block;
+    font-family: 'Lucida Grande', 'Trebuchet MS', Arial, sans-serif;
+    font-size: 12px;
+    color: #999;
+    letter-spacing: 0.02em;
 }
