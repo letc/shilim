@@ -79,7 +79,7 @@ function showStep(index) {
 
     // Hint text
     if (msg.advance === 'click') {
-        hintEl.textContent = 'Click anywhere to continue';
+        hintEl.textContent = 'Click this box to continue';
         hintEl.style.display = 'block';
     } else if (msg.advance === 'drag') {
         hintEl.textContent = '';
