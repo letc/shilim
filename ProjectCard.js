@@ -88,10 +88,10 @@ function createDetailWindow(artistDetails, details, link, cardBackground, x, y) 
     // Add Artist Details Section
     if (artistDetails) {
         const artistTitle = new PIXI.Text('Artist Details', {
-            fontFamily: 'Gelasio',
-            fontSize: 18,
-            fontWeight: 'bold',
-            fill: 0x2196F3,
+            fontFamily: 'Georgia',
+            fontSize: 20,
+            fontStyle: 'italic',
+            fill: 0x808080,
             wordWrap: true,
             wordWrapWidth: contentWidth
         });
@@ -101,13 +101,13 @@ function createDetailWindow(artistDetails, details, link, cardBackground, x, y) 
         currentY += artistTitle.height + 10;
 
         const artistText = new PIXI.Text(artistDetails, {
-            fontFamily: 'Gelasio',
-            fontSize: 16,
+            fontFamily: 'Hind Madurai',
+            fontSize: 18,
             fontStyle: 'normal',
             fill: 0x444444,
             wordWrap: true,
             wordWrapWidth: contentWidth,
-            lineHeight: 24
+            lineHeight: 26
         });
         artistText.x = 0;
         artistText.y = currentY;
@@ -116,7 +116,7 @@ function createDetailWindow(artistDetails, details, link, cardBackground, x, y) 
 
         // Add separator line
         const separator = new PIXI.Graphics();
-        separator.lineStyle(2, 0x999999, 1);
+        separator.lineStyle(0.5, 0xCCCCCC, 1);
         separator.moveTo(0, 0);
         separator.lineTo(contentWidth, 0);
         separator.stroke();
@@ -129,10 +129,10 @@ function createDetailWindow(artistDetails, details, link, cardBackground, x, y) 
 
     // Add Project Details Section
     const projectTitle = new PIXI.Text('Project Details', {
-        fontFamily: 'Gelasio',
-        fontSize: 18,
-        fontWeight: 'bold',
-        fill: 0x2196F3,
+        fontFamily: 'Georgia',
+        fontSize: 20,
+        fontStyle: 'italic',
+        fill: 0x808080,
         wordWrap: true,
         wordWrapWidth: contentWidth
     });
@@ -142,13 +142,13 @@ function createDetailWindow(artistDetails, details, link, cardBackground, x, y) 
     currentY += projectTitle.height + 10;
 
     const detailText = new PIXI.Text(details, {
-        fontFamily: 'Gelasio',
-        fontSize: 16,
+        fontFamily: 'Hind Madurai',
+        fontSize: 18,
         fontStyle: 'normal',
         fill: 0x444444,
         wordWrap: true,
         wordWrapWidth: contentWidth,
-        lineHeight: 24
+        lineHeight: 26
     });
     detailText.x = 0;
     detailText.y = currentY;
@@ -312,7 +312,7 @@ export function createProjectCard(title, author, date, link, details, artistDeta
 
     // Author text
     const authorText = new PIXI.Text(author, {
-        fontFamily: 'Arial',
+        fontFamily: 'Hind Madurai',
         fontSize: 16,
         fill: 0x808080,
         wordWrap: true,
@@ -323,7 +323,7 @@ export function createProjectCard(title, author, date, link, details, artistDeta
 
     // Date text
     const dateText = new PIXI.Text(date, {
-        fontFamily: 'Arial',
+        fontFamily: 'Hind Madurai',
         fontSize: 16,
         fill: 0x808080,
         wordWrap: true,
@@ -332,8 +332,8 @@ export function createProjectCard(title, author, date, link, details, artistDeta
     dateText.x = padding;
     dateText.y = authorText.y + authorText.height + 8;
 
-    // Calculate required height
-    const contentHeight = dateText.y + dateText.height + buttonPadding;
+    // Calculate required height — add room for the button row below text
+    const contentHeight = dateText.y + dateText.height + buttonSize + buttonPadding + 10;
     cardHeight = Math.max(cardHeight, contentHeight);
 
     // Create background with rounded corners
