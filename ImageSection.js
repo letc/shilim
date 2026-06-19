@@ -1,4 +1,4 @@
-import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, interactiveRect, stageSize, stageHeight, GridCell, gridCells, DragDirection, PLAIN_COLORS, projectType } from './Config.js';
+import { app, TextureArray, numberOfRows, numberOfColumns, cellSize, interactiveRect, stageSize, stageHeight, GridCell, gridCells, DragDirection, DIRECTION_COLORS, PLAIN_COLORS, projectType } from './Config.js';
 import { getRandomSelectionRect } from './Utils.js';
 import { archiveIndexValueLabelText } from './InfoSection.js';
 import { updateSectionSizes, updateTextBox } from './BottomLayout.js';
@@ -64,6 +64,10 @@ async function initImageSection() {
         };
 
         let currentDragDirection;
+
+        // Category is now chosen from the picker (see below) instead of drag direction.
+        // Defaults to the first category (ART) so painting works before any picker click.
+        let selectedCategory = DragDirection.Top;
 
         const container = document.getElementById('app-container');
 
@@ -719,8 +723,8 @@ async function initImageSection() {
                 selectionRect.drawRoundedRect(x, y, width, height,24);
                 selectionRect.endFill();
 
-                // Update project type text based on drag direction
-                const direction = getDragDirection(startX, startY, endX, endY);
+                // Update project type text based on the currently picked category
+                const direction = selectedCategory;
                 let projectIndex = 0;
                 switch(direction) {
                     case DragDirection.Top:
@@ -856,8 +860,8 @@ async function initImageSection() {
 
             
 
-            currentDragDirection = getDragDirection(startX, startY, endX, endY);
-            
+            currentDragDirection = selectedCategory;
+
             tempGridCells.length = 0;
 
             if(gridCells.length > 0){
@@ -1073,9 +1077,114 @@ async function initImageSection() {
         // Add grid container to image container
         imageContainer.addChild(gridContainer);
         imageContainer.addChild(restartButton);
-        
+
+        // ===== Category Picker =====
+        // A row of small circular buttons that select which category you are
+        // drawing with. Replaces the old "drag direction decides the category"
+        // mechanic — now the direction of the drag no longer matters.
+        // Order matches Config.js (TextureArray / projectType / DIRECTION_COLORS).
+        const categoryOptions = [
+            { dir: DragDirection.Top,         label: projectType[0], color: parseInt(DIRECTION_COLORS.Top.replace('#', '0x')) },
+            { dir: DragDirection.TopRight,    label: projectType[1], color: parseInt(DIRECTION_COLORS.TopRight.replace('#', '0x')) },
+            { dir: DragDirection.BottomRight, label: projectType[2], color: parseInt(DIRECTION_COLORS.BottomRight.replace('#', '0x')) },
+            { dir: DragDirection.Bottom,      label: projectType[3], color: parseInt(DIRECTION_COLORS.Bottom.replace('#', '0x')) },
+            { dir: DragDirection.BottomLeft,  label: projectType[4], color: parseInt(DIRECTION_COLORS.BottomLeft.replace('#', '0x')) },
+            { dir: DragDirection.TopLeft,     label: projectType[5], color: parseInt(DIRECTION_COLORS.TopLeft.replace('#', '0x')) },
+        ];
+
+        const pickerRadius = 15;
+        const pickerSpacing = 48;
+        const pickerCount = categoryOptions.length;
+        const pickerInnerWidth = (pickerCount - 1) * pickerSpacing;
+        const pickerPadX = 30;
+        const pickerPadY = 15;
+        const pickerBgWidth = pickerInnerWidth + pickerRadius * 2 + pickerPadX * 2;
+        const pickerBgHeight = pickerRadius * 2 + pickerPadY * 2;
+
+        const categoryPicker = new PIXI.Container();
+        categoryPicker.zIndex = 1000;
+        // Centre horizontally over the grid panel, sit just above the bottom bar.
+        categoryPicker.x = interactiveRect.x + interactiveRect.width / 2;
+        categoryPicker.y = app.screen.height - 112;
+
+        // Drop shadow + rounded pill background.
+        const pickerShadow = new PIXI.Graphics();
+        pickerShadow.beginFill(0x000000, 0.12);
+        pickerShadow.drawRoundedRect(-pickerBgWidth / 2 + 3, -pickerBgHeight / 2 + 4, pickerBgWidth, pickerBgHeight, pickerBgHeight / 2);
+        pickerShadow.endFill();
+        categoryPicker.addChild(pickerShadow);
+
+        const pickerBg = new PIXI.Graphics();
+        pickerBg.lineStyle(1, 0xe2e2e2, 1);
+        pickerBg.beginFill(0xffffff, 0.96);
+        pickerBg.drawRoundedRect(-pickerBgWidth / 2, -pickerBgHeight / 2, pickerBgWidth, pickerBgHeight, pickerBgHeight / 2);
+        pickerBg.endFill();
+        categoryPicker.addChild(pickerBg);
+
+        // Tooltip label shown above the row on hover / for the active category.
+        const pickerTooltip = new PIXI.Text('', {
+            fontFamily: 'IBM Plex Mono', fontSize: 14, fill: 0x4a4a4a, align: 'center'
+        });
+        pickerTooltip.anchor.set(0.5, 1);
+        pickerTooltip.y = -pickerBgHeight / 2 - 8;
+        categoryPicker.addChild(pickerTooltip);
+
+        const pickerButtons = [];
+
+        function setSelectedCategory(index) {
+            selectedCategory = categoryOptions[index].dir;
+            pickerTooltip.text = categoryOptions[index].label;
+            pickerButtons.forEach((btn, i) => {
+                const active = i === index;
+                btn.ring.visible = active;
+                gsap.to(btn.scale, { x: active ? 1.18 : 1, y: active ? 1.18 : 1, duration: 0.18 });
+            });
+        }
+
+        const firstX = -pickerInnerWidth / 2;
+        categoryOptions.forEach((opt, i) => {
+            const btn = new PIXI.Container();
+            btn.x = firstX + i * pickerSpacing;
+            btn.eventMode = 'static';
+            btn.cursor = 'pointer';
+            btn.hitArea = new PIXI.Circle(0, 0, pickerRadius + 5);
+
+            // Selection ring (only visible for the active category).
+            const ring = new PIXI.Graphics();
+            ring.lineStyle(3, 0x2b2b2b, 1);
+            ring.drawCircle(0, 0, pickerRadius + 4);
+            ring.visible = false;
+            btn.addChild(ring);
+            btn.ring = ring;
+
+            // Colour dot.
+            const dot = new PIXI.Graphics();
+            dot.lineStyle(1, 0xffffff, 1);
+            dot.beginFill(opt.color);
+            dot.drawCircle(0, 0, pickerRadius);
+            dot.endFill();
+            btn.addChild(dot);
+
+            btn.on('pointertap', () => setSelectedCategory(i));
+            btn.on('pointerover', () => { pickerTooltip.text = opt.label; });
+            btn.on('pointerout', () => {
+                const sel = categoryOptions.findIndex(o => o.dir === selectedCategory);
+                pickerTooltip.text = sel >= 0 ? categoryOptions[sel].label : '';
+            });
+
+            categoryPicker.addChild(btn);
+            pickerButtons.push(btn);
+        });
+
+        // Ensure the picker renders on top of the bottom layout bar / text box.
+        app.stage.sortableChildren = true;
+
+        // Default to the first category.
+        setSelectedCategory(0);
+
         // Add the container to the stage
         app.stage.addChild(imageContainer);
+        app.stage.addChild(categoryPicker);
 
     } catch (error) {
         console.error('Error initializing image section:', error);
